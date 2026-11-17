@@ -1,0 +1,3 @@
+# Auditorías
+
+Se registra la verificación de cada hito y cualquier incidente de consistencia. Formato: id, fecha, ejecutor y auditor (marcar AUTOEVALUACIÓN si coinciden), alcance, evidencias examinadas, criterios de aceptación, fallas, decisión continuar/corregir/replantear/retroceder, acciones pendientes, enlace a commit. La inspección de inicialización puede ser una **simulación de continuidad documental**, nunca presentarse como ejecución científica real.

@@ -1,0 +1,3 @@
+# Evidencias
+
+Cada unidad verificable crea un registro trazable: identificador de tarea, fecha, fuentes primarias, método de consulta, enlace/commit o hash, afirmaciones y nivel de evidencia A/B/C/D (METHODOLOGY.md), incertidumbres y salida. No guardar tokens, secretos ni archivos de terceros con restricciones de redistribución. La primera evidencia será T0.1.1 sobre EvoScientist. Enlaces externos sin copia local no equivalen a reproducción.

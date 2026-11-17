@@ -1,0 +1,3 @@
+# Experimentos y controles
+
+Aún no hay ejecuciones. Cuando H0 lo permita, cada prueba debe tener id único, pregunta, hipótesis, protocolo, baseline, configuración, seed, ambiente, recursos, outputs y evaluación externa. Registrar fallos y reintentos. Usar evidencia enlazada en evidence/; nunca sustituir resultados por texto generado. El inventario definitivo y las comparaciones se definen en PLAN.md y METHODOLOGY.md.
