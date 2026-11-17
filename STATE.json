@@ -4,20 +4,19 @@
   "date": "2026-11-17",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
-  "status": "initialization_check_pending",
+  "status": "ready_for_research",
   "current_milestone": "H0",
   "current_task": "T0.1.1",
   "task_title": "Auditoría documental de EvoScientist (R01)",
   "task_expected_output": "Ficha crítica de R01 en RESEARCH.md y evidence/ con arquitectura, versión/SHA, licencia, requisitos, afirmaciones, evidencia, límites y decisión provisional",
   "task_acceptance": "Ficha completa o incógnitas explícitas justificadas; fuentes primarias enlazadas; SHA/versión y método de consulta registrado; sin ejecutar software ni gastar recursos",
-  "next_action": "Releer el repositorio completo, cerrar simulación documental A-INIT-001 y luego, en una ejecución posterior de «Continuá», ejecutar exclusivamente T0.1.1",
+  "next_action": "Al recibir «Continuá»: leer los documentos canónicos desde GitHub y ejecutar exclusivamente T0.1.1 (auditoría documental de EvoScientist R01) como unidad verificable; no desarrollar aún framework ni lanzar experimentos",
   "completed_tasks": [],
-  "pending_audits": [
-    "A-INIT-001: simulación documental pendiente"
-  ],
+  "pending_audits": [],
   "blockers": [],
   "decisions": [
-    "D-0001: objetivo y diseño preliminar aprobados"
+    "D-0001: aprobación de diseño",
+    "D-0002: simulación documental de continuidad aprobada por autoverificación"
   ],
   "evidence_refs": [
     {
@@ -29,9 +28,17 @@
     "audits/INIT-2026-11-17.md"
   ],
   "last_confirmed_non_state_write": {
-    "path": "audits/INIT-2026-11-17.md",
-    "commit": "d408ed7334c50b7a17d27a94b4423a96b60ae991"
+    "path": "LOG.md",
+    "commit": "67bba02d167981ede2d76ff5656d50dc38f1e100"
   },
-  "last_confirmed_activity": "Inicialización documental; cero experimentos",
-  "recovered_from": null
+  "last_confirmed_activity": "H0 listo para T0.1.1; ningún experimento científico ejecutado",
+  "recovered_from": null,
+  "initialization_validation": {
+    "audit": "A-INIT-001",
+    "outcome": "documentary_simulation_passed",
+    "files_checked": 14,
+    "relative_links_checked": 21,
+    "independent_audit": false,
+    "details": "audits/INIT-2026-11-17.md"
+  }
 }
