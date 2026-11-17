@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "project": "mxlzz/autonomous-scientific-research",
+  "date": "2026-11-17",
+  "objective_file": "OBJECTIVE.md",
+  "stage": "H0",
+  "status": "initialization_check_pending",
+  "current_milestone": "H0",
+  "current_task": "T0.1.1",
+  "task_title": "Auditoría documental de EvoScientist (R01)",
+  "task_expected_output": "Ficha crítica de R01 en RESEARCH.md y evidence/ con arquitectura, versión/SHA, licencia, requisitos, afirmaciones, evidencia, límites y decisión provisional",
+  "task_acceptance": "Ficha completa o incógnitas explícitas justificadas; fuentes primarias enlazadas; SHA/versión y método de consulta registrado; sin ejecutar software ni gastar recursos",
+  "next_action": "Releer el repositorio completo, cerrar simulación documental A-INIT-001 y luego, en una ejecución posterior de «Continuá», ejecutar exclusivamente T0.1.1",
+  "completed_tasks": [],
+  "pending_audits": [
+    "A-INIT-001: simulación documental pendiente"
+  ],
+  "blockers": [],
+  "decisions": [
+    "D-0001: objetivo y diseño preliminar aprobados"
+  ],
+  "evidence_refs": [
+    {
+      "path": "RESEARCH.md",
+      "status": "inventario documental inicial; ninguna reproducción local"
+    }
+  ],
+  "audit_refs": [
+    "audits/INIT-2026-11-17.md"
+  ],
+  "last_confirmed_non_state_write": {
+    "path": "audits/INIT-2026-11-17.md",
+    "commit": "d408ed7334c50b7a17d27a94b4423a96b60ae991"
+  },
+  "last_confirmed_activity": "Inicialización documental; cero experimentos",
+  "recovered_from": null
+}
