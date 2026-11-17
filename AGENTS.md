@@ -1,6 +1,6 @@
 # Contrato operativo de cualquier investigador
 
-**Proyecto aprobado:** OBJETIVE no; la fuente válida es [OBJECTIVE.md](OBJECTIVE.md). Este documento regula el procedimiento, no cambia el objetivo. GitHub es fuente de verdad. El mensaje **Continuá** activa una sola unidad de trabajo verificable.
+**Objetivo aprobado:** la única fuente canónica del propósito y alcance es [OBJECTIVE.md](OBJECTIVE.md). Este documento regula el procedimiento y no cambia el objetivo. GitHub es fuente de verdad. El mensaje **Continuá** activa una sola unidad de trabajo verificable.
 
 ## Antes de actuar
 1. Desde el repositorio actual, leer README.md, OBJECTIVE.md, PLAN.md, METHODOLOGY.md, STATE.json y secciones relevantes de RESEARCH.md y LOG.md; leer auditorías pendientes.
