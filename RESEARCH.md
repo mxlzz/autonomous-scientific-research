@@ -39,7 +39,7 @@ T0.1 debe ampliar fuentes originales relevantes, verificar licencias, versiones 
 ## Formato obligatorio para ampliar el registro
 ID | autor/año | enlace primario | fecha de acceso | versión/commit y licencia (o desconocido) | claim preciso | tipo de evidencia (documentación, estudio, reproducción independiente) | límites | relevancia | decisión (adoptar/adaptar/comparar/descartar) | evidencia local asociada.
 
-La primera unidad T0.1.1 examinará **R01 EvoScientist** en profundidad, sin ejecutar código. [Plan](PLAN.md) | [protocolo](METHODOLOGY.md).
+La unidad T0.1.1 documentó **R01 EvoScientist** sin ejecutar código. Siguiente unidad: **T0.1.2 DeepScientist**, con contraste contra R01. [Plan](PLAN.md) | [protocolo](METHODOLOGY.md).
 ## Auditoría documental R01 — EvoScientist (T0.1.1, 2026-11-17)
 
 - **Autor / publicación:** Lyu et al., 2026, [arXiv 2603.08127v2](https://arxiv.org/html/2603.08127v2) (5 de octubre); **consulta:** 2026-11-17.
