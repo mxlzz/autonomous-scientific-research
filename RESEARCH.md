@@ -6,7 +6,7 @@
 | ID | Sistema / fuente primaria | Función | Decisión preliminar | Estado |
 |---|---|---|---|---|
 | R01 | [EvoScientist código](https://github.com/EvoScientist/EvoScientist) · [artículo v2](https://arxiv.org/html/2603.08127v2) | Agentes, memoria y ejecución de investigaciones computacionales | **Comparar; reproducción condicional** | **Auditoría documental T0.1.1 cerrada**: código 0.4.3 @ [`15f3e25`](https://github.com/EvoScientist/EvoScientist/tree/15f3e25bf86e55557d511367e16a3711c0f36934), Apache-2.0; no ejecutado. [Ficha](evidence/R01-EvoScientist-2026-11-17.md) · [Autoverificación](audits/T0.1.1-R01-2026-11-17.md) |
-| R02 | [DeepScientist](https://github.com/ResearAI/DeepScientist) · [ICLR 2026](https://proceedings.iclr.cc/paper_files/paper/2026/hash/4f64494ecc3442f1c9261baa036378bc-Abstract-Conference.html) | Investigación experimental de larga duración | Candidato a reproducir | Enlace; afirmaciones de autores |
+| R02 | [DeepScientist](https://github.com/ResearAI/DeepScientist) · [ICLR 2026](https://proceedings.iclr.cc/paper_files/paper/2026/hash/4f64494ecc3442f1c9261baa036378bc-Abstract-Conference.html) | Búsqueda escalonada, experimentación prolongada y persistencia por quest | **Comparar; infraestructura reutilizable condicional** | **Auditoría T0.1.2 documental cerrada**: producto 1.6.0 @ [b366244](https://github.com/ResearAI/DeepScientist/tree/b36624417f0c6b8238ec02db37b94d6db2faa5b0), Apache-2.0; paper reporta >20.000 GPU-h y ~US$100.000, no reproducido. [Ficha](evidence/R02-DeepScientist-2026-11-17.md) · [Autoverificación](audits/T0.1.2-R02-2026-11-17.md) |
 | R03 | [AI Scientist v2](https://github.com/SakanaAI/AI-Scientist-v2) | Búsqueda de ideas, experimentos y elaboración de artículos | Comparar / adaptar | Enlace; sin reproducción |
 | R04 | [autoresearch](https://github.com/karpathy/autoresearch) | Ciclo experimental sencillo con métrica | Baseline conceptual | Enlace; sin reproducción |
 | R05 | [Agent Laboratory](https://github.com/SamuelSchmidgall/AgentLaboratory) | Pipeline de investigación asistida | Comparar | Enlace; sin reproducción |
@@ -31,7 +31,7 @@
 - R13 advierte contra asumir beneficios universales del multiagente. La arquitectura debe compararse, no prefijarse.
 
 ## Decisión de adopción actual
-**Adoptar para evaluación:** benchmark y baselines existentes si son reproducibles. **Reproducir primero:** candidatos R01, R02 y baseline R04 según viabilidad de H0. **Adaptar condicionalmente:** cadena de evidencia, verificadores, persistencia y enrutamiento. **Desarrollar:** solo si falla una capacidad exigida y queda demostrada la necesidad.
+**Adoptar para evaluación:** benchmark y baselines existentes si son reproducibles. **Evaluar condicionalmente:** R01/R02 como sistemas complejos y R04 como posible baseline simple; la selección de sistemas a reproducir se decide en T0.2 según viabilidad de H0. **Adaptar condicionalmente:** cadena de evidencia, verificadores, persistencia y enrutamiento. **Desarrollar:** solo si falla una capacidad exigida y queda demostrada la necesidad.
 
 ## Pendientes metodológicos de revisión
 T0.1 debe ampliar fuentes originales relevantes, verificar licencias, versiones y resultados, clasificar evidencia y detectar duplicaciones. Antes de experimentos: comprobar filtración de benchmark, modelos contaminados, validez de métricas y equiparación de presupuestos. No atribuir capacidades o cifras más allá de lo demostrado por la fuente.
@@ -39,7 +39,7 @@ T0.1 debe ampliar fuentes originales relevantes, verificar licencias, versiones 
 ## Formato obligatorio para ampliar el registro
 ID | autor/año | enlace primario | fecha de acceso | versión/commit y licencia (o desconocido) | claim preciso | tipo de evidencia (documentación, estudio, reproducción independiente) | límites | relevancia | decisión (adoptar/adaptar/comparar/descartar) | evidencia local asociada.
 
-La unidad T0.1.1 documentó **R01 EvoScientist** sin ejecutar código. Siguiente unidad: **T0.1.2 DeepScientist**, con contraste contra R01. [Plan](PLAN.md) | [protocolo](METHODOLOGY.md).
+Las unidades T0.1.1 y T0.1.2 documentaron **R01 EvoScientist** y **R02 DeepScientist** sin ejecutar código. Siguiente unidad: **T0.1.3 R04 autoresearch y R03 AI Scientist v2**. [Plan](PLAN.md) | [protocolo](METHODOLOGY.md).
 ## Auditoría documental R01 — EvoScientist (T0.1.1, 2026-11-17)
 
 - **Autor / publicación:** Lyu et al., 2026, [arXiv 2603.08127v2](https://arxiv.org/html/2603.08127v2) (5 de octubre); **consulta:** 2026-11-17.
@@ -48,3 +48,13 @@ La unidad T0.1.1 documentó **R01 EvoScientist** sin ejecutar código. Siguiente
 - **Dato inspeccionado:** repositorio actual basado en DeepAgents con seis subagentes operativos documentados, memoria por observaciones/AutoSkills y checkpoint SQLite. **No identificar** automáticamente esta versión con la implementación del paper.
 - **Límites:** éxito de ejecución y calificación de propuestas no equivalen a validez científica; evidencia restringida a investigación computacional; ausencia de paquete de reproducción identificado en el árbol actual; costo por resultado científicamente válido y contraste mono/multiagente no evaluados.
 - **Decisión:** comparar en H0 y eventualmente probar como baseline si resulta viable; no copiar ni afirmar superioridad. **Detalle y fuentes fijas:** [evidence/R01-EvoScientist-2026-11-17.md](evidence/R01-EvoScientist-2026-11-17.md). **Autoverificación:** [audits/T0.1.1-R01-2026-11-17.md](audits/T0.1.1-R01-2026-11-17.md).
+
+## Auditoría documental R02 — DeepScientist (T0.1.2, 2026-11-17)
+
+- **Autores/año/fuente:** Weng et al., ICLR 2026, [artículo oficial](https://proceedings.iclr.cc/paper_files/paper/2026/hash/4f64494ecc3442f1c9261baa036378bc-Abstract-Conference.html), [PDF final](https://proceedings.iclr.cc/paper_files/paper/2026/file/4f64494ecc3442f1c9261baa036378bc-Paper-Conference.pdf); **acceso:** 2026-11-17.
+- **Código fijado:** `ResearAI/DeepScientist@b36624417f0c6b8238ec02db37b94d6db2faa5b0`, producto **1.6.0**, Python >=3.11, licencia **Apache-2.0** confirmada. Tag v1.6.0 apunta a otro commit (3fa3485). El paper propone otra licencia futura; prima LICENSE del código inspeccionado.
+- **Claims autores (C):** ciclo hipótesis → experimentación → análisis con memoria acumulativa y selección tipo UCB; ~5.000 ideas, ~1.100 ensayos, 21 progresos, 5 artículos, >20.000 GPU-h, ~US$100.000; mejoras relativas +183,7%, +1,9%, +7,9% sobre métricas distintas. Reproducción externa **no realizada**.
+- **Hallazgo de límite científico en el propio paper (C):** revisión de 300 fallos: ~60% por errores de implementación. Tres revisores humanos califican soundness media 2,27/4 vs promedio 2,59/4 de referencia ICLR 2025; detectan ausencia de baselines y análisis de profundidad.
+- **Código inspeccionado (estático):** plataforma 1.6.0 **single-agent-first**, quest Git, memoria en tarjetas, artefactos tipados y runners múltiples; **no se puede equiparar sin prueba** al producto experimental del paper (Gemini-2.5-Pro + Claude-4-Opus, 16 GPU H800, supervisión humana). No se identificó paquete íntegro de trazas del estudio en árbol main.
+- **R01 vs R02:** ambos con paper/producto divergentes. R01 enfatiza RA/EA/EMA y evolución de memoria; R02 enfatiza selección escalonada y persistencia por quest. No hay evidencia comparable para decidir cuál reduce **costo por resultado científicamente válido** o si más agentes/tareas/modelos pequeños ganan.
+- **Decisión:** **comparar y evaluar reutilización condicional** de persistencia/evidencia/contratos de métricas; no reproducir campaña a ~US$100k ni adoptar hallazgos como validación propia. **Ficha extensiva:** [evidence/R02-DeepScientist-2026-11-17.md](evidence/R02-DeepScientist-2026-11-17.md). **Autoverificación:** [audits/T0.1.2-R02-2026-11-17.md](audits/T0.1.2-R02-2026-11-17.md). Sin auditoría independiente ni ejecución experimental.
