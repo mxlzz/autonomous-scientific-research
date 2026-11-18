@@ -4,34 +4,44 @@
   "date": "2026-11-17",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
-  "status": "ready_for_research",
+  "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.1.1",
-  "task_title": "Auditoría documental de EvoScientist (R01)",
-  "task_expected_output": "Ficha crítica de R01 en RESEARCH.md y evidence/ con arquitectura, versión/SHA, licencia, requisitos, afirmaciones, evidencia, límites y decisión provisional",
-  "task_acceptance": "Ficha completa o incógnitas explícitas justificadas; fuentes primarias enlazadas; SHA/versión y método de consulta registrado; sin ejecutar software ni gastar recursos",
-  "next_action": "Al recibir «Continuá»: leer los documentos canónicos desde GitHub y ejecutar exclusivamente T0.1.1 (auditoría documental de EvoScientist R01) como unidad verificable; no desarrollar aún framework ni lanzar experimentos",
-  "completed_tasks": [],
-  "pending_audits": [],
+  "current_task": "T0.1.2",
+  "task_title": "Auditoría documental de DeepScientist (R02) y contraste con EvoScientist (R01)",
+  "task_expected_output": "Ficha crítica R02 en RESEARCH.md y evidence/ con paper, código, SHA/versión, licencia, arquitectura, claims/evidencia/límites y tabla comparativa contra R01",
+  "task_acceptance": "Ficha con fuentes primarias, commit/versión y licencia confirmada o incógnitas justificadas, análisis de validez y reproducibilidad, contraste explícito R01/R02; sin ejecución ni gasto",
+  "next_action": "Al recibir «Continuá»: leer estado y documentos canónicos desde GitHub, realizar exclusivamente T0.1.2 (auditar documentalmente DeepScientist R02 y contrastar con R01), guardar evidencias y autoverificación, actualizar STATE.json al final",
+  "completed_tasks": [
+    "T0.1.1"
+  ],
+  "pending_audits": [
+    "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0"
+  ],
   "blockers": [],
   "decisions": [
     "D-0001: aprobación de diseño",
-    "D-0002: simulación documental de continuidad aprobada por autoverificación"
+    "D-0002: simulación documental de continuidad aprobada por autoverificación",
+    "D-0003: R01 EvoScientist comparador/reproducción condicional, no línea base validada"
   ],
   "evidence_refs": [
     {
       "path": "RESEARCH.md",
-      "status": "inventario documental inicial; ninguna reproducción local"
+      "status": "R01 auditado documentalmente, R02–R16 inventario preliminar"
+    },
+    {
+      "path": "evidence/R01-EvoScientist-2026-11-17.md",
+      "status": "R01 versión y fuentes primarias, claims, código, límites y decisión; no reproducción"
     }
   ],
   "audit_refs": [
-    "audits/INIT-2026-11-17.md"
+    "audits/INIT-2026-11-17.md",
+    "audits/T0.1.1-R01-2026-11-17.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "67bba02d167981ede2d76ff5656d50dc38f1e100"
+    "commit": "2b36e3143c6886c152a3968b7ac0358240827d9c"
   },
-  "last_confirmed_activity": "H0 listo para T0.1.1; ningún experimento científico ejecutado",
+  "last_confirmed_activity": "T0.1.1 completada como auditoría documental: EvoScientist 0.4.3 @15f3e25, Apache-2.0; diferencia arquitectura paper/código, resultados autorales sin réplica; registros verificados, cero ejecuciones/pagos",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
