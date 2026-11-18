@@ -6,22 +6,25 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.1.2",
-  "task_title": "Auditoría documental de DeepScientist (R02) y contraste con EvoScientist (R01)",
-  "task_expected_output": "Ficha crítica R02 en RESEARCH.md y evidence/ con paper, código, SHA/versión, licencia, arquitectura, claims/evidencia/límites y tabla comparativa contra R01",
-  "task_acceptance": "Ficha con fuentes primarias, commit/versión y licencia confirmada o incógnitas justificadas, análisis de validez y reproducibilidad, contraste explícito R01/R02; sin ejecución ni gasto",
-  "next_action": "Al recibir «Continuá»: leer estado y documentos canónicos desde GitHub, realizar exclusivamente T0.1.2 (auditar documentalmente DeepScientist R02 y contrastar con R01), guardar evidencias y autoverificación, actualizar STATE.json al final",
+  "current_task": "T0.1.3",
+  "task_title": "Auditorías documentales de autoresearch (R04) y AI Scientist v2 (R03)",
+  "task_expected_output": "Dos fichas críticas de R04 y R03 en RESEARCH.md y evidence/, con fuentes primarias, commits/versiones, licencias, arquitectura/costos, claims y límites; comparar baseline simple R04 frente a R01/R02 y diseño R03",
+  "task_acceptance": "Ambas fichas completas o incógnitas explícitas justificadas, enlaces y SHA/versión, fuente de licencia efectiva, separación de claims y evidencia, evaluación de viabilidad como baseline simple y contraste R01/R02; sin gastar ni instalar software",
+  "next_action": "Al recibir «Continuá»: leer GitHub y ejecutar exclusivamente T0.1.3. Auditar documentalmente R04 autoresearch y R03 AI Scientist v2 con criterios de PLAN.md; registrar contraste y evidencias verificadas; actualizar STATE.json al final.",
   "completed_tasks": [
-    "T0.1.1"
+    "T0.1.1",
+    "T0.1.2"
   ],
   "pending_audits": [
-    "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0"
+    "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
+    "Auditoría científica independiente de R02 no realizada; autoverificación T0.1.2 aprobada documentalmente; retomar en cierre H0"
   ],
   "blockers": [],
   "decisions": [
     "D-0001: aprobación de diseño",
     "D-0002: simulación documental de continuidad aprobada por autoverificación",
-    "D-0003: R01 EvoScientist comparador/reproducción condicional, no línea base validada"
+    "D-0003: R01 EvoScientist comparador/reproducción condicional, no línea base validada",
+    "D-0004: R02 DeepScientist candidato condicional a comparar/reutilizar como infraestructura; no reproducir campaña original costosa; discrepancia paper 2025 y producto 1.6.0"
   ],
   "evidence_refs": [
     {
@@ -31,17 +34,22 @@
     {
       "path": "evidence/R01-EvoScientist-2026-11-17.md",
       "status": "R01 versión y fuentes primarias, claims, código, límites y decisión; no reproducción"
+    },
+    {
+      "path": "evidence/R02-DeepScientist-2026-11-17.md",
+      "status": "R02 auditado documentalmente: paper ICLR 2026, código 1.6.0 Apache-2.0, costos y limitaciones, contraste R01; sin ejecución"
     }
   ],
   "audit_refs": [
     "audits/INIT-2026-11-17.md",
-    "audits/T0.1.1-R01-2026-11-17.md"
+    "audits/T0.1.1-R01-2026-11-17.md",
+    "audits/T0.1.2-R02-2026-11-17.md"
   ],
   "last_confirmed_non_state_write": {
-    "path": "RESEARCH.md",
-    "commit": "96482756bc377a5d4dc1dc1d81531dc3f087f728"
+    "path": "LOG.md",
+    "commit": "8af2f3c1757904ec280119ee101005b5474c1493"
   },
-  "last_confirmed_activity": "T0.1.1 completada como auditoría documental: EvoScientist 0.4.3 @15f3e25, Apache-2.0; diferencia arquitectura paper/código, resultados autorales sin réplica; registros verificados, cero ejecuciones/pagos; README, PLAN y RESEARCH alineados y re-leídos",
+  "last_confirmed_activity": "T0.1.2 cerrada documentalmente: DeepScientist ICLR 2026 y producto 1.6.0 @b366244; métricas y costos son de autores, sin réplica; R01/R02 comparados, código y logs re-leídos en GitHub, cero gasto y ninguna prueba de terceros",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
