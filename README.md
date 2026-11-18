@@ -2,7 +2,7 @@
 
 Investigación metodológica y experimental sobre **autonomía científica verificable** y **eficiencia de agentes de IA**. El objeto de estudio es determinar cuándo un sistema puede investigar con rigor y autonomía progresiva, y cuándo conviene usar un solo agente, varios agentes o modelos de distinta capacidad. No se presupone que haya que crear un framework.
 
-**Estado:** H0 activo; T0.1–T0.2 cerradas documentalmente y **T0.3 diseñó siete slots de piloto con evaluación externa**, cuatro IDs de datasets aún pendientes y sin ejecución. [Protocolo del piloto](benchmarks/H0-PILOT-v0.1-2026-11-17.md) · [Autoverificación](audits/T0.3-PILOT-DESIGN-2026-11-17.md). **Próxima tarea T0.4:** comprobar viabilidad, permisos, hardware y costos. Estado operativo vigente: [STATE.json](STATE.json).
+**Estado:** H0 sigue activo; T0.3 diseñó [7 slots de piloto](benchmarks/H0-PILOT-v0.1-2026-11-17.md), aún sin ejecución. **T0.4 bloqueada por preflight:** el runtime accesible carece de Docker/GPU y tiene límite 4 GiB, el dataset AstaBench es gated y faltan modelos/costos autorizados. [Evidencia T0.4](evidence/T0.4-environment-preflight-2026-11-17.md) · [Autoverificación del bloqueo](audits/T0.4-BLOCKED-2026-11-17.md). No se avanzó a T0.5. [STATE.json](STATE.json) es el estado operativo.
 
 ## Navegación
 - [Objetivo estable, alcance y criterios](OBJECTIVE.md)
