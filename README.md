@@ -2,7 +2,7 @@
 
 Investigación metodológica y experimental sobre **autonomía científica verificable** y **eficiencia de agentes de IA**. El objeto de estudio es determinar cuándo un sistema puede investigar con rigor y autonomía progresiva, y cuándo conviene usar un solo agente, varios agentes o modelos de distinta capacidad. No se presupone que haya que crear un framework.
 
-**Estado:** H0 sigue activo; **T0.1 inventario y auditoría documental cerrados** (14 antecedentes distintos, autoverificación con reservas), sin reproducir software. **Próxima unidad T0.2:** selección justificada de 2–4 candidatos y evaluadores. El estado operativo está en [STATE.json](STATE.json).
+**Estado:** H0 activo; T0.1 cerrada documentalmente con 14 fuentes y **T0.2 selección documental de tres candidatos** cerrada con reservas. [Selección](evidence/T0.2-candidate-selection-2026-11-17.md) · [Autoverificación](audits/T0.2-CANDIDATE-SELECTION-2026-11-17.md). **Próxima tarea T0.3:** diseñar piloto de 6–8 tareas, sin ejecución todavía. La verdad operativa permanece en [STATE.json](STATE.json).
 
 ## Navegación
 - [Objetivo estable, alcance y criterios](OBJECTIVE.md)
