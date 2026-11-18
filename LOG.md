@@ -64,3 +64,10 @@ Fuente única para eventos y decisiones históricas. El estado operativo corrien
 - AstaBench `0.5.5` / suite 1.0.0 / dataset HF revision `a600dc7` / scorer aislado Inspect 0.3.225; C1/C2 dependencias distintas, no validadas. C3 solo si mismos contratos. Prueba aritmética demo no cuenta como ciencia.
 - **D-0008:** HF AstaBench gated y prohíbe redistribución; no copiar prompts/gold al repo público. Scorer DiscoveryBench `gpt-4o-2024-08-06`, E2E `claude-sonnet-4-6`, costos no autorizados. No considerar 7 instancias congeladas ni inferir validez científica desde un scorer solo.
 - [Autoverificación T0.3](audits/T0.3-PILOT-DESIGN-2026-11-17.md) propia, no independiente. Ningún experimento/descarga/uso API/compra. **Próxima unidad T0.4**: chequeos de entorno, permisos y costos, o bloqueo con intervención precisa.
+
+## 2026-11-17 — D-0009: T0.4 — Preflight negativo, BLOQUEO operativo
+
+- Se partió desde STATE H0/T0.4 tras validar HEAD `4ef23e3bc4301a036bf741a62179f0ab8d85887e` y T0.3. Preflight con comandos no destructivos en **runtime efímero**: Linux, Python 3.13.5, 4 GiB cgroup, 4 vCPU, PyTorch CPU, sin CUDA/GPU visible, sin Docker ni `inspect_ai`/`astabench`/`smolagents`. No se inspeccionó PC del usuario.
+- HF `allenai/asta-bench` gated con prohibición de redistribución; aceptación por cuenta no verificada. C1/C2 versiones no compatibilizadas, C3 sin adaptador. P06/P07 utilizan GPT-4o/Claude como scorers, sin precio/clave/autorización; máximo autorizado de gasto pago `0`.
+- **D-0009: T0.4 NO completada.** Recursos/permiso insuficientes para ejecutar el piloto aquí. No inferir falla científica ni avanzar a T0.5. [Evidencia de comandos, versiones y gates](evidence/T0.4-environment-preflight-2026-11-17.md); [autoverificación de bloqueo](audits/T0.4-BLOCKED-2026-11-17.md). Intervención: acceso lícito HF por titular, entorno con Docker/Python apropiado y modelo/costo aprobado o vía gratuita comprobada.
+- **Gasto pagado cero**, instalación/benchmarks/ejecución de código ajeno cero. Tras intervención, repetir preflight y registrar recuperación con CAS GitHub, actualizar STATE al final.
