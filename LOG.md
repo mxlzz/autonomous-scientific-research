@@ -30,3 +30,12 @@ Fuente única para eventos y decisiones históricas. El estado operativo corrien
 - Decisión D-0004: comparar R02 con R01; no se declara superioridad científica, ni se autoriza gasto; posible infraestructura reutilizable condicionada a pruebas futuras.
 - Persistidos [evidence/R02-DeepScientist-2026-11-17.md](evidence/R02-DeepScientist-2026-11-17.md) y [audits/T0.1.2-R02-2026-11-17.md](audits/T0.1.2-R02-2026-11-17.md). Esta última es **autoverificación no independiente**.
 - Próxima unidad T0.1.3: R04 autoresearch (baseline simple) y R03 AI Scientist v2, según PLAN.md.
+
+## 2026-11-17 — D-0005: T0.1.3 — auditorías documentales R04 y R03
+
+- Se continuó exclusivamente T0.1.3 de STATE.json; lectura de código/documentación primaria desde GitHub con SHA fijo y de paper arXiv 2504.08066 para R03.
+- R04 autoresearch: `karpathy/autoresearch@228791fb499afffb54b46200aca536f79142f117`, paquete 0.1.0, entrenamiento 300s, evaluación `val_bpb`, Git + TSV; **MIT declarado en README**, sin LICENSE independiente. Una GPU NVIDIA y agente de coding externo; no es por sí mismo orquestador autónomo completo.
+- R03 AI Scientist v2: `SakanaAI/AI-Scientist-v2@96bd51617cfdbb494a9fc283af00fe090edfae48`; licencia propia restringida de diciembre 2025, modelos remotos/cómputo. Paper describe búsqueda en árbol y 1/3 papers de workshop aprobable (después retirado); metaselección humana de ideas y mejores ejecuciones.
+- **D-0005:** R04 candidato de control simple para tarea/medición acotada, R03 comparador de mayor amplitud con condicionantes legales y de costo; no equivalen a resultados científicos reproducidos, ninguna prueba comparativa de modelos/agentes efectuada.
+- Se guardaron fichas [R04](evidence/R04-autoresearch-2026-11-17.md), [R03](evidence/R03-AI-Scientist-v2-2026-11-17.md), [matriz](evidence/T0.1.3-contrast-2026-11-17.md) y [autoverificación](audits/T0.1.3-R03-R04-2026-11-17.md) no independiente; archivos releídos antes del cierre.
+- Sin ejecución de terceros ni gasto pago. Próxima unidad: **T0.1.4** (R06–R08, R09–R14, matriz consolidada y auditoría T0.1).
