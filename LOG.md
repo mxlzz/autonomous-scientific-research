@@ -21,3 +21,12 @@ Fuente única para eventos y decisiones históricas. El estado operativo corrien
 - Se confirmó Apache-2.0 del código, paquete 0.4.3 y Python >=3.11; se distinguió la arquitectura RA/EA/EMA del paper de la plataforma actual con seis subagentes, memoria de observaciones y base DeepAgents.
 - Resultado: hallazgos y límites en [evidence/R01-EvoScientist-2026-11-17.md](evidence/R01-EvoScientist-2026-11-17.md); [autoverificación](audits/T0.1.1-R01-2026-11-17.md) favorable, **no independiente**.
 - Dictamen: candidato a comparar/reproducir **condicionalmente**; sin evidencia experimental propia ni modelo ejecutado y sin gasto. Próxima unidad: T0.1.2, DeepScientist R02.
+
+## 2026-11-17 — D-0004: T0.1.2 DeepScientist — auditoría documental y contraste R01
+
+- Estado operativo recuperado desde GitHub: H0/T0.1.2, sin bloqueos ni duplicación. Paper primario final ICLR 2026 y producto `ResearAI/DeepScientist@b36624417f0c6b8238ec02db37b94d6db2faa5b0`; versión 1.6.0, Apache-2.0, diferente del tag v1.6.0 y del diseño experimental del paper.
+- Reportes autorales: ~5.000 hipótesis, ~1.100 ensayos, 21 Progress Findings, más de 20.000 GPU-h, costo total ~US$100.000; revisores detectan bajo soundness y ~60% de fallos de implementación en muestra de fallas. No se han replicado.
+- Producto actual documenta operación single-agent-first con Git por quest, memoria y artefactos de evidencia; similitud/correspondencia con la implementación del artículo sin verificar.
+- Decisión D-0004: comparar R02 con R01; no se declara superioridad científica, ni se autoriza gasto; posible infraestructura reutilizable condicionada a pruebas futuras.
+- Persistidos [evidence/R02-DeepScientist-2026-11-17.md](evidence/R02-DeepScientist-2026-11-17.md) y [audits/T0.1.2-R02-2026-11-17.md](audits/T0.1.2-R02-2026-11-17.md). Esta última es **autoverificación no independiente**.
+- Próxima unidad T0.1.3: R04 autoresearch (baseline simple) y R03 AI Scientist v2, según PLAN.md.
