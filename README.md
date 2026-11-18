@@ -2,7 +2,7 @@
 
 Investigación metodológica y experimental sobre **autonomía científica verificable** y **eficiencia de agentes de IA**. El objeto de estudio es determinar cuándo un sistema puede investigar con rigor y autonomía progresiva, y cuándo conviene usar un solo agente, varios agentes o modelos de distinta capacidad. No se presupone que haya que crear un framework.
 
-**Estado:** inicialización documental; H0 (auditoría de soluciones existentes); primera unidad ejecutable T0.1.1. La verdad operativa está en [STATE.json](STATE.json).
+**Estado:** H0 (auditoría de soluciones existentes); T0.1.1 EvoScientist cerrada documentalmente; siguiente unidad T0.1.2 DeepScientist. La verdad operativa está en [STATE.json](STATE.json).
 
 ## Navegación
 - [Objetivo estable, alcance y criterios](OBJECTIVE.md)
