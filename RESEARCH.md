@@ -5,7 +5,7 @@
 ## Inventario inicial (fuente única de referencias)
 | ID | Sistema / fuente primaria | Función | Decisión preliminar | Estado |
 |---|---|---|---|---|
-| R01 | [EvoScientist código](https://github.com/EvoScientist/EvoScientist) · [artículo](https://arxiv.org/abs/2603.08127) | Flujo científico, agentes especializados y memoria | Candidato a reproducir | Enlace; capacidades declaradas, sin reproducción |
+| R01 | [EvoScientist código](https://github.com/EvoScientist/EvoScientist) · [artículo v2](https://arxiv.org/html/2603.08127v2) | Agentes, memoria y ejecución de investigaciones computacionales | **Comparar; reproducción condicional** | **Auditoría documental T0.1.1 cerrada**: código 0.4.3 @ [`15f3e25`](https://github.com/EvoScientist/EvoScientist/tree/15f3e25bf86e55557d511367e16a3711c0f36934), Apache-2.0; no ejecutado. [Ficha](evidence/R01-EvoScientist-2026-11-17.md) · [Autoverificación](audits/T0.1.1-R01-2026-11-17.md) |
 | R02 | [DeepScientist](https://github.com/ResearAI/DeepScientist) · [ICLR 2026](https://proceedings.iclr.cc/paper_files/paper/2026/hash/4f64494ecc3442f1c9261baa036378bc-Abstract-Conference.html) | Investigación experimental de larga duración | Candidato a reproducir | Enlace; afirmaciones de autores |
 | R03 | [AI Scientist v2](https://github.com/SakanaAI/AI-Scientist-v2) | Búsqueda de ideas, experimentos y elaboración de artículos | Comparar / adaptar | Enlace; sin reproducción |
 | R04 | [autoresearch](https://github.com/karpathy/autoresearch) | Ciclo experimental sencillo con métrica | Baseline conceptual | Enlace; sin reproducción |
@@ -40,3 +40,11 @@ T0.1 debe ampliar fuentes originales relevantes, verificar licencias, versiones 
 ID | autor/año | enlace primario | fecha de acceso | versión/commit y licencia (o desconocido) | claim preciso | tipo de evidencia (documentación, estudio, reproducción independiente) | límites | relevancia | decisión (adoptar/adaptar/comparar/descartar) | evidencia local asociada.
 
 La primera unidad T0.1.1 examinará **R01 EvoScientist** en profundidad, sin ejecutar código. [Plan](PLAN.md) | [protocolo](METHODOLOGY.md).
+## Auditoría documental R01 — EvoScientist (T0.1.1, 2026-11-17)
+
+- **Autor / publicación:** Lyu et al., 2026, [arXiv 2603.08127v2](https://arxiv.org/html/2603.08127v2) (5 de octubre); **consulta:** 2026-11-17.
+- **Código público fijado:** `EvoScientist/EvoScientist@15f3e25bf86e55557d511367e16a3711c0f36934`; versión `0.4.3`; **licencia Apache-2.0** comprobada; Python >=3.11. No hay ejecución ni validación de equivalencia entre código y paper.
+- **Claim (nivel C):** 3 roles RA/EA/EMA y 2 memorias; estudios con 30 consultas de IA, éxito de código según autores de 34,39 % a 44,56 % tras evolución; 6/6 manuscritos aceptados en pista IA de ICAIS 2025. Evidencia: artículo, no réplica independiente.
+- **Dato inspeccionado:** repositorio actual basado en DeepAgents con seis subagentes operativos documentados, memoria por observaciones/AutoSkills y checkpoint SQLite. **No identificar** automáticamente esta versión con la implementación del paper.
+- **Límites:** éxito de ejecución y calificación de propuestas no equivalen a validez científica; evidencia restringida a investigación computacional; ausencia de paquete de reproducción identificado en el árbol actual; costo por resultado científicamente válido y contraste mono/multiagente no evaluados.
+- **Decisión:** comparar en H0 y eventualmente probar como baseline si resulta viable; no copiar ni afirmar superioridad. **Detalle y fuentes fijas:** [evidence/R01-EvoScientist-2026-11-17.md](evidence/R01-EvoScientist-2026-11-17.md). **Autoverificación:** [audits/T0.1.1-R01-2026-11-17.md](audits/T0.1.1-R01-2026-11-17.md).
