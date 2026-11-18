@@ -6,25 +6,27 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.3",
-  "task_title": "Diseño de piloto H0 de aproximadamente 6–8 tareas científicas con evaluadores externos",
-  "task_expected_output": "Protocolo de piloto exploratorio con 6–8 tareas de validación identificadas (o incertidumbres verificables), entradas/salidas, scorers y versiones congeladas, métricas/costos, dificultad, repetición, separación desarrollo/test reservado, protección contra leakage y gates de licencia/hardware; registrar qué candidatos realmente comparten tarea/scorer sin ejecutar pruebas",
-  "task_acceptance": "Definir 6–8 tareas con identificadores y criterio externo de aceptación, datos/splits, prerequisitos, recursos estimados y riesgos de contaminación; comparación equitativa diseñada para C1/C2 y C3 sólo si se puede integrar, sin modificar evaluador ni preregistrar afirmaciones confirmatorias; no pagar ni ejecutar software",
-  "next_action": "Al recibir «Continuá»: leer documentos y HEAD de GitHub; ejecutar exclusivamente T0.3: diseñar 6–8 tareas evaluables y contrato de salida/scorer para C1 ReAct, C2 SmolAgents y C3 EvoScientist sólo si compatible; comprobar licencias/splits/contaminación/viabilidad prevista. Guardar evidencia, LOG y autoverificación; reread; STATE.json último. No correr ensayos ni gastar sin autorización.",
+  "current_task": "T0.4",
+  "task_title": "Prueba de viabilidad de ejecución H0: entorno, credenciales, licencias, compatibilidad y costo",
+  "task_expected_output": "Preflight verificable de entorno disponible, requisitos de código/datos/scorers, diferencias de versiones, presupuesto de CPU/GPU y APIs, límites y riesgos; comprobar si los 7 slots de piloto tienen acceso autorizado y recursos reales; registrar gates bloqueados y recuperación, sin pagos ni pruebas inseguras",
+  "task_acceptance": "Reportar versiones fijadas, entorno en el que realmente puede ejecutarse la tarea, disponibilidad/ausencia de Docker/GPU/datasets y acceso legal, costos de modelos y jueces estimados/unknowns, opciones sin gasto y decisión clara pasar o bloquear. No contar preflight documental como reproducción ni ejecutar terceros sin sandbox y autorización.",
+  "next_action": "Al iniciar unidad T0.4: releer HEAD/STATE y canónicos; comprobar capacidad técnica local realmente disponible (sin asumir hardware de usuario); términos de AstaBench y autorización de cuenta; scorer GPT-4o/Claude y modelos; registrar evidencias negativas, presupuestos y bloqueo si faltan permisos/recursos. No gastar ni ejecutar código científico ajeno sin control. Persistir evidencia/auditoría/LOG, leer y finalizar STATE.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
     "T0.1.3",
     "T0.1.4",
     "T0.1",
-    "T0.2"
+    "T0.2",
+    "T0.3"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
     "Auditoría científica independiente de R02 no realizada; autoverificación T0.1.2 aprobada documentalmente; retomar en cierre H0",
     "Auditoría independiente de R03/R04 no realizada; autoverificación documental T0.1.3 registrada; revisar cobertura en cierre T0.1",
     "T0.1-COVERAGE-2026-11-17: auditoría independiente no realizada; cobertura aprobada únicamente por autoverificación, revisar al cierre de H0",
-    "T0.2: autoverificación documental realizada, auditoría independiente de selección no ejecutada; revisar en cierre de H0"
+    "T0.2: autoverificación documental realizada, auditoría independiente de selección no ejecutada; revisar en cierre de H0",
+    "T0.3 piloto de 7 slots autoverificado, sin auditor independiente; 4 IDs de datasets no congelados; costoso/gated para P06/P07"
   ],
   "blockers": [],
   "decisions": [
@@ -34,7 +36,8 @@
     "D-0004: R02 DeepScientist candidato condicional a comparar/reutilizar como infraestructura; no reproducir campaña original costosa; discrepancia paper 2025 y producto 1.6.0",
     "D-0005: R04 autoresearch control simple candidato con MIT declarado solo en README; R03 AI Scientist-v2 comparador condicional con licencia restringida, sin ejecución.",
     "D-0006: T0.1 cobertura documental aprobada con 14 fuentes únicas R01–R14; R06–R08 evaluadores condicionales, R07 licencia raíz no identificada, R09 motor sin código público identificado; continuar T0.2, no cerrar H0 ni autorizar gasto.",
-    "D-0007: seleccionar para gate de viabilidad C1 Asta ReAct, C2 Asta SmolAgents coder, C3 EvoScientist condicional; AstaBench primario, ScienceAgentBench secundario condicionado. Asta-v0/E2E cache y modelos fijos invalidan control limpio, C1/C2 requieren reconciliar versiones; no hay reproducibilidad ni gasto aprobado."
+    "D-0007: seleccionar para gate de viabilidad C1 Asta ReAct, C2 Asta SmolAgents coder, C3 EvoScientist condicional; AstaBench primario, ScienceAgentBench secundario condicionado. Asta-v0/E2E cache y modelos fijos invalidan control limpio, C1/C2 requieren reconciliar versiones; no hay reproducibilidad ni gasto aprobado.",
+    "D-0008: aceptar diseño exploratorio de siete slots de piloto H0; DS1000 validación IDs 513/974/18 fijados, P04–P07 IDs/gates pendientes; AstaBench dataset gated sin redistribución y P06/P07 scorers LLM remotos. Próxima etapa T0.4 comprueba viabilidad, no ejecutar sin acceso."
   ],
   "evidence_refs": [
     {
@@ -68,6 +71,10 @@
     {
       "path": "evidence/T0.2-candidate-selection-2026-11-17.md",
       "status": "3 candidatos y 2 evaluadores condicionales, pesos y gates, fuentes inmutables y exclusiones; sin ejecuciones"
+    },
+    {
+      "path": "benchmarks/H0-PILOT-v0.1-2026-11-17.md",
+      "status": "Diseño piloto 7 slots P01–P07, 3 IDs validación fijados, 4 pendientes, scorer AstaBench congelado; sin ejecución"
     }
   ],
   "audit_refs": [
@@ -76,13 +83,14 @@
     "audits/T0.1.2-R02-2026-11-17.md",
     "audits/T0.1.3-R03-R04-2026-11-17.md",
     "audits/T0.1-COVERAGE-2026-11-17.md",
-    "audits/T0.2-CANDIDATE-SELECTION-2026-11-17.md"
+    "audits/T0.2-CANDIDATE-SELECTION-2026-11-17.md",
+    "audits/T0.3-PILOT-DESIGN-2026-11-17.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "c31a4df1f318bcb64196ce3388276283080ad402"
+    "commit": "060d91d5fa32c38f3ca18f84d25ea2a13609f5d9"
   },
-  "last_confirmed_activity": "T0.2 completada documentalmente: 3 candidatos para viabilidad (Asta Basic ReAct, SmolAgents, EvoScientist condicionado); scorer primario AstaBench y secundario ScienceAgentBench; versiones del benchmark incompatibles sin prueba y Asta-v0 con modelos/caché fija; fichas, auditoría y logs re-leídos, sin ejecución ni gastos",
+  "last_confirmed_activity": "T0.3 diseño exploratorio guardado y auditado por autoverificación: 7 slots de los que sólo 3 tienen ID real, otros gated; AstaBench scorer/documentos congelados, restricciones de redistribución, GPT-4o/Claude para dos scorers; ninguna ejecución, costo pagado cero; H0 sigue abierto",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
