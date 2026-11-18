@@ -7,8 +7,8 @@ Objetivo canónico: [OBJECTIVE.md](OBJECTIVE.md). Hipótesis H1–H6 definidas a
 
 - T0.1 Inventario crítico de antecedentes y licencias. **Aceptación:** mínimo 12 fuentes pertinentes con ficha de fuente primaria, versión/commit o desconocido explícito, licencia confirmada o pendiente, claims separados de evidencia, comparación y decisión provisional. Auditoría de cobertura, enlaces y duplicaciones.
   - **T0.1.1 (COMPLETADA DOCUMENTALMENTE; sin reproducción)**: auditar EvoScientist (R01) documentalmente: repositorio y paper, funcionalidades demostradas vs anunciadas, arquitectura real, licencia, requisitos, fecha, revisión del commit concreto, límites y potencial de reutilización. Conservar resultados en RESEARCH.md y evidencia en evidence/. **Aceptación:** ficha completa o campos faltantes explícitos con motivos, enlaces directos, SHA/versión, fuentes primarias y registro del protocolo empleado; sin instalación ni gastos.
-  - **T0.1.2 (PRÓXIMA UNIDAD):** revisar R02 DeepScientist con el mismo criterio; contrastar con R01.
-  - T0.1.3: revisar R04 autoresearch como baseline simple y R03 AI Scientist v2.
+  - **T0.1.2 (COMPLETADA DOCUMENTALMENTE; sin reproducción):** revisar R02 DeepScientist con el mismo criterio; contrastar con R01. [Ficha](evidence/R02-DeepScientist-2026-11-17.md) · [Autoverificación](audits/T0.1.2-R02-2026-11-17.md).
+  - **T0.1.3 (PRÓXIMA UNIDAD):** revisar R04 autoresearch como baseline simple y R03 AI Scientist v2.
   - T0.1.4: verificar R06–R08, R09–R14, licencias, evaluabilidad, consolidar matriz y auditoría T0.1.
 - T0.2 Elegir 2–4 sistemas candidatos. **Aceptación:** criterios de selección y exclusión por reproducibilidad, cobertura, costo, requisitos y mantenimiento; evitar benchmark sesgado.
 - T0.3 Diseñar piloto de aproximadamente 6–8 tareas (no potencia estadística confirmatoria). **Aceptación:** evaluadores externos, entradas/salidas, dificultad, fugas posibles, recursos, partición desarrollo/prueba reservada.
