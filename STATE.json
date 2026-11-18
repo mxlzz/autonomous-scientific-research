@@ -38,10 +38,10 @@
     "audits/T0.1.1-R01-2026-11-17.md"
   ],
   "last_confirmed_non_state_write": {
-    "path": "LOG.md",
-    "commit": "2b36e3143c6886c152a3968b7ac0358240827d9c"
+    "path": "RESEARCH.md",
+    "commit": "96482756bc377a5d4dc1dc1d81531dc3f087f728"
   },
-  "last_confirmed_activity": "T0.1.1 completada como auditoría documental: EvoScientist 0.4.3 @15f3e25, Apache-2.0; diferencia arquitectura paper/código, resultados autorales sin réplica; registros verificados, cero ejecuciones/pagos",
+  "last_confirmed_activity": "T0.1.1 completada como auditoría documental: EvoScientist 0.4.3 @15f3e25, Apache-2.0; diferencia arquitectura paper/código, resultados autorales sin réplica; registros verificados, cero ejecuciones/pagos; README, PLAN y RESEARCH alineados y re-leídos",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
