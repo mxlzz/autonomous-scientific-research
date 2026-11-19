@@ -30,9 +30,9 @@ jobs:
           python3 -m pip install --quiet --user uv==0.13.9
           "$HOME/.local/bin/uv" python install 3.9
           git init -q "$RUNNER_TEMP/t011-project"
-          git -C "$RUNNER_TEMP/t011-project" fetch -q --depth 1 https://github.com/mxlzz/autonomous-scientific-research.git a580cdfa855c85a2bffacb2ab690ed3f5783f459
+          git -C "$RUNNER_TEMP/t011-project" fetch -q --depth 1 https://github.com/mxlzz/autonomous-scientific-research.git 16228f755b674cbde89e76ae0102a6d16f4ff3fa
           git -C "$RUNNER_TEMP/t011-project" checkout -q --detach FETCH_HEAD
-          test "$(git -C "$RUNNER_TEMP/t011-project" rev-parse HEAD)" = a580cdfa855c85a2bffacb2ab690ed3f5783f459
+          test "$(git -C "$RUNNER_TEMP/t011-project" rev-parse HEAD)" = 16228f755b674cbde89e76ae0102a6d16f4ff3fa
           git init -q "$RUNNER_TEMP/t011-dw"
           git -C "$RUNNER_TEMP/t011-dw" fetch -q --depth 1 https://github.com/allenai/discoveryworld.git fd591323920be0d3786ef350955de1945aa571e5
           git -C "$RUNNER_TEMP/t011-dw" checkout -q --detach FETCH_HEAD
