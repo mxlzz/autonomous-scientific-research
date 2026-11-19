@@ -56,20 +56,25 @@ jobs:
           from discoveryworld.DiscoveryWorldAPI import DiscoveryWorldAPI
           from discoveryworld.ScenarioMaker import SCENARIO_NAMES
           assert "Plant Nutrients" in SCENARIO_NAMES
+          print("T09_STAGE=scenario_name_found")
           start=time.monotonic()
           api=DiscoveryWorldAPI(threadID=10919)
           loaded=api.loadScenario(scenarioName="Plant Nutrients", difficultyStr="Normal", randomSeed=0, numUserAgents=1)
           if not loaded:
               raise RuntimeError("scenario_load_failed")
+          print("T09_STAGE=scenario_loaded")
           obs=api.getAgentObservation(agentIdx=0)
           assert not obs.get("errors") and "ui" in obs
+          print("T09_STAGE=observation_ok")
           # Do not make the scorecard available to any agent policy.
           obs_json=json.dumps(obs,sort_keys=True,default=str)
           forbidden=("scoreNormalized","criticalQuestions","scoreCard","maxScore")
           leaked=[k for k in forbidden if k in obs_json]
           assert not leaked, "agent_observation_exposes_evaluator_private_fields"
+          print("T09_STAGE=no_score_leak")
           known=api.listKnownActions(limited=False)
           assert "ROTATE_DIRECTION" in known
+          print("T09_STAGE=rotation_action_known")
           results=[]
           for direction in ("north","east"):
               response=api.performAgentAction(agentIdx=0,actionJSON={"action":"ROTATE_DIRECTION","arg1":direction})
@@ -77,10 +82,13 @@ jobs:
               tick_result=api.tick()
               assert tick_result.get("success") is True, "world_tick_failed"
               results.append(True)
+              print("T09_STAGE=action_"+str(len(results))+"_ok")
           assert api.getStepCounter()==2
+          print("T09_STAGE=two_steps_confirmed")
           # Evaluator-only read AFTER actions; do NOT leak subgoals/critical hypotheses.
           scorecard=api.getTaskScorecard()
           assert isinstance(scorecard,list) and len(scorecard)>=1
+          print("T09_STAGE=evaluator_scorecard_read")
           score=scorecard[0]
           assert isinstance(score["completedSuccessfully"],bool)
           value=float(score["scoreNormalized"])
@@ -119,7 +127,9 @@ jobs:
           joined="\n".join(data)
           print("T09_FAILURE_CATEGORIES="+(",".join(k for k in safe if k.lower() in joined.lower()) or "unclassified"))
           print("T09_PRIVATE_LOG_LINECOUNT="+str(len(data)))
-          frames=re.findall(r'File "<stdin>", line (\\d+)',joined)
+          stages=re.findall(r"T09_STAGE=([a-z0-9_]+)",joined)
+          print("T09_LAST_COMPLETED_STAGE="+(stages[-1] if stages else "none"))
+          frames=re.findall(r'File "<stdin>", line (\d+)',joined)
           print("T09_FAILURE_STDIN_LINE="+(frames[-1] if frames else "none"))
           PY
               exit "$rc"
