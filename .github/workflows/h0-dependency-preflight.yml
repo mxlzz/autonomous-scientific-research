@@ -9,7 +9,7 @@ permissions:
 jobs:
   preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Install pinned uv 0.13.9
         shell: bash
@@ -46,3 +46,31 @@ jobs:
           echo RESOLUTION_RC="$rc"
           tail -n 20 "$RUNNER_TEMP/resolve.log"
           echo RESOLUTION_CHECK_FINISHED=true
+      - name: Install isolated AstaBench package without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 360 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/h0-venv/bin/python" "$RUNNER_TEMP/asta-bench" > "$RUNNER_TEMP/install.log" 2>&1
+          rc=$?
+          set -e
+          echo PACKAGE_INSTALL_EXIT_CODE="$rc"
+          tail -n 25 "$RUNNER_TEMP/install.log"
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          "$RUNNER_TEMP/h0-venv/bin/python" -c 'import importlib.metadata as m; print("ASTABENCH_INSTALLED=" + m.version("astabench")); print("INSPECT_AI_INSTALLED=" + m.version("inspect_ai"))'
+          "$RUNNER_TEMP/h0-venv/bin/python" -m pip --version 2>/dev/null || true
+          "$HOME/.local/bin/uv" pip freeze --python "$RUNNER_TEMP/h0-venv/bin/python" > "$RUNNER_TEMP/resolved.txt"
+          sha256sum "$RUNNER_TEMP/resolved.txt"
+          echo PACKAGE_INSTALL_VALIDATED=true
+      - name: Smoke test public arithmetic fixture with local mock model
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 180 "$RUNNER_TEMP/h0-venv/bin/inspect" eval astabench/arithmetic_demo --model mockllm/model --solver generate --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/demo-logs" > "$RUNNER_TEMP/smoke.log" 2>&1
+          rc=$?
+          set -e
+          echo ARITHMETIC_MOCK_SMOKE_EXIT="$rc"
+          tail -n 45 "$RUNNER_TEMP/smoke.log"
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          echo ARITHMETIC_MOCK_SMOKE_SUCCESS=true
