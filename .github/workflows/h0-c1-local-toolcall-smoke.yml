@@ -73,7 +73,15 @@ jobs:
           if samples:
               e=samples[0].get("error")
               print("C1_ARITHMETIC_SAMPLE_ERROR="+str(bool(e)).lower())
-              if isinstance(e,dict):print("C1_ARITHMETIC_ERROR_CLASS="+str(e.get("type","unknown"))[:100])
+              if isinstance(e,dict):
+                  print("C1_ARITHMETIC_ERROR_KEYS="+",".join(sorted(str(k) for k in e.keys())))
+                  print("C1_ARITHMETIC_ERROR_CLASS="+str(e.get("type","unknown"))[:100])
+                  # Print only matches from an allowlist; never print message/traceback itself.
+                  detail=" ".join(str(e.get(k,"")) for k in ("message","traceback","traceback_ansi","type"))
+                  labels=("LimitExceededError","ToolError","ModelAPIError","NotFoundError","BadRequestError","TypeError","ValueError","RuntimeError","AssertionError","PermissionError","MaxSteps","context_length","tool_calls","docker","connection")
+                  match=[v for v in labels if v.lower() in detail.lower()]
+                  print("C1_ARITHMETIC_ERROR_CATEGORIES="+(",".join(match) if match else "unclassified"))
+                  print("C1_ARITHMETIC_ERROR_DETAIL_SHA256="+hashlib.sha256(detail.encode()).hexdigest())
               for k,v in (samples[0].get("scores") or {}).items():
                   print("C1_ARITHMETIC_SCORER="+str(k))
                   value=v.get("value") if isinstance(v,dict) else None
