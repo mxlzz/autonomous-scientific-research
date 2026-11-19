@@ -1,97 +1,48 @@
-name: H0 - AstaBench dependency compatibility preflight
-
-# No secrets, gated data, model calls or experiment runs. Temporary public runner only.
+name: H0 dependency preflight Python and uv
 on:
   workflow_dispatch:
   push:
     paths:
       - .github/workflows/h0-dependency-preflight.yml
-
 permissions:
   contents: read
-
-concurrency:
-  group: h0-dependency-preflight
-  cancel-in-progress: true
-
 jobs:
-  dependency-preflight:
+  preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
-    env:
-      UV_NO_PROGRESS: "1"
-      UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
-      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    timeout-minutes: 10
     steps:
-      - name: Install pinned uv and managed Python 3.11
+      - name: Install pinned uv 0.13.9
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --user --quiet 'uv==0.13.9'
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --user --quiet uv==0.13.9
+          "$HOME/.local/bin/uv" --version
+      - name: Prepare Python 3.11
+        shell: bash
+        run: |
+          set -euo pipefail
           "$HOME/.local/bin/uv" python install 3.11
-          echo "UV_VERSION=$("$HOME/.local/bin/uv" --version)"
-          echo "PY311_PATH=$("$HOME/.local/bin/uv" python find 3.11)"
-
-      - name: Fetch immutable upstream code without any secrets
+          "$HOME/.local/bin/uv" python find 3.11
+          echo PYTHON311_SETUP=success
+      - name: Check immutable source checkout
         shell: bash
         run: |
           set -euo pipefail
           git init -q "$RUNNER_TEMP/asta-bench"
           git -C "$RUNNER_TEMP/asta-bench" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
           git -C "$RUNNER_TEMP/asta-bench" checkout -q --detach FETCH_HEAD
-          test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = "b0f436711e052cec1f216c296e804c70e4ec529b"
-          git init -q "$RUNNER_TEMP/agent-baselines"
-          git -C "$RUNNER_TEMP/agent-baselines" fetch -q --depth 1 https://github.com/allenai/agent-baselines.git 2d426deac51ad74381319bcfd77066c6e222ba30
-          git -C "$RUNNER_TEMP/agent-baselines" checkout -q --detach FETCH_HEAD
-          test "$(git -C "$RUNNER_TEMP/agent-baselines" rev-parse HEAD)" = "2d426deac51ad74381319bcfd77066c6e222ba30"
-          echo 'UPSTREAM_SHA_CHECK=pass'
-
-      - name: Audit real source constraints before installing any solvers
-        shell: bash
-        run: |
-          set -euo pipefail
-          export ASTA_SRC="$RUNNER_TEMP/asta-bench"
-          export BASE_SRC="$RUNNER_TEMP/agent-baselines"
-          "$HOME/.local/bin/uv" run --no-project --python 3.11 --no-managed-python python - <<'PY'
-          import os
-          import pathlib
-          import tomllib
-          root = pathlib.Path(os.environ["ASTA_SRC"])
-          solver = pathlib.Path(os.environ["BASE_SRC"])
-          paths = {
-              "ASTA": root / "pyproject.toml",
-              "REACT": solver / "solvers/react/pyproject.toml",
-              "SMOLAGENTS": solver / "solvers/smolagents/pyproject.toml",
-              "SCORER": root / "solvers/scorer/pyproject.toml",
-          }
-          for name, path in paths.items():
-              data = tomllib.loads(path.read_text())
-              dep = data["project"]["dependencies"]
-              filtered = [x for x in dep if x.split("=",1)[0].lower().replace("-","_").startswith(("inspect_ai", "astabench", "smolagents", "agent_eval"))]
-              print(f"{name}_PKG={data['project']['name']}@{data['project']['version']}")
-              print(f"{name}_RUNTIME_CONSTRAINTS={filtered}")
-          print("CONFLICT_REACT_CURRENT_ASTABENCH=requires_inspect_ai_0_3_203_vs_min_0_3_233")
-          print("CONFLICT_SMOLAGENTS_CURRENT_ASTABENCH=requires_inspect_ai_0_3_114_vs_min_0_3_233")
-          PY
-
-      - name: Attempt one solver-free package resolution (NO install, NO execution)
+          git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD
+          test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          echo ASTABENCH_SOURCE_PIN=verified
+      - name: Try root requirements resolution without installing
         shell: bash
         run: |
           set -euo pipefail
           "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/h0-venv"
-          echo 'RESOLUTION_STARTED=true'
           set +e
-          timeout 260 "$HOME/.local/bin/uv" pip install --dry-run --python "$RUNNER_TEMP/h0-venv/bin/python" "$RUNNER_TEMP/asta-bench" > "$RUNNER_TEMP/uv-resolve.log" 2>&1
+          timeout 180 "$HOME/.local/bin/uv" pip install --dry-run --python "$RUNNER_TEMP/h0-venv/bin/python" "$RUNNER_TEMP/asta-bench" > "$RUNNER_TEMP/resolve.log" 2>&1
           rc=$?
           set -e
-          echo "RESOLUTION_EXIT_CODE=$rc"
-          # Print only bounded diagnostic output; neither secrets nor datasets are present.
-          tail -n 28 "$RUNNER_TEMP/uv-resolve.log"
-          if [ "$rc" -eq 0 ]; then
-            echo 'ROOT_DEPENDENCIES_RESOLVABLE=true'
-          else
-            echo 'ROOT_DEPENDENCIES_RESOLVABLE=false'
-          fi
-          # The workflow records a negative outcome without masking it as a successful install.
-          echo 'DEPENDENCY_PREFLIGHT_FINISHED=true'
+          echo RESOLUTION_RC="$rc"
+          tail -n 20 "$RUNNER_TEMP/resolve.log"
+          echo RESOLUTION_CHECK_FINISHED=true
