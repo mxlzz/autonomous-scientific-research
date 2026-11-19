@@ -36,6 +36,9 @@ jobs:
           "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/frozen-venv"
           timeout 180 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/frozen-venv/bin/python" "$RUNNER_TEMP/frozen-asta" > "$RUNNER_TEMP/install-private.log" 2>&1
           timeout 100 "$HOME/.local/bin/uv" pip install --no-deps --python "$RUNNER_TEMP/frozen-venv/bin/python" "$RUNNER_TEMP/c1-source/solvers/react" >> "$RUNNER_TEMP/install-private.log" 2>&1
+          # Original solver package is a source-tree namespace, not an installed wheel package.
+          export PYTHONPATH="$RUNNER_TEMP/c1-source${PYTHONPATH:+:$PYTHONPATH}"
+          echo "C1_SOURCE_TREE_ON_PYTHONPATH=true"
           "$RUNNER_TEMP/frozen-venv/bin/python" - <<'PY'
           import importlib.metadata as m
           assert m.version("astabench")=="0.5.5"
