@@ -1,0 +1,125 @@
+name: H0 T0.9 DiscoveryWorld official API CPU/headless smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-discoveryworld-cpu-preflight.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t09-discoveryworld-preflight
+  cancel-in-progress: true
+jobs:
+  world:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+      PYGAME_HIDE_SUPPORT_PROMPT: "1"
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+    steps:
+      - name: Install pinned public DiscoveryWorld and CPU dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "T09_START_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 -m pip install --user --quiet uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.9
+          git init -q "$RUNNER_TEMP/dw-source"
+          git -C "$RUNNER_TEMP/dw-source" fetch -q --depth 1 https://github.com/allenai/discoveryworld.git fd591323920be0d3786ef350955de1945aa571e5
+          git -C "$RUNNER_TEMP/dw-source" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/dw-source" rev-parse HEAD)" = fd591323920be0d3786ef350955de1945aa571e5
+          echo "T09_SOURCE_PIN=verified"
+          "$HOME/.local/bin/uv" venv --python 3.9 "$RUNNER_TEMP/dw-env"
+          timeout 240 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/dw-env/bin/python" "$RUNNER_TEMP/dw-source" > "$RUNNER_TEMP/install-private.log" 2>&1
+          "$HOME/.local/bin/uv" pip freeze --python "$RUNNER_TEMP/dw-env/bin/python" | sort > "$RUNNER_TEMP/installed-versions.txt"
+          sha256sum "$RUNNER_TEMP/installed-versions.txt" | awk '{print "T09_RESOLUTION_SHA256="$1}'
+          "$RUNNER_TEMP/dw-env/bin/python" - <<'PY'
+          import importlib.metadata as m, sys
+          print("T09_PYTHON="+sys.version.split()[0])
+          for p in ("discoveryworld","pygame","numpy","pathfinding"):
+              print("T09_PKG_"+p.upper()+"="+m.version(p))
+          PY
+      - name: Run two fixed instrumental actions on selected development scenario
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/dw-source"
+          mkdir -p "$RUNNER_TEMP/t09-private"
+          # Source may emit verbose hidden-world details: capture locally; never show it publicly.
+          set +e
+          timeout 130 "$RUNNER_TEMP/dw-env/bin/python" - > "$RUNNER_TEMP/t09-private/runtime.log" 2>&1 <<'PY'
+          import hashlib, json, pathlib, resource, time, os, sys
+          from discoveryworld.DiscoveryWorldAPI import DiscoveryWorldAPI
+          from discoveryworld.ScenarioMaker import SCENARIO_NAMES
+          assert "Plant Nutrients" in SCENARIO_NAMES
+          start=time.monotonic()
+          api=DiscoveryWorldAPI(threadID=10919)
+          loaded=api.loadScenario(scenarioName="Plant Nutrients", difficultyStr="Normal", randomSeed=0, numUserAgents=1)
+          if not loaded:
+              raise RuntimeError("scenario_load_failed")
+          obs=api.getAgentObservation(agentIdx=0)
+          assert not obs.get("errors") and "ui" in obs
+          # Do not make the scorecard available to any agent policy.
+          obs_json=json.dumps(obs,sort_keys=True,default=str)
+          forbidden=("scoreNormalized","criticalQuestions","scoreCard","maxScore")
+          leaked=[k for k in forbidden if k in obs_json]
+          assert not leaked, "agent_observation_exposes_evaluator_private_fields"
+          known=api.listKnownActions(limited=False)
+          assert "ROTATE_DIRECTION" in known
+          results=[]
+          for direction in ("north","east"):
+              response=api.performAgentAction(agentIdx=0,actionJSON={"action":"ROTATE_DIRECTION","arg1":direction})
+              assert response.get("success") is True and not response.get("errors"), "scripted_action_failed"
+              tick_result=api.tick()
+              assert tick_result.get("success") is True, "world_tick_failed"
+              results.append(True)
+          assert api.getStepCounter()==2
+          # Evaluator-only read AFTER actions; do NOT leak subgoals/critical hypotheses.
+          scorecard=api.getTaskScorecard()
+          assert isinstance(scorecard,list) and len(scorecard)>=1
+          score=scorecard[0]
+          assert isinstance(score["completedSuccessfully"],bool)
+          value=float(score["scoreNormalized"])
+          assert 0<=value<=1
+          metric={
+            "task_theme":"Plant Nutrients",
+            "difficulty":"Normal",
+            "seed":0,
+            "actions_attempted":2,
+            "actions_succeeded":len(results),
+            "score_type":"simulator_procedural_not_scientific_validity",
+            "score_normalized":value,
+            "completed_successfully":score["completedSuccessfully"],
+            "agent_observation_score_leak":bool(leaked),
+            "elapsed_seconds":round(time.monotonic()-start,3),
+            "maxrss_kb":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+            "source_commit":"fd591323920be0d3786ef350955de1945aa571e5"
+          }
+          output=pathlib.Path(os.environ["RUNNER_TEMP"])/"t09-private"/"allowlisted.json"
+          output.write_text(json.dumps(metric,sort_keys=True))
+          PY
+          rc=$?
+          set -e
+          echo "T09_SMOKE_CLI_RC=$rc"
+          if [ "$rc" -ne 0 ]; then
+              echo "T09_SMOKE_RESULT=failed_private_diagnostics_not_published"
+              echo "T09_PRIVATE_LOG_SHA256=$(sha256sum "$RUNNER_TEMP/t09-private/runtime.log" | awk '{print $1}')"
+              exit "$rc"
+          fi
+          "$RUNNER_TEMP/dw-env/bin/python" - <<'PY'
+          import json,hashlib,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t09-private"/"allowlisted.json"
+          raw=p.read_bytes()
+          d=json.loads(raw)
+          assert d["actions_attempted"]==2 and d["actions_succeeded"]==2
+          assert d["agent_observation_score_leak"] is False
+          print("T09_RESULT=pass")
+          print("T09_PUBLIC_SUMMARY_SHA256="+hashlib.sha256(raw).hexdigest())
+          for k in ("task_theme","difficulty","seed","actions_attempted","actions_succeeded","score_normalized","completed_successfully","elapsed_seconds","maxrss_kb"):
+              print("T09_"+k.upper()+"="+str(d[k]))
+          PY
+          echo "T09_PRIVATE_LOG_UPLOADED=false"
