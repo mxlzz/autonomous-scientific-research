@@ -64,6 +64,7 @@ jobs:
               raise RuntimeError("scenario_load_failed")
           print("T09_STAGE=scenario_loaded")
           obs=api.getAgentObservation(agentIdx=0)
+          initial_counter=api.getStepCounter()
           assert not obs.get("errors") and "ui" in obs
           print("T09_STAGE=observation_ok")
           # Do not make the scorecard available to any agent policy.
@@ -83,7 +84,10 @@ jobs:
               assert tick_result.get("success") is True, "world_tick_failed"
               results.append(True)
               print("T09_STAGE=action_"+str(len(results))+"_ok")
-          assert api.getStepCounter()==2
+          # Upstream API refreshes self.steps during getAgentObservation, not tick().
+          post_obs=api.getAgentObservation(agentIdx=0)
+          assert not post_obs.get("errors"), "post_observation_failed"
+          assert api.getStepCounter()-initial_counter==2, "world_tick_delta_mismatch"
           print("T09_STAGE=two_steps_confirmed")
           # Evaluator-only read AFTER actions; do NOT leak subgoals/critical hypotheses.
           scorecard=api.getTaskScorecard()
