@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.10",
-  "task_title": "T0.10 — definir frontera de interfaz agente/evaluador y reutilización de baselines DiscoveryWorld con LLM local",
-  "task_expected_output": "Análisis verificable de arquitectura mínima ya existente para permitir a un LLM local recibir solo observaciones públicas/elegir acciones DiscoveryWorld y ocultar scorecard/world, sin inventar framework, con presupuesto de tokens/tiempo/pasos, prompts/acciones auditables y scorer original accesible únicamente al proceso evaluador; decidir si siguiente smoke LLM CPU gratuito viable o requiere intervención.",
-  "task_acceptance": "Leer código fuente oficial de RandomAgent, Hypothesizer, ReAct/Recoma, DiscoveryWorldAPI y Model/local Ollama; distinguir qué herramientas/interfaces permiten consultar scorecard accidentalmente; seleccionar reutilizar/adaptar con la menor complejidad y un test negativo de acceso prohibido definido; presupuesto explícito de pasos/tokens/CPU y política de logs legal; evidencia y autoverificación, y ninguna ejecución de LLM con acceso interno al evaluador antes de probar la frontera.",
-  "next_action": "Al recibir «Continuá», inspeccionar código pinned oficial DiscoveryWorld RandomAgent/Hypothesizer/recoma y un modelo Ollama gratuito disponible; diseñar contrato de aislamiento agente-evaluador (preferir proceso separado+JSON allowlist, no pasar API object), test de no-acceso a scorecard y logging no leaking, presupuesto de tokens y pasos antes de ejecutar. Comparar alternativas existentes y decidir si mini baseline sin frameworks nuevos es posible. Escribir evidencia/auditoría/LOG y STATE último. No correr campaña real hasta gate.",
+  "current_task": "T0.11",
+  "task_title": "T0.11 — validar puente seguro texto→acción DiscoveryWorld y realizar smoke local de Qwen3 0.6B sólo si los bloqueos funcionan",
+  "task_expected_output": "Implementación mínima y pruebas de validación JSON con salidas sintéticas negativas/positivas sin acceso al evaluador ni código arbitrario; si pasa, 1 micro-run de modelo local Qwen3 0.6B sobre Plant Nutrients Normal seed0, max4 acciones/max6 requests/max512 tokens, tiempo/costo registrado y scorecard solo después del corte. Sin pretensión de investigación científica.",
+  "task_acceptance": "Validar acciones contra API oficial allowlist sin dispatch dinámico, rechazar intento de getTaskScorecard, claves peligrosas y acciones inexistentes; comprobar en runner público que los logs no contienen scorecard oráculo/prompt o datos de terceros y que el modelo no tiene herramienta de código. Solo con validación PASS hacer smoke Qwen3 local CPU con presupuesto fijado y todas las acciones/tokens/errores contabilizados, scorer al final y estado auditable. Si la validación falla NO ejecutar modelo; registrar falla. No inventar marco multiagente ni alterar scorer original.",
+  "next_action": "En T0.11, releer HEAD/STATE/AGENTS y evidencias T0.10; implementar/usar adaptador mínimo texto Ollama local y estricta validación JSON, antes de cualquier LLM ejecutar pruebas negativas con output malicioso sintético y positivas de acción. No enviar API object ni funciones a modelo; única interfaz texto. Presupuesto hard 4 acciones/6 LLM requests/512 tokens salida cada una, temp0 si API soporta, timeout 4min de inferencia y 15min del workflow, compute CPU GitHub público gratis, no secrets. Scorecard del world solo tras cortar, métricas allowlist y raw traces privadas/no artifacts públicos. Si no cumple, declarar bloqueo técnico. Registrar en GitHub evidencias/audit/docs/LOG y STATE último.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -24,7 +24,8 @@
     "T0.6",
     "T0.7",
     "T0.8",
-    "T0.9"
+    "T0.9",
+    "T0.10"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -40,7 +41,8 @@
     "H0/T0.6 auditado solo por el ejecutor, sin independencia. Hito NO CERRADO. Antes de afirmaciones científicas fuertes: traza/retención verificable, tarea científica representativa, comparador y costos, revisor independiente.",
     "T0.7 autoverificación documental no independiente; retención de trazas privadas sin implementación/ensayo; exigir auditor autorizado antes de claims científicos A.",
     "T0.8 selección documental autoauditoría no independiente; DiscoveryWorld es proxy simulado con código público, scoring de conocimiento no automático, transferencia a tareas reales no validada. Gates T0.9–T0.10 pendientes.",
-    "T0.9 autoauditoría del preflight, no científica independiente; sin baseline LLM, traza histórica completa no retenida, verificación de nombres de score no prueba aislamiento Python. Resolver en T0.10."
+    "T0.9 autoauditoría del preflight, no científica independiente; sin baseline LLM, traza histórica completa no retenida, verificación de nombres de score no prueba aislamiento Python. Resolver en T0.10.",
+    "T0.10 autoverificación documental no independiente; aislamiento del controlador textual y no acceso a oráculo/archivos aún por probar con tests negativos antes del LLM en T0.11."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -50,7 +52,8 @@
     "H0-F05 splits: dataset DS1000 fuente xlangai/DS-1000 usa split original test, mientras AstaBench deriva validation/test propios; no equiparar, y riesgo de contaminación por pretraining no evaluado. No usar test reservado AstaBench durante desarrollo.",
     "T0.7 retención: decisión documental de manifiestos públicos sanitizados + rehidratación, raw traces solo cuando derechos y destino seguro confirmados; no se dispone de almacén privado aprobado ni hubo validación de sanitización automática. Elegir tarea pública apta para auditar sin ese bloqueo si posible.",
     "T0.8/T0.9: DiscoveryWorld no ejecutado todavía en CPU Actions; scorecard original potencialmente accesible desde agente a través de Python sin separación explícita, y conocimiento crítico no auto-puntuado. Evaluación solo tras smoke de API y aislamiento. Simulación no equivale a ciencia con datos reales.",
-    "T0.9/T0.10 seguridad constructo: agente con referencia al objeto DiscoveryWorldAPI/world podría consultar getTaskScorecard y romper independencia del scorer. Aislar proceso/interfaz estricta y negar acceso a mundo/score antes de ejecutar LLM."
+    "T0.9/T0.10 seguridad constructo: agente con referencia al objeto DiscoveryWorldAPI/world podría consultar getTaskScorecard y romper independencia del scorer. Aislar proceso/interfaz estricta y negar acceso a mundo/score antes de ejecutar LLM.",
+    "T0.10: código de RandomAgent y ReCoMa original consulta scorecard durante acciones; no se ha implementado/probado yet la interfaz segura LLM-only. T0.11 debe rechazar JSON malicioso y evitar acceso a API/world; no habilitar herramientas Python o scoring durante razonamiento."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -68,7 +71,8 @@
     "D-0013: auditoría H0/T0.6 por AUTOVERIFICACIÓN, rechaza cierre del hito H0 y decide CORREGIR/CONTINUAR H0 antes de H1/H2. T0.1–T0.5 aportaron inventario, pipeline de un code-completion DS1000 validation513 con C1+Qwen I/I en dos intentos, pero no ciclo de investigación autónoma ni auditoría de trayectorias. 29 CI runs son trabajo de ingeniería, no scores; licencia y splits de DS1000 original separados de AstaBench gated; costo total indeterminado. Next T0.7 procedencia/licencia y retención; luego T0.8 tarea científica.",
     "D-0014: T0.7 documentalmente aprobada; licencia por capa/fuente (DS1000 original CC BY-SA4, AstaBench gated no redistribute), GitHub Actions artifact público accesible a lectores y expirable; elegir manifiesto GitHub público allowlist + rehidratación de fuentes legalmente accesibles como estándar, con raw trace sólo en destino permitido con acceso controlado. No se creó infraestructura ni se resolvió auditoría exacta de T0.5; prioridad T0.8 tarea científica E2E con licencia y scorer viable sin gasto pago.",
     "D-0015: T0.8 selección documental de siete opciones existentes; escoger DiscoveryWorld Ai2 Apache2 código (sprites no Apache) para piloto controlado del proceso científico simulado, tarea Plant Nutrients Normal seed0, scorecard original procedural/binary, knowledge criticalQuestions requiere auditoría separada. Seeds1-4 reservadas localmente, no verdaderamente ocultas. CORE-Bench más realista pero setup/cápsulas; FIRE/ResearchGym barreras de licencia/costo; ScienceAgentBench etapas código; no extrapolar a ciencia real. Próxima T0.9 smoke CPU sin LLM.",
-    "D-0016: T0.9 preflight real de DiscoveryWorld Plant Nutrients/Normal/seed0 con Python3.9.25/pygame SDL dummy y dos rotaciones/ticks ejecutado en Actions run44543963302; source original fd591323; scorecard procedural 0.0 completion false esperados, no LLM; 5 fallos de instrumentación auditados, corregida aserción de getStepCounter sin alterar upstream. H0 no cerrado, T0.10 aislamiento de evaluator/agent antes de LLM."
+    "D-0016: T0.9 preflight real de DiscoveryWorld Plant Nutrients/Normal/seed0 con Python3.9.25/pygame SDL dummy y dos rotaciones/ticks ejecutado en Actions run44543963302; source original fd591323; scorecard procedural 0.0 completion false esperados, no LLM; 5 fallos de instrumentación auditados, corregida aserción de getStepCounter sin alterar upstream. H0 no cerrado, T0.10 aislamiento de evaluator/agent antes de LLM.",
+    "D-0017: inspección de fuentes DiscoveryWorld revela consulta de scorecard en RandomAgent y tracking ReCoMa y acoplamiento al mismo objeto API, pero sin prueba de fuga a LLM original. Hypothesizer GPT4o no apto para costo cero. Para primera línea base elegir motor/scorer originales + controlador textual mínimo hacia Qwen3 0.6B Ollama CPU con JSON de acción validado, sin herramientas ejecutables, score al final, y procesos aislados solo si se agregara ejecución arbitraria. T0.11 test negativo+positivo antes de micro-run. T0.10 documental, H0 sin cerrar."
   ],
   "evidence_refs": [
     {
@@ -138,6 +142,10 @@
     {
       "path": "evidence/T0.9-discoveryworld-cpu-preflight-2026-11-19.md",
       "status": "run44543963302 PASS API/scorer CPU/headless source pin, 2 acciones, memory/time/env/hash; 5 negativos de debugging documentados; sin LLM/ciencia, riesgo score leakage si agente ve Python API"
+    },
+    {
+      "path": "evidence/T0.10-discoveryworld-agent-evaluator-contract-2026-11-19.md",
+      "status": "Análisis código fuente API/RandomAgent/Hypothesizer/ReCoMa, hallazgo de llamadas a scorecard durante tracking, contrato controlador JSON tipado a LLM local y presupuesto/riesgos; no LLM ejecutado"
     }
   ],
   "audit_refs": [
@@ -156,13 +164,14 @@
     "audits/H0-MILESTONE-T0.6-2026-11-19.md",
     "audits/T0.7-PROVENANCE-RETENTION-2026-11-19.md",
     "audits/T0.8-SCIENTIFIC-TASK-SELECTION-2026-11-19.md",
-    "audits/T0.9-DISCOVERYWORLD-PREFLIGHT-2026-11-19.md"
+    "audits/T0.9-DISCOVERYWORLD-PREFLIGHT-2026-11-19.md",
+    "audits/T0.10-AGENT-EVALUATOR-BOUNDARY-2026-11-19.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "0572c0dfb9d55c4a235978d037084c7665ecaf50"
+    "commit": "714de6e1691fa83e860103c9f6ee1ef87651ff2d"
   },
-  "last_confirmed_activity": "T0.9 preflight DiscoveryWorld CPU/headless completado en Actions run44543963302; escenario Plant Nutrients Normal seed0, 2 acciones/ticks, API y scorecard original PASS, score0.0/tarea incompleta sin LLM; 5 runs fallidos por debugging y fix test counter; docs/audit/evidence persisted+verified. T0.10 agent/evaluator separation next; H0 still open, no paid API.",
+  "last_confirmed_activity": "T0.10 fuentes oficiales DiscoveryWorld RandomAgent/Hypothesizer/ReCoMa auditadas, scorecard expuesto en instrumentación pero no fuga directa demostrada; elegir texto Ollama local + controlador JSON tipado sin herramienta de código, scorer al cierre. Docs/audit/evidence/LOG actualizados y re-leídos; siguiente T0.11 tests negativos de frontera y solo entonces 4 acciones local Qwen; H0 sin cerrar.",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
