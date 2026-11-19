@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
-      OLLAMA_BASE_URL: http://127.0.0.1:11434
+      OLLAMA_BASE_URL: http://127.0.0.1:11434/v1
       OPENAI_API_KEY: ""
       ANTHROPIC_API_KEY: ""
       HF_TOKEN: ""
@@ -61,6 +61,22 @@ jobs:
           echo INSPECT_LOCAL_MODEL_EXIT_CODE="$rc"
           tail -n 37 "$RUNNER_TEMP/inspect-local-smoke.log"
           if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          if grep -Eq 'Task interrupted|NotFoundError|no samples completed' "$RUNNER_TEMP/inspect-local-smoke.log"; then
+            echo INSPECT_LOCAL_MODEL_SMOKE_COMPLETED=false
+            exit 23
+          fi
+          "$RUNNER_TEMP/inspect-local/bin/python" - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          logs=list(Path(os.environ["RUNNER_TEMP"], "inspect-logs").glob("*.json"))
+          assert len(logs)==1, f"Expected exactly one Inspect log; got {len(logs)}"
+          report=json.loads(logs[0].read_text())
+          print("INSPECT_EVAL_STATUS="+str(report.get("status")))
+          print("INSPECT_COMPLETED_SAMPLES="+str(len(report.get("samples", []))))
+          assert report.get("status")=="success", "Inspect eval did not report success"
+          assert len(report.get("samples", []))==1, "No completed evaluation sample"
+          PY
           echo INSPECT_LOCAL_MODEL_SMOKE_COMPLETED=true
       - name: Always stop local model service
         if: always()
