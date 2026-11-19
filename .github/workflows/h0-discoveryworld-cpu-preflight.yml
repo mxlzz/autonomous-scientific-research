@@ -108,6 +108,18 @@ jobs:
           if [ "$rc" -ne 0 ]; then
               echo "T09_SMOKE_RESULT=failed_private_diagnostics_not_published"
               echo "T09_PRIVATE_LOG_SHA256=$(sha256sum "$RUNNER_TEMP/t09-private/runtime.log" | awk '{print $1}')"
+              python3 - <<'PY'
+              import os,pathlib,re,hashlib
+              p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t09-private"/"runtime.log"
+              data=p.read_text(errors="replace").splitlines()
+              last=data[-1].strip() if data else ""
+              match=re.match(r"([A-Za-z_][A-Za-z_0-9.]*?(?:Error|Exception))(?::|$)",last)
+              print("T09_EXCEPTION_CLASS="+(match.group(1) if match else "unclassified"))
+              safe=("FileNotFoundError","ModuleNotFoundError","ImportError","KeyError","TypeError","ValueError","AssertionError","RuntimeError","pygame.error","display","SDL","sprite","scripted_action_failed","agent_observation_exposes_evaluator_private_fields")
+              joined="\n".join(data)
+              print("T09_FAILURE_CATEGORIES="+(",".join(k for k in safe if k.lower() in joined.lower()) or "unclassified"))
+              print("T09_PRIVATE_LOG_LINECOUNT="+str(len(data)))
+              PY
               exit "$rc"
           fi
           "$RUNNER_TEMP/dw-env/bin/python" - <<'PY'
