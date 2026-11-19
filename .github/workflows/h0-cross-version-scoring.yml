@@ -58,7 +58,7 @@ jobs:
           file=$(find "$RUNNER_TEMP/c1-logs" -name '*.json' -type f | head -n 1)
           if [ -z "$file" ]; then echo NO_SOLVE_LOG=true; exit 10; fi
           set +e
-          timeout 100 "$HOME/.local/bin/uv" run --project solvers/scorer --frozen -- inspect score --overwrite "$file" > "$RUNNER_TEMP/scoring.log" 2>&1
+          timeout 100 "$HOME/.local/bin/uv" run --project solvers/scorer --frozen -- inspect score --scorer astabench/evals/demo/arithmetic/task.py@check_arithmetic --overwrite "$file" > "$RUNNER_TEMP/scoring.log" 2>&1
           rc=$?
           set -e
           echo CROSS_VERSION_SCORE_EXIT="$rc"
