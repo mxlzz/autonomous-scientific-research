@@ -1,0 +1,45 @@
+name: H0 - GitHub Actions runner infrastructure preflight
+
+# Infrastructure-only inspection. No model, no third-party code, no dataset download.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-runner-preflight.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h0-runner-preflight
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Inspect runtime limits, Docker daemon, and installed Python versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "RUNNER_OS=${RUNNER_OS:-unknown}"
+          echo "RUNNER_ARCH=${RUNNER_ARCH:-unknown}"
+          echo "RUNNER_CPUS=$(nproc)"
+          awk '/^MemTotal:/{print "RUNNER_MEMTOTAL_KB="$2}' /proc/meminfo
+          echo "RUNNER_DISK_AVAILABLE_KB=$(df -Pk / | awk 'NR==2 {print $4}')"
+          echo "DEFAULT_PYTHON=$(python3 --version 2>&1)"
+          if command -v python3.11 >/dev/null 2>&1; then
+            echo "PYTHON311_PRESENT=true"
+            python3.11 --version
+          else
+            echo "PYTHON311_PRESENT=false"
+          fi
+          if command -v uv >/dev/null 2>&1; then echo "UV_PRESENT=true"; else echo "UV_PRESENT=false"; fi
+          if command -v docker >/dev/null 2>&1 && docker info --format '{{.ServerVersion}}' >/dev/null 2>&1; then
+            echo "DOCKER_DAEMON_AVAILABLE=true"
+            echo "DOCKER_SERVER_VERSION=$(docker info --format '{{.ServerVersion}}')"
+          else
+            echo "DOCKER_DAEMON_AVAILABLE=false"
+          fi
+          if command -v nvidia-smi >/dev/null 2>&1; then echo "NVIDIA_SMI_PRESENT=true"; else echo "NVIDIA_SMI_PRESENT=false"; fi
