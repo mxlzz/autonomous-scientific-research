@@ -1,0 +1,77 @@
+name: H0 T0.5 C1 source in frozen AstaBench scoring environment (public smoke)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-c1-frozen-scoring-public-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  same-env-scoring:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Prepare exact source and compatible AstaBench 0.5.5 environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --user uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.11
+          git init -q "$RUNNER_TEMP/frozen-asta"
+          git -C "$RUNNER_TEMP/frozen-asta" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
+          git -C "$RUNNER_TEMP/frozen-asta" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/frozen-asta" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          git init -q "$RUNNER_TEMP/c1-source"
+          git -C "$RUNNER_TEMP/c1-source" fetch -q --depth 1 https://github.com/allenai/agent-baselines.git 2d426deac51ad74381319bcfd77066c6e222ba30
+          git -C "$RUNNER_TEMP/c1-source" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/c1-source" rev-parse HEAD)" = 2d426deac51ad74381319bcfd77066c6e222ba30
+          git -C "$RUNNER_TEMP/frozen-asta" submodule update --init --recursive --depth 1 > "$RUNNER_TEMP/submodule-private.log" 2>&1
+          test "$(git -C "$RUNNER_TEMP/frozen-asta/inspect_evals" rev-parse HEAD)" = c2bec9ebee7a5995512bf5ff67a2e82afe4d12e1
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/frozen-venv"
+          timeout 180 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/frozen-venv/bin/python" "$RUNNER_TEMP/frozen-asta" > "$RUNNER_TEMP/install-private.log" 2>&1
+          timeout 100 "$HOME/.local/bin/uv" pip install --no-deps --python "$RUNNER_TEMP/frozen-venv/bin/python" "$RUNNER_TEMP/c1-source/solvers/react" >> "$RUNNER_TEMP/install-private.log" 2>&1
+          "$RUNNER_TEMP/frozen-venv/bin/python" - <<'PY'
+          import importlib.metadata as m
+          assert m.version("astabench")=="0.5.5"
+          print("FROZEN_ASTABENCH="+m.version("astabench"))
+          print("FROZEN_INSPECT="+m.version("inspect_ai"))
+          print("FROZEN_OPENAI_SDK="+m.version("openai"))
+          from agent_baselines.solvers.react.basic_agent import instantiated_basic_agent
+          from inspect_evals.ds1000.ds1000 import ds1000_scorer
+          assert callable(instantiated_basic_agent) and callable(ds1000_scorer)
+          print("ORIGINAL_C1_AND_SCORER_IMPORT=pass")
+          PY
+      - name: Evaluate original C1 code on public arithmetic fixture with inline original scorer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/public-logs"
+          cd "$RUNNER_TEMP/c1-source"
+          set +e
+          timeout 120 "$RUNNER_TEMP/frozen-venv/bin/inspect" eval astabench/arithmetic_demo --solver agent_baselines/solvers/react/basic_agent.py@instantiated_basic_agent --model mockllm/model --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/public-logs" -S max_steps=2 -S with_search_tools=0 -S with_table_editor=0 -S with_report_editor=0 -S with_thinking_tool=0 > "$RUNNER_TEMP/public-eval-private.log" 2>&1
+          rc=$?
+          set -e
+          echo "FROZEN_PUBLIC_CLI_RC=$rc"
+          "$RUNNER_TEMP/frozen-venv/bin/python" - <<'PY'
+          import json,pathlib,hashlib,os
+          fs=list((pathlib.Path(os.environ["RUNNER_TEMP"])/"public-logs").glob("*.json"))
+          print("FROZEN_PUBLIC_LOG_COUNT="+str(len(fs)))
+          if len(fs)!=1:raise SystemExit(20)
+          raw=fs[0].read_bytes();d=json.loads(raw);ss=d.get("samples") or []
+          print("FROZEN_PUBLIC_LOG_SHA256="+hashlib.sha256(raw).hexdigest())
+          print("FROZEN_PUBLIC_STATUS="+str(d.get("status")))
+          print("FROZEN_PUBLIC_SAMPLE_COUNT="+str(len(ss)))
+          print("FROZEN_PUBLIC_ERROR="+str(bool(ss[0].get("error"))).lower() if ss else "FROZEN_PUBLIC_ERROR=missing")
+          keys=list((ss[0].get("scores") or {}).keys()) if ss else []
+          print("FROZEN_PUBLIC_SCORERS="+",".join(keys))
+          good=d.get("status")=="success" and len(ss)==1 and not ss[0].get("error") and "check_arithmetic" in keys
+          print("FROZEN_PUBLIC_INLINE_SCORE_GATE="+("pass" if good else "fail"))
+          if not good:raise SystemExit(21)
+          PY
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
