@@ -2,7 +2,7 @@
 
 Investigación metodológica y experimental sobre **autonomía científica verificable** y **eficiencia de agentes de IA**. El objeto de estudio es determinar cuándo un sistema puede investigar con rigor y autonomía progresiva, y cuándo conviene usar un solo agente, varios agentes o modelos de distinta capacidad. No se presupone que haya que crear un framework.
 
-**Estado:** H0 activo, **T0.4 reanudada parcialmente**. [Hugging Face autorizado para un archivo y GitHub Actions runner con Docker/16 GB verificados](evidence/T0.4-hf-and-actions-preflight-2026-11-18.md) mediante [dos ejecuciones](audits/T0.4-RECHECK-2026-11-18.md). Quedan Python/uv, compatibilidad de solvers/scorer, un modelo de costo cero realmente probado y algunos IDs de muestras. **T0.4 no cerrada; no hay experimento científico ni T0.5.** [STATE.json](STATE.json) es el estado operativo.
+**Estado:** H0 activo. **T0.4 cerrada sólo para viabilidad C1/P01**: runner GitHub con Docker, Python3.11 y Qwen3 0.6B local, original ReAct corregido con SDK2.30.0 y [DS1000 validación 513 completada sin puntuar](evidence/T0.4-reconciliation-and-c1-2026-11-19.md). [Autoverificación de gate restringido](audits/T0.4-FEASIBILITY-GATE-2026-11-19.md). **Próxima T0.5:** reproducir/scorar formalmente C1/P01 sin alterar evaluador. C2/C3 y otros slots siguen condicionados. **H0 aún sin resultado científico reproducido.** Estado: [STATE.json](STATE.json).
 
 ## Navegación
 - [Objetivo estable, alcance y criterios](OBJECTIVE.md)
