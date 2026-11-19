@@ -1,0 +1,48 @@
+name: H0 DS1000 validation sample metadata preflight
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-ds1000-dataset-preflight.yml
+permissions:
+  contents: read
+jobs:
+  ds1000-metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Prepare immutable evaluator environment without secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user --quiet uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.11
+          git init -q "$RUNNER_TEMP/asta-bench"
+          git -C "$RUNNER_TEMP/asta-bench" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
+          git -C "$RUNNER_TEMP/asta-bench" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/asta"
+          timeout 180 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/asta/bin/python" "$RUNNER_TEMP/asta-bench" > "$RUNNER_TEMP/install.log" 2>&1
+          "$RUNNER_TEMP/asta/bin/python" -c 'import importlib.metadata as m; print("ASTABENCH_VERSION="+m.version("astabench")); print("INSPECT_VERSION="+m.version("inspect_ai"))'
+      - name: Enumerate public DS1000 validation metadata without printing sample content
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/asta/bin/python" - <<'PY'
+          import hashlib
+          import sys
+          try:
+              from astabench.evals.inspect_eval_wrappers.ds1000 import ds1000_validation
+              task = ds1000_validation()
+              ids = sorted(str(s.id) for s in task.dataset)
+              print("DS1000_VALIDATION_COUNT=" + str(len(ids)))
+              print("DS1000_VALIDATION_IDS_SHA256=" + hashlib.sha256(("\n".join(ids)+"\n").encode()).hexdigest())
+              print("DS1000_ID_513_PRESENT=" + str("513" in ids).lower())
+              print("DS1000_ID_974_PRESENT=" + str("974" in ids).lower())
+              print("DS1000_ID_18_PRESENT=" + str("18" in ids).lower())
+              print("DS1000_SCORER_PRESENT=" + str(task.scorer is not None).lower())
+              print("DS1000_TASK_SANDBOX_CONFIGURED=" + str(bool(task.sandbox)).lower())
+          except Exception as error:
+              print("DS1000_LOAD_ERROR_CLASS=" + type(error).__name__)
+              sys.exit(25)
+          PY
