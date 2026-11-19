@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.11",
-  "task_title": "T0.11 — validar puente seguro texto→acción DiscoveryWorld y realizar smoke local de Qwen3 0.6B sólo si los bloqueos funcionan",
-  "task_expected_output": "Implementación mínima y pruebas de validación JSON con salidas sintéticas negativas/positivas sin acceso al evaluador ni código arbitrario; si pasa, 1 micro-run de modelo local Qwen3 0.6B sobre Plant Nutrients Normal seed0, max4 acciones/max6 requests/max512 tokens, tiempo/costo registrado y scorecard solo después del corte. Sin pretensión de investigación científica.",
-  "task_acceptance": "Validar acciones contra API oficial allowlist sin dispatch dinámico, rechazar intento de getTaskScorecard, claves peligrosas y acciones inexistentes; comprobar en runner público que los logs no contienen scorecard oráculo/prompt o datos de terceros y que el modelo no tiene herramienta de código. Solo con validación PASS hacer smoke Qwen3 local CPU con presupuesto fijado y todas las acciones/tokens/errores contabilizados, scorer al final y estado auditable. Si la validación falla NO ejecutar modelo; registrar falla. No inventar marco multiagente ni alterar scorer original.",
-  "next_action": "En T0.11, releer HEAD/STATE/AGENTS y evidencias T0.10; implementar/usar adaptador mínimo texto Ollama local y estricta validación JSON, antes de cualquier LLM ejecutar pruebas negativas con output malicioso sintético y positivas de acción. No enviar API object ni funciones a modelo; única interfaz texto. Presupuesto hard 4 acciones/6 LLM requests/512 tokens salida cada una, temp0 si API soporta, timeout 4min de inferencia y 15min del workflow, compute CPU GitHub público gratis, no secrets. Scorecard del world solo tras cortar, métricas allowlist y raw traces privadas/no artifacts públicos. Si no cumple, declarar bloqueo técnico. Registrar en GitHub evidencias/audit/docs/LOG y STATE último.",
+  "current_task": "T0.12",
+  "task_title": "T0.12 — evaluar alternativas de modelo local y validez científica externa tras fracaso de Qwen3 0.6B en DiscoveryWorld",
+  "task_expected_output": "Comparación de opciones realmente existentes con fuentes oficiales: modelos gratuitos de mayor capacidad (p. ej. Qwen3 1.7B/4B) y Ollama CPU Actions 4CPU/16GB con tiempo/memoria/cuotas, alternativas de benchmarks científicos reales (CORE, FIRE-Bench, etc.) y necesidad/seguridad de almacenamiento de trazas; priorizar si ejecutar una sola prueba adicional o replantear el enfoque, con costes estimados y licencias. Sin nueva campaña ni pago hasta justificarlo.",
+  "task_acceptance": "Verificar características actuales, licencia y cuantificación aproximada de memoria/CPU/inferencia de al menos dos modelos open-weight, comparar con Qwen0.6 empírico y recursos Actions, distinguir complejidad de affordances de calidad científica; revisar al menos una alternativa con datos reales/evaluador y sus restricciones; decidir plan priorizado de una próxima unidad con recursos y criterio de cancelación. Si una prueba representativa exige acceso a PC/GPU, cuenta/secret o API paga, pedir autorización concreta, no gastar. No atribuir a 0.6B incapacidad de cualquier modelo pequeño.",
+  "next_action": "T0.12: releer HEAD/STATE/objetivo y archivos H0; contrastar fuentes actuales Ollama/Qwen3 1.7B/4B, tiempos y RAM CPU y benchmark de ciencia con datos/papers reales (CORE o ScienceAgentBench) desde fuentes primarias. Evaluar costo de oportunidad de otro smoke contra la necesidad científica end-to-end, seleccionar solo una acción de valor medible sin pago ni duplicados; registrar evidencia/auditoría/LOG y STATE último. Si la ruta requiere GPU del usuario o presupuesto API pago, detener y solicitar autorización de recursos, no solicitar tokens por chat.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -25,7 +25,8 @@
     "T0.7",
     "T0.8",
     "T0.9",
-    "T0.10"
+    "T0.10",
+    "T0.11"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -42,7 +43,8 @@
     "T0.7 autoverificación documental no independiente; retención de trazas privadas sin implementación/ensayo; exigir auditor autorizado antes de claims científicos A.",
     "T0.8 selección documental autoauditoría no independiente; DiscoveryWorld es proxy simulado con código público, scoring de conocimiento no automático, transferencia a tareas reales no validada. Gates T0.9–T0.10 pendientes.",
     "T0.9 autoauditoría del preflight, no científica independiente; sin baseline LLM, traza histórica completa no retenida, verificación de nombres de score no prueba aislamiento Python. Resolver en T0.10.",
-    "T0.10 autoverificación documental no independiente; aislamiento del controlador textual y no acceso a oráculo/archivos aún por probar con tests negativos antes del LLM en T0.11."
+    "T0.10 autoverificación documental no independiente; aislamiento del controlador textual y no acceso a oráculo/archivos aún por probar con tests negativos antes del LLM en T0.11.",
+    "T0.11 self-audit: logical JSON/no-code boundary gates passed, no rigorous adversarial/independent review; LLM action baseline failed 0/4 actions, raw traces not retained, no scientific validity, must not generalize to model size or architecture."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -53,7 +55,8 @@
     "T0.7 retención: decisión documental de manifiestos públicos sanitizados + rehidratación, raw traces solo cuando derechos y destino seguro confirmados; no se dispone de almacén privado aprobado ni hubo validación de sanitización automática. Elegir tarea pública apta para auditar sin ese bloqueo si posible.",
     "T0.8/T0.9: DiscoveryWorld no ejecutado todavía en CPU Actions; scorecard original potencialmente accesible desde agente a través de Python sin separación explícita, y conocimiento crítico no auto-puntuado. Evaluación solo tras smoke de API y aislamiento. Simulación no equivale a ciencia con datos reales.",
     "T0.9/T0.10 seguridad constructo: agente con referencia al objeto DiscoveryWorldAPI/world podría consultar getTaskScorecard y romper independencia del scorer. Aislar proceso/interfaz estricta y negar acceso a mundo/score antes de ejecutar LLM.",
-    "T0.10: código de RandomAgent y ReCoMa original consulta scorecard durante acciones; no se ha implementado/probado yet la interfaz segura LLM-only. T0.11 debe rechazar JSON malicioso y evitar acceso a API/world; no habilitar herramientas Python o scoring durante razonamiento."
+    "T0.10: código de RandomAgent y ReCoMa original consulta scorecard durante acciones; no se ha implementado/probado yet la interfaz segura LLM-only. T0.11 debe rechazar JSON malicioso y evitar acceso a API/world; no habilitar herramientas Python o scoring durante razonamiento.",
+    "T0.11 Qwen3 0.6B cannot produce a successful DiscoveryWorld world action under 4-action cap: 4 PICKUP repeats rejected (run44548747248). Structured JSON fixes syntax only. No proven viable local scientific baseline; T0.12 assess capacity/resources and opportunity cost before further runs."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -72,7 +75,8 @@
     "D-0014: T0.7 documentalmente aprobada; licencia por capa/fuente (DS1000 original CC BY-SA4, AstaBench gated no redistribute), GitHub Actions artifact público accesible a lectores y expirable; elegir manifiesto GitHub público allowlist + rehidratación de fuentes legalmente accesibles como estándar, con raw trace sólo en destino permitido con acceso controlado. No se creó infraestructura ni se resolvió auditoría exacta de T0.5; prioridad T0.8 tarea científica E2E con licencia y scorer viable sin gasto pago.",
     "D-0015: T0.8 selección documental de siete opciones existentes; escoger DiscoveryWorld Ai2 Apache2 código (sprites no Apache) para piloto controlado del proceso científico simulado, tarea Plant Nutrients Normal seed0, scorecard original procedural/binary, knowledge criticalQuestions requiere auditoría separada. Seeds1-4 reservadas localmente, no verdaderamente ocultas. CORE-Bench más realista pero setup/cápsulas; FIRE/ResearchGym barreras de licencia/costo; ScienceAgentBench etapas código; no extrapolar a ciencia real. Próxima T0.9 smoke CPU sin LLM.",
     "D-0016: T0.9 preflight real de DiscoveryWorld Plant Nutrients/Normal/seed0 con Python3.9.25/pygame SDL dummy y dos rotaciones/ticks ejecutado en Actions run44543963302; source original fd591323; scorecard procedural 0.0 completion false esperados, no LLM; 5 fallos de instrumentación auditados, corregida aserción de getStepCounter sin alterar upstream. H0 no cerrado, T0.10 aislamiento de evaluator/agent antes de LLM.",
-    "D-0017: inspección de fuentes DiscoveryWorld revela consulta de scorecard en RandomAgent y tracking ReCoMa y acoplamiento al mismo objeto API, pero sin prueba de fuga a LLM original. Hypothesizer GPT4o no apto para costo cero. Para primera línea base elegir motor/scorer originales + controlador textual mínimo hacia Qwen3 0.6B Ollama CPU con JSON de acción validado, sin herramientas ejecutables, score al final, y procesos aislados solo si se agregara ejecución arbitraria. T0.11 test negativo+positivo antes de micro-run. T0.10 documental, H0 sin cerrar."
+    "D-0017: inspección de fuentes DiscoveryWorld revela consulta de scorecard en RandomAgent y tracking ReCoMa y acoplamiento al mismo objeto API, pero sin prueba de fuga a LLM original. Hypothesizer GPT4o no apto para costo cero. Para primera línea base elegir motor/scorer originales + controlador textual mínimo hacia Qwen3 0.6B Ollama CPU con JSON de acción validado, sin herramientas ejecutables, score al final, y procesos aislados solo si se agregara ejecución arbitraria. T0.11 test negativo+positivo antes de micro-run. T0.10 documental, H0 sin cerrar.",
+    "D-0018: T0.11 completada con resultado mixto: 9 negativos y 3 positivos del validador JSON PASS, modelos texto sin herramientas de código ni scorecard; Qwen3 0.6B en DiscoveryWorld Normal seed0 produjo primero respuestas con campos JSON inválidos; Ollama schema las corrigió pero mundos rechazaron 4/4 PICKUP, incluso con UI feedback/affordance. Run44548747248 source pinned final, API paid0, scoreboard0 no validez científica; no iterar mismo prompt sin nueva hipótesis. Próxima T0.12 evaluación crítica de modelo local/benchmark real."
   ],
   "evidence_refs": [
     {
@@ -146,6 +150,10 @@
     {
       "path": "evidence/T0.10-discoveryworld-agent-evaluator-contract-2026-11-19.md",
       "status": "Análisis código fuente API/RandomAgent/Hypothesizer/ReCoMa, hallazgo de llamadas a scorecard durante tracking, contrato controlador JSON tipado a LLM local y presupuesto/riesgos; no LLM ejecutado"
+    },
+    {
+      "path": "evidence/T0.11-local-qwen-action-bridge-2026-11-19.md",
+      "status": "5 runs GitHub Actions Qwen0.6 bridge; tests 9 negatives/3 positives PASS, scorer isolated until stop; final 4 PICKUP attempts all world rejected, no successful actions, result negative; source sha and CPU/tokens time logged"
     }
   ],
   "audit_refs": [
@@ -165,13 +173,14 @@
     "audits/T0.7-PROVENANCE-RETENTION-2026-11-19.md",
     "audits/T0.8-SCIENTIFIC-TASK-SELECTION-2026-11-19.md",
     "audits/T0.9-DISCOVERYWORLD-PREFLIGHT-2026-11-19.md",
-    "audits/T0.10-AGENT-EVALUATOR-BOUNDARY-2026-11-19.md"
+    "audits/T0.10-AGENT-EVALUATOR-BOUNDARY-2026-11-19.md",
+    "audits/T0.11-LOCAL-LLM-BRIDGE-2026-11-19.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "714de6e1691fa83e860103c9f6ee1ef87651ff2d"
+    "commit": "d157d531e9bbd77f25e66733454b6cb98093c4a8"
   },
-  "last_confirmed_activity": "T0.10 fuentes oficiales DiscoveryWorld RandomAgent/Hypothesizer/ReCoMa auditadas, scorecard expuesto en instrumentación pero no fuga directa demostrada; elegir texto Ollama local + controlador JSON tipado sin herramienta de código, scorer al cierre. Docs/audit/evidence/LOG actualizados y re-leídos; siguiente T0.11 tests negativos de frontera y solo entonces 4 acciones local Qwen; H0 sin cerrar.",
+  "last_confirmed_activity": "T0.11 original DiscoveryWorld and local Qwen3 0.6B 5 runs; 9 malicious action attempts denied/3 positives pass, Ollama structured JSON improved schema but world actions all rejected (PICKUP×4), scorer0 and CI failure correctly gated. No paid APIs, no science. Evidence/audit/README/PLAN/METHOD/RESEARCH/LOG reread; T0.12 model/baseline/cost alternatives next.",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
