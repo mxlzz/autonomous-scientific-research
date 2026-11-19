@@ -1,0 +1,70 @@
+name: H0 Inspect local CPU Qwen3 arithmetic smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-inspect-local-model.yml
+permissions:
+  contents: read
+jobs:
+  local-inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OLLAMA_BASE_URL: http://127.0.0.1:11434
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Start pinned Ollama server and small public model
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592
+          docker run -d --name h0-local-model --cpus=4 --memory=8g -p 127.0.0.1:11434:11434 ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          timeout 180 docker exec h0-local-model ollama pull qwen3:0.6b > "$RUNNER_TEMP/qwen-pull.log" 2>&1
+          python3 - <<'PY'
+          import json
+          import urllib.request
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=15) as response:
+              models=json.load(response).get("models", [])
+          row=next(item for item in models if item["name"] == "qwen3:0.6b")
+          assert row["digest"] == "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435", "Model digest changed: stop"
+          print("LOCAL_MODEL_SHA256=" + row["digest"])
+          print("LOCAL_MODEL_BYTES=" + str(row["size"]))
+          PY
+      - name: Install AstaBench at immutable commit without any API keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user --quiet uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.11
+          git init -q "$RUNNER_TEMP/asta-bench"
+          git -C "$RUNNER_TEMP/asta-bench" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
+          git -C "$RUNNER_TEMP/asta-bench" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/inspect-local"
+          timeout 250 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/inspect-local/bin/python" "$RUNNER_TEMP/asta-bench" ollama==0.6.3 > "$RUNNER_TEMP/install.log" 2>&1
+          "$RUNNER_TEMP/inspect-local/bin/python" -c 'import importlib.metadata as m; print("INSTALLED_ASTABENCH=" + m.version("astabench"));print("INSTALLED_INSPECT_AI="+m.version("inspect_ai"));print("INSTALLED_OLLAMA_PYTHON="+m.version("ollama"))'
+      - name: Evaluate public arithmetic fixture through Inspect Ollama provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 220 "$RUNNER_TEMP/inspect-local/bin/inspect" eval astabench/arithmetic_demo --model ollama/qwen3:0.6b --solver generate --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/inspect-logs" > "$RUNNER_TEMP/inspect-local-smoke.log" 2>&1
+          rc=$?
+          set -e
+          echo INSPECT_LOCAL_MODEL_EXIT_CODE="$rc"
+          tail -n 37 "$RUNNER_TEMP/inspect-local-smoke.log"
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          echo INSPECT_LOCAL_MODEL_SMOKE_COMPLETED=true
+      - name: Always stop local model service
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f h0-local-model >/dev/null 2>&1 || true
+          echo LOCAL_MODEL_SERVICE_STOPPED=true
