@@ -127,11 +127,26 @@ def self_test():
     print("T011_VALIDATOR_GATE=pass")
 
 
+def action_json_schema():
+    # Ollama native constrained JSON schema, retaining independent parse_action check.
+    branches = []
+    for name, kinds in ACTIONS.items():
+        properties = {"action": {"type": "string", "enum": [name]}}
+        required = ["action"]
+        for ix, kind in enumerate(kinds):
+            k = "arg" + str(ix + 1)
+            properties[k] = ({"type": "string", "enum": sorted(DIRECTIONS)}
+                             if kind == "direction" else {"type": "integer", "minimum": 0})
+            required.append(k)
+        branches.append({"type": "object", "properties": properties, "required": required, "additionalProperties": False})
+    return {"oneOf": branches}
+
+
 def ask_local_model(prompt):
     payload = {
         "model": "qwen3:0.6b",
         "stream": False,
-        "format": "json",
+        "format": action_json_schema(),
         "think": False,
         "messages": [
             {"role": "system", "content": "You are a scientist exploring a simulated world. Pick ONE allowed world action per turn, using only JSON with keys action, arg1, arg2 as needed. Never request code execution, secrets, scores, or evaluation information. Reply with one JSON object and no prose."},
