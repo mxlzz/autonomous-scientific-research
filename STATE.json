@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.5",
-  "task_title": "T0.5 — reproducir y puntuar resultado DS1000 validation513 con C1 ReAct, scorer original fijo",
-  "task_expected_output": "Ejecución de C1/P01 con solver ReAct@2d426de, AstaBench solve0.5.3/Inspect0.3.203/OpenAI SDK2.30.0 local Qwen3 0.6B; scorer oficial AstaBench0.5.5/Inspect0.3.225 y submódulo DS1000@c2bec9. Guardar manifiesto, comandos, hashes y resultados sin distribuir datos gated; evaluar una repetición/resultado de referencia, costos y fallos.",
-  "task_acceptance": "Comprobar puntuación de 1 sample validación ID513 con scorer sin modificar en entorno separado o documentar la incompatibilidad real; registrar logs y hash, salida de score C/I, fuente/dataset/seed/modelo, comandos y tiempo/costos, comparación limitada con baseline generate sin atribuir causalidad. No proclamar reproducción científica completa si no hay persistencia legal, replica suficiente o validación; no usar test ni API paga.",
-  "next_action": "Al recibir «Continuá»: releer HEAD y canónicos; ejecutar T0.5 únicamente sobre C1/P01, log de solve separado --no-score, instalar scorer AstaBench0.5.5 Inspect0.3.225 y usar EXACTO ds1000_scorer original de UKGovernmentBEIS/inspect_evals@c2bec9eb; comprobar que scorer puede leer y puntuar log C1 y que sandbox original está disponible. Proteger datos privados: no publicar prompts, outputs ni targets (repo público), sólo hashes, IDs, scores permitidos y fallos. Si falla, conservar negativo y bloquear sin cambiar benchmark. Gasto pago 0.",
+  "current_task": "T0.6",
+  "task_title": "T0.6 — auditoría crítica del hito H0 y decisión continuar/corregir/replantear/retroceder",
+  "task_expected_output": "Auditoría documentada que confronte OBJECTIVE.md/METHODOLOGY.md con cobertura real de H0: antecedentes, selección, piloto de 7 slots (4 no fijados), corrida C1/P01 (dos scores I/I de Qwen local), fracaso del scorer separado, fallas C2/C3, trazas no conservadas, riesgos de leakage, licencias, recursos y costo total; decisión fundamentada sobre próximos trabajos sin inventar autonomía científica.",
+  "task_acceptance": "Evaluar si H0 alcanzó al menos una línea base científicamente válida, representativa y reproducible; distinguir evidencia de tarea de código de investigación autónoma, comparar compromisos con criterios, documentar resultados negativos y sesgos, necesidad de réplica/auditoría independiente, y emitir decisión de hito: continuar H0, corregir, replantear o retroceder con gates verificables. Sin aprobar H1/H2 ni cambios de objetivo sin respaldo.",
+  "next_action": "Al recibir «Continuá», leer HEAD/STATE y documentos canónicos + auditorías; ejecutar sólo T0.6: auditar H0 contra objetivo y aceptación, interpretar C1 ReAct + Qwen3 0.6B DS1000 validation513 I/I sin generalizar, catalogar scorer separado 0.3.225 fallido vs scoring inline original Inspect0.3.258, faltas C2/C3 y otros slots, límites de logs completos/semillas/costos, definir plan concreto de corrección o continuación de H0 y registrarlo; crear auditoría propia (no independiente), LOG/RESEARCH/PLAN, reread y STATE al final. Ningún experimento nuevo ni gasto pago por el solo hecho de auditar.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -19,7 +19,8 @@
     "T0.1",
     "T0.2",
     "T0.3",
-    "T0.4"
+    "T0.4",
+    "T0.5"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -30,13 +31,14 @@
     "T0.3 piloto de 7 slots autoverificado, sin auditor independiente; 4 IDs de datasets no congelados; costoso/gated para P06/P07",
     "T0.4 preflight bloqueado, autoverificación no independiente registrada; auditoría de seguridad y reproducción pendientes al reanudar en entorno autorizado",
     "T0.4 recheck 2026-11-18 autoverificación de logs de HF/Actions, no auditoría independiente; validar integridad/safety al instalar y correr modelos.",
-    "T0.4 cierre restringido autoverificado, sin auditor independiente; evidencia C1/P01 solve sin scorer externo. Validación científica y repetición pendientes T0.5."
+    "T0.4 cierre restringido autoverificado, sin auditor independiente; evidencia C1/P01 solve sin scorer externo. Validación científica y repetición pendientes T0.5.",
+    "T0.5 autoverificación no independiente: scorer source intacto pero Inspect runtime0.3.258 distinto del scorer frozen0.3.225; logs privados efímeros, sin revisión independiente de trayectorias, N=2 mismo sample, falta generalización científica. Revisar en auditoría H0/T0.6."
   ],
   "blockers": [
-    "C2 SmolAgents: sandbox build timeout run44443363940, no compatibilidad conjunta comprobada; diferir comparador hasta gate específico.",
-    "C3 EvoScientist: no adaptador común AstaBench/scorer observado; no incluir en comparación de T0.5.",
-    "P04–P07: IDs aún no congelados; P06/P07 jueces GPT-4o/Claude pago no autorizado; no usar ni redistribuir datos HF gated.",
-    "T0.5 requiere probar scorer DS1000 congelado0.5.5/Inspect0.3.225 con log C1 solver0.5.3/Inspect0.3.203; compatibilidad DS1000 y retención legal de logs todavía desconocidas."
+    "T0.5/T0.6 cobertura: únicamente 1 ID DS1000 de programación evaluado en C1 con modelo 0.6B, dos scores I/I; no demostrado ciclo de investigación científica autónoma ni efectos H1/H2/H3.",
+    "T0.5 trazabilidad: JSON completos de muestra/trayectoria no persistidos por protección de datos y repo público; hashes y stdout CI disponibles, pero auditoría independiente de trayectoria no posible a posteriori. Seeds/temperatura no fijados, costo CPU/energía no imputado.",
+    "T0.5 scorer congelado: dos intentos de scoring separado Asta0.5.5/Inspect0.3.225 fallaron sin puntuación (último LookupError registry); ruta válida de scoring inline usa mismo código scorer original, pero Inspect0.3.258, desviación documentada sin equivalencia binaria.",
+    "H0 resto de pilotos: C2 SmolAgents Docker build timeout, C3 EvoScientist sin adaptador; P04–P07 sin IDs fijados; P06/P07 jueces remotos GPT-4o/Claude fuera de presupuesto pago0, dataset HF gated no redistribuible."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -49,7 +51,8 @@
     "D-0008: aceptar diseño exploratorio de siete slots de piloto H0; DS1000 validación IDs 513/974/18 fijados, P04–P07 IDs/gates pendientes; AstaBench dataset gated sin redistribución y P06/P07 scorers LLM remotos. Próxima etapa T0.4 comprueba viabilidad, no ejecutar sin acceso.",
     "D-0009: T0.4 NO completada. Preflight negativo en runtime efímero del asistente (4GiB, 4 vCPU, Docker ausente, sin CUDA/Inspect/Asta), dataset AstaBench HF gated, modelos/scorers no autorizados; no ir a T0.5. Esperar intervención para acceso legítimo, entorno compatible y presupuesto de modelos.",
     "D-0010: reanudación parcial T0.4; HF_TOKEN presente y HEAD autenticado 200 a archivo gated (run 44440776634); runner GitHub Actions público gratuito con Docker y ~16 GB/4CPU (run 44440919736). Gates HF/HW iniciales superados, sin instalar paquetes o ejecutar agentes. T0.4 no completada; continuar ruta gratis, no T0.5.",
-    "D-0011: T0.4 aceptada SOLO viabilidad de C1 ReAct/P01, gracias a SDK OpenAI2.30.0 pin en entorno original y Qwen3 0.6B local en GitHub Actions; DS1000 validation513 no-score success con SHA log. C2/C3/P04-P07 no demostrados y fuera del alcance de T0.5 inicial; ninguna conclusión científica."
+    "D-0011: T0.4 aceptada SOLO viabilidad de C1 ReAct/P01, gracias a SDK OpenAI2.30.0 pin en entorno original y Qwen3 0.6B local en GitHub Actions; DS1000 validation513 no-score success con SHA log. C2/C3/P04-P07 no demostrados y fuera del alcance de T0.5 inicial; ninguna conclusión científica.",
+    "D-0012: T0.5 aceptada ÚNICAMENTE como calibración exploratoria de scorer original en C1/P01, no como autonomía científica ni equivalencia del entorno frozen. Same workflow 44459486187 attempts 1/2 ds1000 validation513 score I/I (incorrecto), status success sin error; hashes c41ab50... y d3d7819...; código AstaBench0.5.5 submódulo scorer original, Inspect0.3.258 inline. Scorer separado Inspect0.3.225 falló LookupError/registry. T0.6 auditar H0 antes de H1/H2."
   ],
   "evidence_refs": [
     {
@@ -99,6 +102,10 @@
     {
       "path": "evidence/T0.4-reconciliation-and-c1-2026-11-19.md",
       "status": "17 commits CI reconciliados; registro de negativos, SDK pin y C1 DS1000 validation513 no-score success run44451780572, log sha256; no score ni resultados científicos"
+    },
+    {
+      "path": "evidence/T0.5-C1-DS1000-scoring-2026-11-19.md",
+      "status": "Dos ejecuciones del mismo workflow run44459486187: C1/P01 DS1000 validation513 ds1000_scorer I/I sin errores, hashes log, versiones y tiempos; scoreboard negativo; scoring separado0.3.225 falló registry; full private JSON no retenidos."
     }
   ],
   "audit_refs": [
@@ -112,13 +119,14 @@
     "audits/T0.4-BLOCKED-2026-11-17.md",
     "audits/T0.4-RECHECK-2026-11-18.md",
     "audits/T0.4-C1-RECONCILIATION-2026-11-19.md",
-    "audits/T0.4-FEASIBILITY-GATE-2026-11-19.md"
+    "audits/T0.4-FEASIBILITY-GATE-2026-11-19.md",
+    "audits/T0.5-C1-DS1000-2026-11-19.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "c9647cd4fa2bed08369aeb94ac25b5e9c3144b22"
+    "commit": "491c3126b40826aa5ea0f1c75c552d19761e33cf"
   },
-  "last_confirmed_activity": "T0.4 closed restricted C1/P01: Qwen3 local CPU, ReAct original repaired by openai==2.30.0, DS1000 validation513 solve success no-score run44451780572 (SHA log fc6978...). Persisted evidence/audit/log reread. No scored scientific C1 result; next T0.5 original scorer.",
+  "last_confirmed_activity": "T0.5 dos runs del mismo workflow C1/P01 DS1000 validation513 con original ds1000_scorer (Asta0.5.5, Inspect0.3.258 inline) dieron I/I incorrectos, status success sin errores; segundos hash de raw logs registrados. scoring separado frozen0.3.225 falla registry; logs privados efímeros, no independencia ni autonomía científica. Evidencia, auditoría, METHOD/PLAN/RESEARCH/LOG persistidos y re-leídos. Próxima T0.6 auditoría H0, objetivo intacto.",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
