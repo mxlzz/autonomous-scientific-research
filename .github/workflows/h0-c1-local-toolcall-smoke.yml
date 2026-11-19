@@ -43,11 +43,15 @@ jobs:
           test "$(git -C "$RUNNER_TEMP/c1-source" rev-parse HEAD)" = 2d426deac51ad74381319bcfd77066c6e222ba30
           "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/c1-env"
           timeout 150 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/c1-env/bin/python" "$RUNNER_TEMP/c1-source/solvers/react" > "$RUNNER_TEMP/install.log" 2>&1
+          # Inspect 0.3.203 passes a timeout object to OpenAI SDK; OpenAI 3.x can break it.
+          timeout 90 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/c1-env/bin/python" "openai==2.30.0" >> "$RUNNER_TEMP/install.log" 2>&1
           "$RUNNER_TEMP/c1-env/bin/python" - <<'PY'
           import importlib.metadata as m
           assert m.version("astabench")=="0.5.3"
           assert m.version("inspect_ai")=="0.3.203"
+          assert m.version("openai")=="2.30.0"
           print("C1_PINNED=true")
+          print("C1_OPENAI_SDK="+m.version("openai"))
           PY
       - name: Attempt original ReAct native tool calling on public arithmetic_demo sample
         shell: bash
