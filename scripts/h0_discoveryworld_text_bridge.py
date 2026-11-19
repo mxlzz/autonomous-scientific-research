@@ -180,10 +180,12 @@ def run():
         stats["completion_tokens"] += tokens_out
         try:
             action = parse_action(raw, known)
-        except (ValueError, json.JSONDecodeError):
+        except (ValueError, json.JSONDecodeError) as exc:
             stats["invalid_actions"] += 1
             invalid_in_row += 1
-            reasons.append("invalid_model_action")
+            allowed_failure_classes = {"output_size_or_type","duplicate_json_field","not_single_allowed_action_object","action_denied","action_argument_fields","direction_denied","uuid_denied"}
+            category = "invalid_json_syntax" if isinstance(exc, json.JSONDecodeError) else (str(exc) if str(exc) in allowed_failure_classes else "invalid_json_or_action_unknown")
+            reasons.append("invalid_model_action:" + category)
             if invalid_in_row >= 2:
                 reasons.append("two_invalid_in_row")
                 break
