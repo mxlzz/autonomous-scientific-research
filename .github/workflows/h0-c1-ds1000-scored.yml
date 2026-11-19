@@ -116,11 +116,24 @@ jobs:
           echo "T05_SCORE_START_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           cd "$RUNNER_TEMP/t05-asta"
           set +e
-          timeout 320 "$HOME/.local/bin/uv" run --project solvers/scorer --frozen -- inspect score --scorer inspect_evals/ds1000/ds1000.py@ds1000_scorer --overwrite "$file" > "$RUNNER_TEMP/t05-score-private.log" 2>&1
+          test -f inspect_evals/src/inspect_evals/ds1000/ds1000.py
+          echo "T05_SCORER_SOURCE_PATH_EXISTS=true"
+          timeout 320 "$HOME/.local/bin/uv" run --project solvers/scorer --frozen -- inspect score --scorer inspect_evals/src/inspect_evals/ds1000/ds1000.py@ds1000_scorer --overwrite "$file" > "$RUNNER_TEMP/t05-score-private.log" 2>&1
           rc=$?
           set -e
           echo "T05_SCORE_CLI_RC=$rc"
           echo "T05_SCORE_END_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Only diagnostic categories and SHA of private failure log may reach public stdout.
+          RC="$rc" python3 - <<'PY'
+          import hashlib,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t05-score-private.log"
+          data=p.read_bytes() if p.exists() else b""
+          print("T05_SCORE_DIAGNOSTIC_SHA256="+hashlib.sha256(data).hexdigest())
+          if os.environ["RC"]!="0":
+              safe=["FileNotFoundError","ModuleNotFoundError","LookupError","ImportError","DockerError","PermissionError","SandboxError","NotFoundError","TimeoutError","ConnectionError","AttributeError","TypeError","ValueError","No such file or directory","registry","traceback"]
+              txt=data.decode("utf-8","replace")
+              print("T05_SCORE_FAILURE_CATEGORIES="+(",".join(x for x in safe if x.lower() in txt.lower()) or "unclassified"))
+          PY
           RC="$rc" "$HOME/.local/bin/uv" run --project solvers/scorer --frozen -- python - "$file" <<'PY'
           import os,sys,json,hashlib,pathlib
           f=pathlib.Path(sys.argv[1]); raw=f.read_bytes();d=json.loads(raw)
