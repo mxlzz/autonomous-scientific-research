@@ -160,10 +160,10 @@ def run():
     known = set(api.listKnownActions(limited=False))
     if not set(ACTIONS).issubset(known):
         raise RuntimeError("upstream_action_schema_changed")
-    stats = {"llm_calls": 0, "valid_actions": 0, "invalid_actions": 0, "prompt_tokens": 0, "completion_tokens": 0}
+    stats = {"llm_calls": 0, "action_attempts": 0, "valid_actions": 0, "invalid_actions": 0, "prompt_tokens": 0, "completion_tokens": 0}
     invalid_in_row = 0
     reasons = []
-    while stats["valid_actions"] < MAX_ACTIONS and stats["llm_calls"] < MAX_CALLS:
+    while stats["action_attempts"] < MAX_ACTIONS and stats["llm_calls"] < MAX_CALLS:
         if time.monotonic() - start > 240:
             reasons.append("timeout_budget")
             break
@@ -189,6 +189,7 @@ def run():
                 break
             continue
         invalid_in_row = 0
+        stats["action_attempts"] += 1
         result = api.performAgentAction(agentIdx=0, actionJSON=action)
         api.tick()
         # Action valid in schema, but world may legitimately reject it. Distinguish.
