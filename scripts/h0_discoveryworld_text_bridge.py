@@ -175,7 +175,7 @@ def run():
     known = set(api.listKnownActions(limited=False))
     if not set(ACTIONS).issubset(known):
         raise RuntimeError("upstream_action_schema_changed")
-    stats = {"llm_calls": 0, "action_attempts": 0, "valid_actions": 0, "invalid_actions": 0, "prompt_tokens": 0, "completion_tokens": 0}
+    stats = {"llm_calls": 0, "action_attempts": 0, "valid_actions": 0, "invalid_actions": 0, "prompt_tokens": 0, "completion_tokens": 0, "action_types": {}, "uuid_arg_not_visible": 0}
     invalid_in_row = 0
     reasons = []
     while stats["action_attempts"] < MAX_ACTIONS and stats["llm_calls"] < MAX_CALLS:
@@ -207,6 +207,25 @@ def run():
             continue
         invalid_in_row = 0
         stats["action_attempts"] += 1
+        name = action["action"]
+        stats["action_types"][name] = stats["action_types"].get(name, 0) + 1
+        # Only classify UUID visibility; do not log UUIDs or object descriptions.
+        visible_ids = set()
+        def ids_in_obj(value):
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    if k == "uuid" and type(v) is int:
+                        visible_ids.add(v)
+                    else:
+                        ids_in_obj(v)
+            elif isinstance(value, (tuple, list)):
+                for v in value:
+                    ids_in_obj(v)
+        for key in ("accessibleEnvironmentObjects", "inventoryObjects", "nearbyObjects"):
+            ids_in_obj(obs.get("ui", {}).get(key))
+        for ix, kind in enumerate(ACTIONS[name]):
+            if kind == "uuid" and action["arg" + str(ix+1)] not in visible_ids:
+                stats["uuid_arg_not_visible"] += 1
         result = api.performAgentAction(agentIdx=0, actionJSON=action)
         api.tick()
         # Action valid in schema, but world may legitimately reject it. Distinguish.
