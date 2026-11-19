@@ -35,3 +35,6 @@ Sin autorización explícita, gasto pagado máximo **cero**. No asumir cuotas gr
 
 ## 11. Decisiones de hito
 Al cierre auditar criterio, coherencia con OBJECTIVE.md, representatividad, fuentes, negatividad y costos. Resultado obligatorio: continuar, corregir, replantear o retroceder, con motivos y enlace al registro en audits/. Sin auditoría satisfactoria no se habilita el hito siguiente.
+## 12. Política documental de trazas T0.7
+
+[Decisión D-0014 / matriz de opciones](evidence/T0.7-provenance-trace-retention-2026-11-19.md): registrar públicamente sólo manifiestos allowlist con fuente/revisión/licencia/split, comandos, modelo/scorer/versiones, hashes, score, costos y errores sanitizados. **No subir raw JSON, prompt, target, rúbrica, trazas de herramientas ni tokens al repo o artifacts de Actions públicos** salvo que un análisis explícito por campo/fuente permita esa difusión. Reproducción por auditor con acceso propio cuando dataset gated; evidencia histórica no conservada ≠ trazabilidad completa. Si la tarea científica elegida exige auditar trayectorias exactas, definir almacenamiento/autorización antes de ejecutarla. Para datos abiertamente licenciados, aun así inspeccionar secretos/datos personales/terceros antes de compartir outputs. Auditoría independiente pendiente.
