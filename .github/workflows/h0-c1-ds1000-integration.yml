@@ -70,7 +70,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/c1-eval"
           cd "$RUNNER_TEMP/c1-src"
           set +e
-          timeout 590 "$RUNNER_TEMP/c1-venv/bin/inspect" eval astabench/ds1000_validation --solver agent_baselines/solvers/react/basic_agent.py@instantiated_basic_agent --model ollama/qwen3:0.6b --sample-id 513 --max-samples 1 --log-format json --no-score --log-dir "$RUNNER_TEMP/c1-eval" -S max_steps=3 -S with_search_tools=0 -S with_table_editor=0 -S with_report_editor=0 -S with_thinking_tool=0 > "$RUNNER_TEMP/c1-eval-output.log" 2>&1
+          timeout 590 "$RUNNER_TEMP/c1-venv/bin/inspect" eval astabench/ds1000_validation --solver agent_baselines/solvers/react/basic_agent.py@instantiated_basic_agent --model ollama/qwen3:0.6b --sample-id 513 --max-samples 1 --log-format json --no-score --log-dir "$RUNNER_TEMP/c1-eval" -S max_steps=8 -S with_search_tools=0 -S with_table_editor=0 -S with_report_editor=0 -S with_thinking_tool=0 > "$RUNNER_TEMP/c1-eval-output.log" 2>&1
           rc=$?
           set -e
           echo C1_DS1000_EVAL_CLI_RC="$rc"
@@ -91,6 +91,12 @@ jobs:
           if samples:
               print("C1_EVAL_SAMPLE_ID="+str(samples[0].get("id")))
               print("C1_EVAL_SAMPLE_ERROR="+str(bool(samples[0].get("error"))).lower())
+              error=samples[0].get("error")
+              if isinstance(error,dict):
+                  # Never print message/traceback: can include restricted prompt/target.
+                  print("C1_EVAL_ERROR_CLASS="+str(error.get("type","UNKNOWN"))[:100])
+              elif error:
+                  print("C1_EVAL_ERROR_CLASS=nonstructured_error")
           success=d.get("status")=="success" and len(samples)==1 and str(samples[0].get("id"))=="513" and not samples[0].get("error")
           print("C1_DS1000_TECHNICAL_SUCCESS="+str(success).lower())
           if not success: raise SystemExit(21)
