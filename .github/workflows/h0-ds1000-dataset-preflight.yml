@@ -21,6 +21,9 @@ jobs:
           git -C "$RUNNER_TEMP/asta-bench" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
           git -C "$RUNNER_TEMP/asta-bench" checkout -q --detach FETCH_HEAD
           test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          git -C "$RUNNER_TEMP/asta-bench" submodule update --init --recursive --depth 1
+          test "$(git -C "$RUNNER_TEMP/asta-bench/inspect_evals" rev-parse HEAD)" = c2bec9ebee7a5995512bf5ff67a2e82afe4d12e1
+          echo INSPECT_EVALS_SUBMODULE_SHA=c2bec9ebee7a5995512bf5ff67a2e82afe4d12e1
           "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/asta"
           timeout 180 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/asta/bin/python" "$RUNNER_TEMP/asta-bench" > "$RUNNER_TEMP/install.log" 2>&1
           "$RUNNER_TEMP/asta/bin/python" -c 'import importlib.metadata as m; print("ASTABENCH_VERSION="+m.version("astabench")); print("INSPECT_VERSION="+m.version("inspect_ai"))'
@@ -44,5 +47,6 @@ jobs:
               print("DS1000_TASK_SANDBOX_CONFIGURED=" + str(bool(task.sandbox)).lower())
           except Exception as error:
               print("DS1000_LOAD_ERROR_CLASS=" + type(error).__name__)
+              print("DS1000_LOAD_ERROR_MODULE=" + str(getattr(error, "name", "none")))
               sys.exit(25)
           PY
