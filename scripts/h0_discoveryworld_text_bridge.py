@@ -35,7 +35,7 @@ ACTIONS = {
 }
 DIRECTIONS = {"north", "east", "south", "west"}
 SCORE_KEYS = {"scoreNormalized", "scoreCard", "maxScore", "criticalQuestions", "criticalHypotheses"}
-UI_ALLOWED = {"taskProgress", "agentLocation", "accessibleEnvironmentObjects", "inventoryObjects", "nearbyObjects", "dialog_box"}
+UI_ALLOWED = {"taskProgress", "agentLocation", "accessibleEnvironmentObjects", "inventoryObjects", "nearbyObjects", "dialog_box", "lastActionMessage"}
 
 
 def reject_duplicates(pairs):
@@ -67,6 +67,31 @@ def parse_action(text, known_names):
         if kind == "uuid" and (type(value) is not int or value < 0):
             raise ValueError("uuid_denied")
     return obj
+
+
+def actionable_ids(ui):
+    # Only objects the original UI declares accessible/inventory, not all nearby objects.
+    ids = set()
+    def visit(obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == "uuid" and type(v) is int:
+                    ids.add(v)
+                else:
+                    visit(v)
+        elif isinstance(obj, (list, tuple)):
+            for v in obj:
+                visit(v)
+    for key in ("accessibleEnvironmentObjects", "inventoryObjects"):
+        visit(ui.get(key))
+    return ids
+
+
+def actionable_target(action, ui):
+    kinds = ACTIONS[action["action"]]
+    ids = actionable_ids(ui)
+    return all(action["arg" + str(i + 1)] in ids
+               for i, kind in enumerate(kinds) if kind == "uuid")
 
 
 def observation_for_model(obs):
@@ -121,6 +146,13 @@ def self_test():
         pass
     else:
         raise AssertionError("hidden_score_field_was_accepted")
+    example_ui = {"accessibleEnvironmentObjects": [{"uuid": 12}], "inventoryObjects": [{"uuid": 44}],
+                  "nearbyObjects": [{"uuid": 999}]}
+    assert actionable_target({"action": "PICKUP", "arg1": 12}, example_ui)
+    assert actionable_target({"action": "USE", "arg1": 44, "arg2": 12}, example_ui)
+    assert not actionable_target({"action": "PICKUP", "arg1": 999}, example_ui)
+    assert not actionable_target({"action": "PICKUP", "arg1": 777}, example_ui)
+    print("T011_ACTIONABLE_ID_TEST=pass")
     print("T011_NEGATIVE_ACTION_TESTS=" + str(len(negatives)))
     print("T011_POSITIVE_ACTION_TESTS=" + str(len(positives)))
     print("T011_ORACLE_FIELD_TEST=pass")
@@ -177,6 +209,7 @@ def run():
         raise RuntimeError("upstream_action_schema_changed")
     stats = {"llm_calls": 0, "action_attempts": 0, "valid_actions": 0, "invalid_actions": 0, "prompt_tokens": 0, "completion_tokens": 0, "action_types": {}, "uuid_arg_not_visible": 0}
     invalid_in_row = 0
+    last_feedback = ""
     reasons = []
     while stats["action_attempts"] < MAX_ACTIONS and stats["llm_calls"] < MAX_CALLS:
         if time.monotonic() - start > 240:
@@ -187,8 +220,13 @@ def run():
         prompt = ("Scenario: Plant Nutrients, Normal difficulty. Discover useful evidence through permitted observations and experiments. "
                   "You have no access to the evaluator. Allowed actions (args UUID are integers): "
                   + json.dumps(ACTIONS, sort_keys=True) + ". World observation: " + projected)
+        prompt += (" For PICKUP, READ, OPEN, TALK and USE choose UUIDs ONLY from accessibleEnvironmentObjects or inventoryObjects. "
+                   "The nearbyObjects list includes out-of-reach objects. A failed action is not a successful experiment. "
+                   "Use ROTATE_DIRECTION or MOVE_DIRECTION to explore if there are no usable objects.")
+        if last_feedback:
+            prompt += " Previous action feedback: " + last_feedback
         if invalid_in_row:
-            prompt += " Previous JSON action was invalid; choose a valid JSON action from allowed set."
+            prompt += " Your previous action was invalid or target unavailable; choose a DIFFERENT allowed action and target."
         stats["llm_calls"] += 1
         raw, tokens_in, tokens_out = ask_local_model(prompt)
         stats["prompt_tokens"] += tokens_in
@@ -201,6 +239,15 @@ def run():
             allowed_failure_classes = {"output_size_or_type","duplicate_json_field","not_single_allowed_action_object","action_denied","action_argument_fields","direction_denied","uuid_denied"}
             category = "invalid_json_syntax" if isinstance(exc, json.JSONDecodeError) else (str(exc) if str(exc) in allowed_failure_classes else "invalid_json_or_action_unknown")
             reasons.append("invalid_model_action:" + category)
+            if invalid_in_row >= 2:
+                reasons.append("two_invalid_in_row")
+                break
+            continue
+        if not actionable_target(action, obs["ui"]):
+            stats["invalid_actions"] += 1
+            invalid_in_row += 1
+            reasons.append("target_not_actionable")
+            last_feedback = "Target was not accessible. Do not repeat this action; navigate or select accessible objects."
             if invalid_in_row >= 2:
                 reasons.append("two_invalid_in_row")
                 break
@@ -231,8 +278,10 @@ def run():
         # Action valid in schema, but world may legitimately reject it. Distinguish.
         if result.get("success") is True:
             stats["valid_actions"] += 1
+            last_feedback = "Last action succeeded."
         else:
             stats["invalid_actions"] += 1
+            last_feedback = "Last " + name + " action was rejected by the world. Choose another action or target."
             reasons.append("world_action_unsuccessful")
             # Count world actions towards budget (never unlimited retries).
             if stats["llm_calls"] >= MAX_CALLS:
