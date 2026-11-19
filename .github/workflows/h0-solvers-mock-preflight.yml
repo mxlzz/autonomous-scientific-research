@@ -69,7 +69,10 @@ jobs:
           if [ ! -x "$RUNNER_TEMP/c2/bin/inspect" ]; then echo C2_SMOKE=skipped_not_installed; exit 0; fi
           cd "$RUNNER_TEMP/agent-baselines"
           set +e
-          timeout 145 "$RUNNER_TEMP/c2/bin/inspect" eval astabench/arithmetic_demo --solver agent_baselines/solvers/smolagents/agent.py@smolagents_coder --model mockllm/model --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/c2-logs" --sandbox docker:agent_baselines/solvers/sandbox_util/sandbox_compose.yaml -S max_steps=2 > "$RUNNER_TEMP/c2-smoke.log" 2>&1
+          compose_path=$("$RUNNER_TEMP/c2/bin/python" -c 'from importlib.resources import files; print(files("astabench.util.sandbox") / "sandbox_compose.yaml")')
+          if [ ! -f "$compose_path" ]; then echo C2_SANDBOX_COMPOSE=missing; exit 0; fi
+          echo C2_SANDBOX_COMPOSE=from_pinned_astabench_distribution
+          timeout 210 "$RUNNER_TEMP/c2/bin/inspect" eval astabench/arithmetic_demo --solver agent_baselines/solvers/smolagents/agent.py@smolagents_coder --model mockllm/model --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/c2-logs" --sandbox "docker:$compose_path" -S max_steps=2 > "$RUNNER_TEMP/c2-smoke.log" 2>&1
           rc=$?
           set -e
           echo C2_MOCK_SMOKE_RC="$rc"
