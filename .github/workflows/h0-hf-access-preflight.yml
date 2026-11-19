@@ -1,0 +1,74 @@
+name: H0 - Hugging Face gated-data access preflight
+
+# Safe to run from the public repo: this performs HEAD only, never downloads or prints data.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-hf-access-preflight.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h0-hf-access-preflight
+  cancel-in-progress: true
+
+jobs:
+  access-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Verify secret presence and HEAD request without exposing the token
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          # Exact dataset revision already pinned in H0-PILOT-v0.1.
+          url = (
+              "https://huggingface.co/datasets/allenai/asta-bench/resolve/"
+              "a600dc767f850385f4664772e3ba7a7f8be17d5e/"
+              "tasks/discoverybench/DBDev_w_hypothesis.json"
+          )
+          token = os.environ.get("HF_TOKEN", "")
+          print("HF_TOKEN_PRESENT=" + str(bool(token)).lower())
+          if not token:
+              print("HF_ACCESS_RESULT=blocked_missing_secret")
+              sys.exit(10)
+
+          # HEAD requests only: no samples, targets, or secrets are printed/downloaded.
+          req = urllib.request.Request(
+              url,
+              headers={"Authorization": "Bearer " + token},
+              method="HEAD",
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  print("HF_ACCESS_RESULT=" + (
+                      "confirmed" if response.status == 200 else "unexpected_http_status"
+                  ))
+                  if response.status != 200:
+                      sys.exit(11)
+          except urllib.error.HTTPError as error:
+              status = error.code
+              if status in (401, 403):
+                  reason = "unauthorized_or_terms_not_accepted"
+              elif status == 404:
+                  reason = "revision_or_file_not_found"
+              else:
+                  reason = "remote_http_error"
+              print("HF_ACCESS_RESULT=" + reason)
+              print("HF_HTTP_STATUS=" + str(status))
+              sys.exit(12)
+          except Exception as error:
+              print("HF_ACCESS_RESULT=network_or_runtime_error")
+              print("ERROR_CLASS=" + type(error).__name__)
+              sys.exit(13)
+          PY
