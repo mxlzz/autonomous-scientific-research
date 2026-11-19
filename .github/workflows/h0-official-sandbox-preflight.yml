@@ -1,0 +1,44 @@
+name: H0 official AstaBench sandbox build preflight
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-official-sandbox-preflight.yml
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Fetch exact AstaBench source without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q "$RUNNER_TEMP/asta-bench"
+          git -C "$RUNNER_TEMP/asta-bench" fetch -q --depth 1 https://github.com/allenai/asta-bench.git b0f436711e052cec1f216c296e804c70e4ec529b
+          git -C "$RUNNER_TEMP/asta-bench" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/asta-bench" rev-parse HEAD)" = b0f436711e052cec1f216c296e804c70e4ec529b
+          echo ASTA_SOURCE_SHA=b0f436711e052cec1f216c296e804c70e4ec529b
+      - name: Attempt bounded build of unmodified official sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo FREE_DISK_BEFORE_KB=$(df -Pk / | awk 'NR==2 {print $4}')
+          set +e
+          timeout 490 docker build --progress plain -t h0-astabench-sandbox:preflight -f "$RUNNER_TEMP/asta-bench/astabench/util/sandbox/Dockerfile" "$RUNNER_TEMP/asta-bench/astabench/util/sandbox" > "$RUNNER_TEMP/sandbox-build.log" 2>&1
+          rc=$?
+          set -e
+          echo ASTABENCH_OFFICIAL_SANDBOX_BUILD_EXIT="$rc"
+          tail -n 28 "$RUNNER_TEMP/sandbox-build.log"
+          echo FREE_DISK_AFTER_KB=$(df -Pk / | awk 'NR==2 {print $4}')
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          docker image inspect --format 'OFFICIAL_SANDBOX_IMAGE_ID={{.Id}}' h0-astabench-sandbox:preflight
+          docker image inspect --format 'OFFICIAL_SANDBOX_IMAGE_BYTES={{.Size}}' h0-astabench-sandbox:preflight
+          echo ASTABENCH_OFFICIAL_SANDBOX_BUILD_VALID=true
+      - name: Inspect runtime libraries inside the built sandbox without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 40 docker run --rm --network none --cpus=2 --memory=8g h0-astabench-sandbox:preflight python -c 'import torch, numpy, pandas; print("SANDBOX_PYTHON_IMPORTS=pass");print("SANDBOX_CUDA="+str(torch.cuda.is_available()))'
+          echo OFFICIAL_SANDBOX_RUNTIME_IMPORTS=pass
