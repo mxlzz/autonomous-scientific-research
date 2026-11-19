@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "project": "mxlzz/autonomous-scientific-research",
-  "date": "2026-11-18",
+  "date": "2026-11-19",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.4",
-  "task_title": "T0.4 — preflight HF/Actions confirmado parcialmente; compatibilidad y modelo gratuito pendientes",
-  "task_expected_output": "Verificar entorno reproducible de benchmark, Python3.11/uv, compatibilidad de solvers/scorer con versiones fijadas, modelo sin costo verificable, acceso lícito a los slots y presupuesto por intento antes de declarar factibilidad; no reproducir todavía resultados científicos.",
-  "task_acceptance": "T0.4 sólo podrá completarse con reproducibilidad de un entorno de ejecución aislado y autorizado, licencias y datos accesibles, scorer/solvers compatibles, opción de modelo de gasto cero probada o presupuesto explícitamente autorizado, límites de memoria/CPU y un smoke test seguro que no publique datos gated. Los dos runs de preflight no alcanzan ese criterio.",
-  "next_action": "Al recibir «Continuá», releer HEAD/STATE y canónicos. Continuar la misma unidad T0.4 (NO T0.5): aprovechar GitHub Actions público gratuito y Docker verificados, preparar Python3.11/uv en job efímero sin secrets, auditar e intentar smoke test de AstaBench sin acceso a datos gated ni llamadas de pago; verificar compatibilidad C1/C2/scorer en entornos aislados y explorar modelo open-source local CPU con licencia apta. Registrar tiempos, recursos, versiones, costos cero. Si necesita clave API paga o hardware adicional, detener y solicitar autorización, nunca inventar resultados. Mantener HF_TOKEN secreto, no imprimir datos gated/gold; guardar evidencia/LOG/auditoría, reread, STATE al final.",
+  "current_task": "T0.5",
+  "task_title": "T0.5 — reproducir y puntuar resultado DS1000 validation513 con C1 ReAct, scorer original fijo",
+  "task_expected_output": "Ejecución de C1/P01 con solver ReAct@2d426de, AstaBench solve0.5.3/Inspect0.3.203/OpenAI SDK2.30.0 local Qwen3 0.6B; scorer oficial AstaBench0.5.5/Inspect0.3.225 y submódulo DS1000@c2bec9. Guardar manifiesto, comandos, hashes y resultados sin distribuir datos gated; evaluar una repetición/resultado de referencia, costos y fallos.",
+  "task_acceptance": "Comprobar puntuación de 1 sample validación ID513 con scorer sin modificar en entorno separado o documentar la incompatibilidad real; registrar logs y hash, salida de score C/I, fuente/dataset/seed/modelo, comandos y tiempo/costos, comparación limitada con baseline generate sin atribuir causalidad. No proclamar reproducción científica completa si no hay persistencia legal, replica suficiente o validación; no usar test ni API paga.",
+  "next_action": "Al recibir «Continuá»: releer HEAD y canónicos; ejecutar T0.5 únicamente sobre C1/P01, log de solve separado --no-score, instalar scorer AstaBench0.5.5 Inspect0.3.225 y usar EXACTO ds1000_scorer original de UKGovernmentBEIS/inspect_evals@c2bec9eb; comprobar que scorer puede leer y puntuar log C1 y que sandbox original está disponible. Proteger datos privados: no publicar prompts, outputs ni targets (repo público), sólo hashes, IDs, scores permitidos y fallos. Si falla, conservar negativo y bloquear sin cambiar benchmark. Gasto pago 0.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -18,7 +18,8 @@
     "T0.1.4",
     "T0.1",
     "T0.2",
-    "T0.3"
+    "T0.3",
+    "T0.4"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -28,13 +29,14 @@
     "T0.2: autoverificación documental realizada, auditoría independiente de selección no ejecutada; revisar en cierre de H0",
     "T0.3 piloto de 7 slots autoverificado, sin auditor independiente; 4 IDs de datasets no congelados; costoso/gated para P06/P07",
     "T0.4 preflight bloqueado, autoverificación no independiente registrada; auditoría de seguridad y reproducción pendientes al reanudar en entorno autorizado",
-    "T0.4 recheck 2026-11-18 autoverificación de logs de HF/Actions, no auditoría independiente; validar integridad/safety al instalar y correr modelos."
+    "T0.4 recheck 2026-11-18 autoverificación de logs de HF/Actions, no auditoría independiente; validar integridad/safety al instalar y correr modelos.",
+    "T0.4 cierre restringido autoverificado, sin auditor independiente; evidencia C1/P01 solve sin scorer externo. Validación científica y repetición pendientes T0.5."
   ],
   "blockers": [
-    "COMPATIBILIDAD/T0.4 pendiente: solver C1 pin astabench 0.5.3/Inspect0.3.203, C2 pin astabench 0.3.1/Inspect0.3.114 y benchmark/scorer actual 0.5.5/0.3.225; no se ha instalado ni validado una salida/comparación común.",
-    "MODELO/T0.4 pendiente: no se ha seleccionado ni probado una ruta de inferencia gratuita (local CPU u otro proveedor legítimo). Ningún gasto pago está autorizado. GitHub Models retirado julio 2026.",
-    "JUECES Y MUESTRAS/T0.4 pendiente: P06/P07 requieren GPT-4o/Claude en scoring, fuera de presupuesto 0; IDs P04-P07 no congelados; sólo HEAD de un archivo gated comprobado. Mantener test oculto y no redistribuir dataset/logs restringidos.",
-    "C3/T0.4 pendiente: EvoScientist sin adaptador comprobado a mismos samples/herramientas/scorer; no atribuir causalidad mono vs multiagente."
+    "C2 SmolAgents: sandbox build timeout run44443363940, no compatibilidad conjunta comprobada; diferir comparador hasta gate específico.",
+    "C3 EvoScientist: no adaptador común AstaBench/scorer observado; no incluir en comparación de T0.5.",
+    "P04–P07: IDs aún no congelados; P06/P07 jueces GPT-4o/Claude pago no autorizado; no usar ni redistribuir datos HF gated.",
+    "T0.5 requiere probar scorer DS1000 congelado0.5.5/Inspect0.3.225 con log C1 solver0.5.3/Inspect0.3.203; compatibilidad DS1000 y retención legal de logs todavía desconocidas."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -46,7 +48,8 @@
     "D-0007: seleccionar para gate de viabilidad C1 Asta ReAct, C2 Asta SmolAgents coder, C3 EvoScientist condicional; AstaBench primario, ScienceAgentBench secundario condicionado. Asta-v0/E2E cache y modelos fijos invalidan control limpio, C1/C2 requieren reconciliar versiones; no hay reproducibilidad ni gasto aprobado.",
     "D-0008: aceptar diseño exploratorio de siete slots de piloto H0; DS1000 validación IDs 513/974/18 fijados, P04–P07 IDs/gates pendientes; AstaBench dataset gated sin redistribución y P06/P07 scorers LLM remotos. Próxima etapa T0.4 comprueba viabilidad, no ejecutar sin acceso.",
     "D-0009: T0.4 NO completada. Preflight negativo en runtime efímero del asistente (4GiB, 4 vCPU, Docker ausente, sin CUDA/Inspect/Asta), dataset AstaBench HF gated, modelos/scorers no autorizados; no ir a T0.5. Esperar intervención para acceso legítimo, entorno compatible y presupuesto de modelos.",
-    "D-0010: reanudación parcial T0.4; HF_TOKEN presente y HEAD autenticado 200 a archivo gated (run 44440776634); runner GitHub Actions público gratuito con Docker y ~16 GB/4CPU (run 44440919736). Gates HF/HW iniciales superados, sin instalar paquetes o ejecutar agentes. T0.4 no completada; continuar ruta gratis, no T0.5."
+    "D-0010: reanudación parcial T0.4; HF_TOKEN presente y HEAD autenticado 200 a archivo gated (run 44440776634); runner GitHub Actions público gratuito con Docker y ~16 GB/4CPU (run 44440919736). Gates HF/HW iniciales superados, sin instalar paquetes o ejecutar agentes. T0.4 no completada; continuar ruta gratis, no T0.5.",
+    "D-0011: T0.4 aceptada SOLO viabilidad de C1 ReAct/P01, gracias a SDK OpenAI2.30.0 pin en entorno original y Qwen3 0.6B local en GitHub Actions; DS1000 validation513 no-score success con SHA log. C2/C3/P04-P07 no demostrados y fuera del alcance de T0.5 inicial; ninguna conclusión científica."
   ],
   "evidence_refs": [
     {
@@ -92,6 +95,10 @@
     {
       "path": "evidence/T0.4-hf-and-actions-preflight-2026-11-18.md",
       "status": "HF_TOKEN + HTTP200 HEAD validado run 44440776634; runner GitHub Docker 4CPU ~16GB run 44440919736; no datos ni modelos ejecutados"
+    },
+    {
+      "path": "evidence/T0.4-reconciliation-and-c1-2026-11-19.md",
+      "status": "17 commits CI reconciliados; registro de negativos, SDK pin y C1 DS1000 validation513 no-score success run44451780572, log sha256; no score ni resultados científicos"
     }
   ],
   "audit_refs": [
@@ -103,13 +110,15 @@
     "audits/T0.2-CANDIDATE-SELECTION-2026-11-17.md",
     "audits/T0.3-PILOT-DESIGN-2026-11-17.md",
     "audits/T0.4-BLOCKED-2026-11-17.md",
-    "audits/T0.4-RECHECK-2026-11-18.md"
+    "audits/T0.4-RECHECK-2026-11-18.md",
+    "audits/T0.4-C1-RECONCILIATION-2026-11-19.md",
+    "audits/T0.4-FEASIBILITY-GATE-2026-11-19.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "b79303a40e60569ffdc4b69f699efb225fa74701"
+    "commit": "c9647cd4fa2bed08369aeb94ac25b5e9c3144b22"
   },
-  "last_confirmed_activity": "T0.4 reanudada: dos workflows públicos mínimos y seguros completados con éxito; secreto HF funcional para HEAD de archivo gated y runner Docker 4 vCPU/~16 GB confirmado; Python3.11/uv y solvers/scorers/modelo gratuito aún sin probar; cero gastos, cero datos privados descargados, sin resultados científicos.",
+  "last_confirmed_activity": "T0.4 closed restricted C1/P01: Qwen3 local CPU, ReAct original repaired by openai==2.30.0, DS1000 validation513 solve success no-score run44451780572 (SHA log fc6978...). Persisted evidence/audit/log reread. No scored scientific C1 result; next T0.5 original scorer.",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
