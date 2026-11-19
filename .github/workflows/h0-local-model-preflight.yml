@@ -1,0 +1,79 @@
+name: H0 local zero-API model inference preflight
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-local-model-preflight.yml
+permissions:
+  contents: read
+jobs:
+  cpu-inference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Start limited Ollama CPU container from versioned official image
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 210 docker pull ollama/ollama:0.40.16
+          docker image inspect --format 'OLLAMA_IMAGE_ID={{.Id}}' ollama/ollama:0.40.16
+          docker image inspect --format 'OLLAMA_REPO_DIGESTS={{json .RepoDigests}}' ollama/ollama:0.40.16
+          docker run -d --name h0-ollama --cpus=4 --memory=8g -p 127.0.0.1:11434:11434 ollama/ollama:0.40.16
+          for attempt in $(seq 1 25); do
+            if curl --silent --fail --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then
+              echo OLLAMA_LOCAL_SERVER_READY=true
+              exit 0
+            fi
+            sleep 1
+          done
+          echo OLLAMA_LOCAL_SERVER_READY=false
+          exit 11
+      - name: Download publicly licensed small Qwen model into isolated runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 230 docker exec h0-ollama ollama pull qwen3:0.6b
+          docker exec h0-ollama ollama list
+          echo OLLAMA_QWEN_PULL=complete
+      - name: Generate one simple local response without API credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import urllib.request
+          url = "http://127.0.0.1:11434"
+          payload = {
+              "model": "qwen3:0.6b",
+              "prompt": "What is 3 plus 4? Reply with the number only.",
+              "stream": False,
+              "think": False,
+              "options": {"num_predict": 32, "temperature": 0, "num_ctx": 2048},
+          }
+          request = urllib.request.Request(
+              url + "/api/generate",
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(request, timeout=110) as response:
+              answer = json.load(response)
+              print("LOCAL_MODEL_HTTP_STATUS=" + str(response.status))
+          print("LOCAL_MODEL_NAME=" + str(answer.get("model")))
+          print("LOCAL_MODEL_DONE=" + str(answer.get("done")))
+          print("LOCAL_MODEL_PREDICTION_CHARS=" + str(len(answer.get("response", ""))))
+          print("LOCAL_MODEL_EXACTLY_SEVEN=" + str(answer.get("response", "").strip() == "7"))
+          print("LOCAL_MODEL_GENERATED_TOKENS=" + str(answer.get("eval_count", "unknown")))
+          with urllib.request.urlopen(url + "/api/tags", timeout=10) as response:
+              models = json.load(response).get("models", [])
+          for item in models:
+              if item.get("name") == "qwen3:0.6b":
+                  print("LOCAL_MODEL_DIGEST=" + str(item.get("digest")))
+                  print("LOCAL_MODEL_SIZE_BYTES=" + str(item.get("size")))
+          PY
+      - name: Stop local runtime
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f h0-ollama >/dev/null 2>&1 || true
+          echo LOCAL_RUNTIME_STOPPED=true
