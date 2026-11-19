@@ -82,6 +82,12 @@ jobs:
                   match=[v for v in labels if v.lower() in detail.lower()]
                   print("C1_ARITHMETIC_ERROR_CATEGORIES="+(",".join(match) if match else "unclassified"))
                   print("C1_ARITHMETIC_ERROR_DETAIL_SHA256="+hashlib.sha256(detail.encode()).hexdigest())
+                  # Only PUBLIC arithmetic data and empty provider credentials exist in this job.
+                  # Restrict to exception's final line, not the traceback or generated content.
+                  raw_trace=str(e.get("traceback",""))
+                  last=(raw_trace.strip().splitlines()[-1] if raw_trace.strip() else str(e.get("message","")).strip().splitlines()[-1] if str(e.get("message","")).strip() else "")
+                  last="".join(ch for ch in last if ch.isprintable())[:350]
+                  print("C1_ARITHMETIC_EXCEPTION_LAST_LINE="+last)
               for k,v in (samples[0].get("scores") or {}).items():
                   print("C1_ARITHMETIC_SCORER="+str(k))
                   value=v.get("value") if isinstance(v,dict) else None
