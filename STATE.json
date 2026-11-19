@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "project": "mxlzz/autonomous-scientific-research",
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
-  "status": "blocked",
+  "status": "research_in_progress",
   "current_milestone": "H0",
   "current_task": "T0.4",
-  "task_title": "T0.4 — viabilidad del piloto H0: BLOQUEADA por entorno, acceso al dataset y modelo",
-  "task_expected_output": "Preflight técnico documentado y verificado, sin ejecución experimental; desbloquear accesos/permisos y entorno compatible, resolver dependencias/scorer C1/C2, presupuesto/modelos y cuatro sample IDs antes de completar T0.4.",
-  "task_acceptance": "Sólo se podrá marcar T0.4 completa después de verificar en un entorno autorizado Docker/Python y dataset accesible con términos aceptados, dependencias/scorer compatibles, límites CPU/GPU/API y costos aprobados/cero demostrados, y un camino seguro a prueba mínima. Preflight de esta sesión es negativo, documentado, pero no satisface viabilidad.",
-  "next_action": "BLOQUEO REAL: usuario debe aceptar por su cuenta términos HF https://huggingface.co/datasets/allenai/asta-bench (sin copiar tokens), habilitar un entorno legítimo con Docker/Python 3.11+ y RAM suficiente — este sandbox efímero tiene 4 GiB y carece de Docker — y autorizar modelo/ruta gratuita y límite de gasto si corresponde. Luego leer HEAD+STATE, reanudar y repetir T0.4; NO avanzar T0.5 ni pagar sin comprobar gates.",
+  "task_title": "T0.4 — preflight HF/Actions confirmado parcialmente; compatibilidad y modelo gratuito pendientes",
+  "task_expected_output": "Verificar entorno reproducible de benchmark, Python3.11/uv, compatibilidad de solvers/scorer con versiones fijadas, modelo sin costo verificable, acceso lícito a los slots y presupuesto por intento antes de declarar factibilidad; no reproducir todavía resultados científicos.",
+  "task_acceptance": "T0.4 sólo podrá completarse con reproducibilidad de un entorno de ejecución aislado y autorizado, licencias y datos accesibles, scorer/solvers compatibles, opción de modelo de gasto cero probada o presupuesto explícitamente autorizado, límites de memoria/CPU y un smoke test seguro que no publique datos gated. Los dos runs de preflight no alcanzan ese criterio.",
+  "next_action": "Al recibir «Continuá», releer HEAD/STATE y canónicos. Continuar la misma unidad T0.4 (NO T0.5): aprovechar GitHub Actions público gratuito y Docker verificados, preparar Python3.11/uv en job efímero sin secrets, auditar e intentar smoke test de AstaBench sin acceso a datos gated ni llamadas de pago; verificar compatibilidad C1/C2/scorer en entornos aislados y explorar modelo open-source local CPU con licencia apta. Registrar tiempos, recursos, versiones, costos cero. Si necesita clave API paga o hardware adicional, detener y solicitar autorización, nunca inventar resultados. Mantener HF_TOKEN secreto, no imprimir datos gated/gold; guardar evidencia/LOG/auditoría, reread, STATE al final.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -27,13 +27,14 @@
     "T0.1-COVERAGE-2026-11-17: auditoría independiente no realizada; cobertura aprobada únicamente por autoverificación, revisar al cierre de H0",
     "T0.2: autoverificación documental realizada, auditoría independiente de selección no ejecutada; revisar en cierre de H0",
     "T0.3 piloto de 7 slots autoverificado, sin auditor independiente; 4 IDs de datasets no congelados; costoso/gated para P06/P07",
-    "T0.4 preflight bloqueado, autoverificación no independiente registrada; auditoría de seguridad y reproducción pendientes al reanudar en entorno autorizado"
+    "T0.4 preflight bloqueado, autoverificación no independiente registrada; auditoría de seguridad y reproducción pendientes al reanudar en entorno autorizado",
+    "T0.4 recheck 2026-11-18 autoverificación de logs de HF/Actions, no auditoría independiente; validar integridad/safety al instalar y correr modelos."
   ],
   "blockers": [
-    "BLOCKED-G-DATA: AstaBench HF dataset gated requiere aceptación explícita por titular y prohibe redistribución; autorización/credenciales no verificadas. No descargar ni subir inputs/gold al repo público.",
-    "BLOCKED-G-HW: runtime efímero del asistente Linux/Python3.13.5/4GiB/4vCPU carece de Docker y GPU CUDA; no refleja hardware del usuario. C1/C2/score necesitan entorno aislado y compatibilidad verificable.",
-    "BLOCKED-G-MODEL: no hay modelo/ejecutor con condiciones de uso y presupuesto autorizados; DiscoveryBench GPT-4o y E2E Claude son jueces remotos de costo potencial; máximo pago autorizado 0.",
-    "BLOCKED-G-COMPAT: pines AstaBench/Inspect distintos para C1/C2/scorer, adaptador C3 no demostrado; 4 sample IDs P04–P07 no congelados hasta acceso legal. No se ha ejecutado ninguna línea base."
+    "COMPATIBILIDAD/T0.4 pendiente: solver C1 pin astabench 0.5.3/Inspect0.3.203, C2 pin astabench 0.3.1/Inspect0.3.114 y benchmark/scorer actual 0.5.5/0.3.225; no se ha instalado ni validado una salida/comparación común.",
+    "MODELO/T0.4 pendiente: no se ha seleccionado ni probado una ruta de inferencia gratuita (local CPU u otro proveedor legítimo). Ningún gasto pago está autorizado. GitHub Models retirado julio 2026.",
+    "JUECES Y MUESTRAS/T0.4 pendiente: P06/P07 requieren GPT-4o/Claude en scoring, fuera de presupuesto 0; IDs P04-P07 no congelados; sólo HEAD de un archivo gated comprobado. Mantener test oculto y no redistribuir dataset/logs restringidos.",
+    "C3/T0.4 pendiente: EvoScientist sin adaptador comprobado a mismos samples/herramientas/scorer; no atribuir causalidad mono vs multiagente."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -44,7 +45,8 @@
     "D-0006: T0.1 cobertura documental aprobada con 14 fuentes únicas R01–R14; R06–R08 evaluadores condicionales, R07 licencia raíz no identificada, R09 motor sin código público identificado; continuar T0.2, no cerrar H0 ni autorizar gasto.",
     "D-0007: seleccionar para gate de viabilidad C1 Asta ReAct, C2 Asta SmolAgents coder, C3 EvoScientist condicional; AstaBench primario, ScienceAgentBench secundario condicionado. Asta-v0/E2E cache y modelos fijos invalidan control limpio, C1/C2 requieren reconciliar versiones; no hay reproducibilidad ni gasto aprobado.",
     "D-0008: aceptar diseño exploratorio de siete slots de piloto H0; DS1000 validación IDs 513/974/18 fijados, P04–P07 IDs/gates pendientes; AstaBench dataset gated sin redistribución y P06/P07 scorers LLM remotos. Próxima etapa T0.4 comprueba viabilidad, no ejecutar sin acceso.",
-    "D-0009: T0.4 NO completada. Preflight negativo en runtime efímero del asistente (4GiB, 4 vCPU, Docker ausente, sin CUDA/Inspect/Asta), dataset AstaBench HF gated, modelos/scorers no autorizados; no ir a T0.5. Esperar intervención para acceso legítimo, entorno compatible y presupuesto de modelos."
+    "D-0009: T0.4 NO completada. Preflight negativo en runtime efímero del asistente (4GiB, 4 vCPU, Docker ausente, sin CUDA/Inspect/Asta), dataset AstaBench HF gated, modelos/scorers no autorizados; no ir a T0.5. Esperar intervención para acceso legítimo, entorno compatible y presupuesto de modelos.",
+    "D-0010: reanudación parcial T0.4; HF_TOKEN presente y HEAD autenticado 200 a archivo gated (run 44440776634); runner GitHub Actions público gratuito con Docker y ~16 GB/4CPU (run 44440919736). Gates HF/HW iniciales superados, sin instalar paquetes o ejecutar agentes. T0.4 no completada; continuar ruta gratis, no T0.5."
   ],
   "evidence_refs": [
     {
@@ -86,6 +88,10 @@
     {
       "path": "evidence/T0.4-environment-preflight-2026-11-17.md",
       "status": "Preflight técnico negativo 4GiB/no Docker/CUDA, comandos/outputs y licencias HF/scorer; T0.4 bloqueada, sin experimentos"
+    },
+    {
+      "path": "evidence/T0.4-hf-and-actions-preflight-2026-11-18.md",
+      "status": "HF_TOKEN + HTTP200 HEAD validado run 44440776634; runner GitHub Docker 4CPU ~16GB run 44440919736; no datos ni modelos ejecutados"
     }
   ],
   "audit_refs": [
@@ -96,13 +102,14 @@
     "audits/T0.1-COVERAGE-2026-11-17.md",
     "audits/T0.2-CANDIDATE-SELECTION-2026-11-17.md",
     "audits/T0.3-PILOT-DESIGN-2026-11-17.md",
-    "audits/T0.4-BLOCKED-2026-11-17.md"
+    "audits/T0.4-BLOCKED-2026-11-17.md",
+    "audits/T0.4-RECHECK-2026-11-18.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "269a225171a881841605f1f94e31cf1596b875b4"
+    "commit": "b79303a40e60569ffdc4b69f699efb225fa74701"
   },
-  "last_confirmed_activity": "T0.4 preflight en runtime efímero: 4 GiB/4vCPU, sin Docker ni CUDA, Python3.13, dependencias ausentes; HF AstaBench gated con no redistribución y scorers LLM posiblemente pagos. Evidencia y autoverificación releídas, sin ejecución; estado BLOCKED esperando acceso/entorno/modelo autorizado.",
+  "last_confirmed_activity": "T0.4 reanudada: dos workflows públicos mínimos y seguros completados con éxito; secreto HF funcional para HEAD de archivo gated y runner Docker 4 vCPU/~16 GB confirmado; Python3.11/uv y solvers/scorers/modelo gratuito aún sin probar; cero gastos, cero datos privados descargados, sin resultados científicos.",
   "recovered_from": null,
   "initialization_validation": {
     "audit": "A-INIT-001",
