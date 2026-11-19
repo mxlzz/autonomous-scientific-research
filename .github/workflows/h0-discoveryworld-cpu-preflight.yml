@@ -119,6 +119,8 @@ jobs:
           joined="\n".join(data)
           print("T09_FAILURE_CATEGORIES="+(",".join(k for k in safe if k.lower() in joined.lower()) or "unclassified"))
           print("T09_PRIVATE_LOG_LINECOUNT="+str(len(data)))
+          frames=re.findall(r'File "<stdin>", line (\\d+)',joined)
+          print("T09_FAILURE_STDIN_LINE="+(frames[-1] if frames else "none"))
           PY
               exit "$rc"
           fi
