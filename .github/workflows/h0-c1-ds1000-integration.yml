@@ -1,0 +1,104 @@
+name: H0 C1 original ReAct DS1000 P01 integration
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-c1-ds1000-integration.yml
+
+permissions:
+  contents: read
+
+jobs:
+  c1-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OLLAMA_BASE_URL: http://127.0.0.1:11434/v1
+      INSPECT_EVAL_MODEL: ollama/qwen3:0.6b
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Verify free local model in bounded CPU container
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 150 docker pull ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592 >/dev/null
+          docker run -d --name h0-c1-ollama --cpus=3 --memory=6g -p 127.0.0.1:11434:11434 ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592 >/dev/null
+          for n in $(seq 1 35); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          timeout 180 docker exec h0-c1-ollama ollama pull qwen3:0.6b > "$RUNNER_TEMP/model-pull.log" 2>&1
+          python3 - <<'PY'
+          import json, urllib.request
+          with urllib.request.urlopen("http://127.0.0.1:11434/api/tags",timeout=12) as f:
+              matches=[m for m in json.load(f)["models"] if m["name"]=="qwen3:0.6b"]
+          assert len(matches)==1 and matches[0]["digest"]=="7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435"
+          print("C1_MODEL_PIN_VERIFIED=true")
+          PY
+      - name: Prepare C1 original environment with pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --user uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.11
+          git init -q "$RUNNER_TEMP/c1-src"
+          git -C "$RUNNER_TEMP/c1-src" fetch -q --depth 1 https://github.com/allenai/agent-baselines.git 2d426deac51ad74381319bcfd77066c6e222ba30
+          git -C "$RUNNER_TEMP/c1-src" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/c1-src" rev-parse HEAD)" = 2d426deac51ad74381319bcfd77066c6e222ba30
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/c1-venv"
+          timeout 200 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/c1-venv/bin/python" "$RUNNER_TEMP/c1-src/solvers/react" > "$RUNNER_TEMP/c1-install.log" 2>&1
+          "$RUNNER_TEMP/c1-venv/bin/python" - <<'PY'
+          import importlib.metadata as m
+          assert m.version("astabench")=="0.5.3"
+          assert m.version("inspect_ai")=="0.3.203"
+          print("C1_PINNED_DEPENDENCIES=true")
+          print("C1_ASTABENCH="+m.version("astabench"))
+          print("C1_INSPECT="+m.version("inspect_ai"))
+          PY
+          "$RUNNER_TEMP/c1-venv/bin/inspect" eval --help > "$RUNNER_TEMP/inspect-help.log"
+          if ! grep -q -- '--sample-id' "$RUNNER_TEMP/inspect-help.log"; then
+            echo "C1_SAMPLE_ID_FILTER_AVAILABLE=false"
+            exit 28
+          fi
+          echo "C1_SAMPLE_ID_FILTER_AVAILABLE=true"
+      - name: Test C1 agent on DS1000 validation 513 in original sandbox without paying or scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/c1-eval"
+          cd "$RUNNER_TEMP/c1-src"
+          set +e
+          timeout 590 "$RUNNER_TEMP/c1-venv/bin/inspect" eval astabench/ds1000_validation --solver agent_baselines/solvers/react/basic_agent.py@instantiated_basic_agent --model ollama/qwen3:0.6b --sample-id 513 --max-samples 1 --log-format json --no-score --log-dir "$RUNNER_TEMP/c1-eval" -S max_steps=3 -S with_search_tools=0 -S with_table_editor=0 -S with_report_editor=0 -S with_thinking_tool=0 > "$RUNNER_TEMP/c1-eval-output.log" 2>&1
+          rc=$?
+          set -e
+          echo C1_DS1000_EVAL_CLI_RC="$rc"
+          RC="$rc" "$RUNNER_TEMP/c1-venv/bin/python" - <<'PY'
+          import json, pathlib, os, hashlib
+          files=list((pathlib.Path(os.environ["RUNNER_TEMP"])/"c1-eval").glob("*.json"))
+          print("C1_EVAL_LOG_COUNT="+str(len(files)))
+          if len(files)!=1:
+              print("C1_EVAL_LOG_MISSING=true")
+              print("C1_EVAL_FAILED_OR_INCOMPLETE=true")
+              raise SystemExit(20)
+          raw=files[0].read_bytes()
+          d=json.loads(raw)
+          print("C1_EVAL_LOG_SHA256="+hashlib.sha256(raw).hexdigest())
+          print("C1_EVAL_STATUS="+str(d.get("status")))
+          samples=d.get("samples") or []
+          print("C1_EVAL_SAMPLE_COUNT="+str(len(samples)))
+          if samples:
+              print("C1_EVAL_SAMPLE_ID="+str(samples[0].get("id")))
+              print("C1_EVAL_SAMPLE_ERROR="+str(bool(samples[0].get("error"))).lower())
+          success=d.get("status")=="success" and len(samples)==1 and str(samples[0].get("id"))=="513" and not samples[0].get("error")
+          print("C1_DS1000_TECHNICAL_SUCCESS="+str(success).lower())
+          if not success: raise SystemExit(21)
+          PY
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+      - name: Stop local model and clean containers
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f h0-c1-ollama >/dev/null 2>&1 || true
+          echo C1_LOCAL_MODEL_TERMINATED=true
