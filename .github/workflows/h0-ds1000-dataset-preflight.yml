@@ -10,6 +10,8 @@ jobs:
   ds1000-metadata:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      INSPECT_EVAL_MODEL: mockllm/model
     steps:
       - name: Prepare immutable evaluator environment without secrets
         shell: bash
@@ -48,5 +50,7 @@ jobs:
           except Exception as error:
               print("DS1000_LOAD_ERROR_CLASS=" + type(error).__name__)
               print("DS1000_LOAD_ERROR_MODULE=" + str(getattr(error, "name", "none")))
+              import traceback
+              print("DS1000_LOAD_ERROR_FRAMES=" + ",".join(f"{frame.name}@{frame.lineno}" for frame in traceback.extract_tb(error.__traceback__)[-4:]))
               sys.exit(25)
           PY
