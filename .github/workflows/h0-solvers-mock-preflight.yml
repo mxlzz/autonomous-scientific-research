@@ -1,0 +1,76 @@
+name: H0 ReAct Smolagents local mock compatibility preflight
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/h0-solvers-mock-preflight.yml
+permissions:
+  contents: read
+jobs:
+  mock-solvers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Install pinned uv and Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user --quiet uv==0.13.9
+          "$HOME/.local/bin/uv" python install 3.11
+          "$HOME/.local/bin/uv" --version
+      - name: Retrieve pinned agent-baselines source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q "$RUNNER_TEMP/agent-baselines"
+          git -C "$RUNNER_TEMP/agent-baselines" fetch -q --depth 1 https://github.com/allenai/agent-baselines.git 2d426deac51ad74381319bcfd77066c6e222ba30
+          git -C "$RUNNER_TEMP/agent-baselines" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/agent-baselines" rev-parse HEAD)" = 2d426deac51ad74381319bcfd77066c6e222ba30
+          echo AGENT_BASELINES_SHA=2d426deac51ad74381319bcfd77066c6e222ba30
+      - name: Setup separate fixed dependency environments
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/c1"
+          "$HOME/.local/bin/uv" venv --python 3.11 "$RUNNER_TEMP/c2"
+          set +e
+          timeout 210 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/c1/bin/python" "$RUNNER_TEMP/agent-baselines/solvers/react" > "$RUNNER_TEMP/c1-install.log" 2>&1
+          rc1=$?
+          timeout 210 "$HOME/.local/bin/uv" pip install --python "$RUNNER_TEMP/c2/bin/python" "$RUNNER_TEMP/agent-baselines/solvers/smolagents" > "$RUNNER_TEMP/c2-install.log" 2>&1
+          rc2=$?
+          set -e
+          echo C1_INSTALL_RC="$rc1"
+          echo C2_INSTALL_RC="$rc2"
+          tail -n 10 "$RUNNER_TEMP/c1-install.log"
+          tail -n 10 "$RUNNER_TEMP/c2-install.log"
+          if [ "$rc1" -eq 0 ]; then
+            "$RUNNER_TEMP/c1/bin/python" -c 'import importlib.metadata as m; print("C1_ASTABENCH="+m.version("astabench")); print("C1_INSPECT="+m.version("inspect_ai"))'
+          fi
+          if [ "$rc2" -eq 0 ]; then
+            "$RUNNER_TEMP/c2/bin/python" -c 'import importlib.metadata as m; print("C2_ASTABENCH="+m.version("astabench")); print("C2_INSPECT="+m.version("inspect_ai")); print("C2_SMOLAGENTS="+m.version("smolagents"))'
+          fi
+          echo INSTALL_VERIFICATION_DONE=true
+      - name: Run ReAct public mock task if installed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -x "$RUNNER_TEMP/c1/bin/inspect" ]; then echo C1_SMOKE=skipped_not_installed; exit 0; fi
+          cd "$RUNNER_TEMP/agent-baselines"
+          set +e
+          timeout 130 "$RUNNER_TEMP/c1/bin/inspect" eval astabench/arithmetic_demo --solver agent_baselines/solvers/react/basic_agent.py@instantiated_basic_agent --model mockllm/model --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/c1-logs" -S max_steps=2 -S with_search_tools=0 -S with_table_editor=0 -S with_report_editor=0 -S with_thinking_tool=0 > "$RUNNER_TEMP/c1-smoke.log" 2>&1
+          rc=$?
+          set -e
+          echo C1_MOCK_SMOKE_RC="$rc"
+          tail -n 22 "$RUNNER_TEMP/c1-smoke.log"
+      - name: Run Smolagents public mock task in Docker if installed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -x "$RUNNER_TEMP/c2/bin/inspect" ]; then echo C2_SMOKE=skipped_not_installed; exit 0; fi
+          cd "$RUNNER_TEMP/agent-baselines"
+          set +e
+          timeout 145 "$RUNNER_TEMP/c2/bin/inspect" eval astabench/arithmetic_demo --solver agent_baselines/solvers/smolagents/agent.py@smolagents_coder --model mockllm/model --limit 1 --max-samples 1 --log-format json --log-dir "$RUNNER_TEMP/c2-logs" --sandbox docker:agent_baselines/solvers/sandbox_util/sandbox_compose.yaml -S max_steps=2 > "$RUNNER_TEMP/c2-smoke.log" 2>&1
+          rc=$?
+          set -e
+          echo C2_MOCK_SMOKE_RC="$rc"
+          tail -n 22 "$RUNNER_TEMP/c2-smoke.log"
