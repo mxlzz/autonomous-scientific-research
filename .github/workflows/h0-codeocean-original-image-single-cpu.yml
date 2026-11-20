@@ -1,0 +1,37 @@
+name: H0 T0.20 one original Code Ocean image CPU reproduction
+on:
+  push:
+    paths:
+      - .github/workflows/h0-codeocean-original-image-single-cpu.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t020-one-preserved-image-science-run
+  cancel-in-progress: true
+jobs:
+  original-preserved-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 11
+    env:
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      DOCKER_BUILDKIT: "0"
+    steps:
+      - name: Checkout fixed SHA without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Syntax and pinned artifact identity gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/h0_codeocean_original_image_once.py
+          grep -Fq 'CAPSULE_SHA="012ff05f9c899452d95e279f1a3e59cffc3b660796645e893b56edf07dc05700"' scripts/h0_codeocean_original_image_once.py
+          grep -Fq 'registry.codeocean.com/published/31650577-0a26-4f81-974b-6c5912a14301:v1' scripts/h0_codeocean_original_image_once.py
+          echo T020_INSTRUMENT_SYNTAX_PASS=true
+      - name: Single original preserved image run or pre-execution STOP
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 570 python3 -u scripts/h0_codeocean_original_image_once.py
