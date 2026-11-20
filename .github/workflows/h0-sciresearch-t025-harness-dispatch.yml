@@ -1,0 +1,120 @@
+name: H0 T0.25 original harness dispatch with offline deterministic mock backend
+on:
+  push:
+    paths:
+      - .github/workflows/h0-sciresearch-t025-harness-dispatch.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t025-original-harness-fake-backend
+  cancel-in-progress: true
+jobs:
+  single-dev-pair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Checkout instrument without persisting credential
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Pin source and validate preparation identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/h0_sciresearch_dispatch_t025.py
+          grep -Fq 'expected="194a4b36caf4cd702caee34044ec457247644aee"' scripts/h0_sciresearch_dispatch_t025.py
+          cd "$RUNNER_TEMP"
+          git clone --no-checkout --filter=blob:none --quiet https://github.com/Btwestyo/sciresearch-eval.git upstream
+          cd upstream
+          git fetch --quiet --depth=1 origin 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          git checkout --detach --quiet 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git rev-parse HEAD)" = 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git hash-object src/sciresearch_eval/grader.py)" = 8194044d11b17b6d9d2b040a5115ff35bb798b64
+          test "$(git hash-object src/sciresearch_eval/baselines/scripted.py)" = 85cbbd24e5da207575dc5ff8113a1b599cec8b05
+          test "$(git hash-object src/sciresearch_eval/agents/harness.py)" = 194a4b36caf4cd702caee34044ec457247644aee
+          test "$(git hash-object src/sciresearch_eval/agents/tools.py)" = 7f2c6e73e4872267ef8bded61880cf620d016c8b
+          test "$(git hash-object tasks/dev/manifest.json)" = e12614f631e992aa7cd1e7bc910ca1be1bdc31b7
+          echo T025_PINNED_UPSTREAM_HEAD=9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          echo T025_SOURCE_ORIGINAL_SCORER=true
+          echo T025_OS_PRIVATE_FILE_ISOLATION=false
+      - name: Freeze existing Python image and download same seven T0.21 wheels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/t025-wheels" "$RUNNER_TEMP/t025-site" "$RUNNER_TEMP/t025-results"
+          chmod 777 "$RUNNER_TEMP/t025-wheels" "$RUNNER_TEMP/t025-site" "$RUNNER_TEMP/t025-results"
+          image="python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df"
+          timeout 120 docker pull "$image" >/dev/null
+          echo "T025_IMAGE_DIGEST=$image"
+          timeout 160 docker run --rm --network bridge --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --pids-limit 96 --memory 2g --cpus 2 \
+            --user 65534:65534 --tmpfs /tmp:rw,nosuid,nodev,size=512m,mode=1777 \
+            --mount "type=bind,src=$RUNNER_TEMP/t025-wheels,dst=/wheels" \
+            "$image" python -m pip download --no-cache-dir --only-binary=:all: --no-deps \
+              -d /wheels numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+              iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 > /dev/null
+          python3 - <<'PY'
+          import hashlib,os,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"t025-wheels"
+          expected={
+              "iniconfig-2.3.1-py3-none-any.whl":"9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+              "numpy-2.4.6-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl":"90f9849678c75fe7afa2d348ac842c168b0a4d3d61919687216dfc547976d853",
+              "packaging-26.3-py3-none-any.whl":"d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+              "pluggy-1.7.0-py3-none-any.whl":"7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec",
+              "pygments-2.21.0-py3-none-any.whl":"2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+              "pytest-9.1.1-py3-none-any.whl":"37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+              "scipy-1.17.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl":"02ae3b274fde71c5e92ac4d54bc06c42d80e399fec704383dcd99b301df37458"
+          }
+          got={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in d.glob("*.whl")}
+          assert got==expected, "Pinned wheels changed; stop"
+          print("T025_ALL_7_WHEELS_MATCH_T021=true",flush=True)
+          PY
+      - name: One real harness tool-use dispatcher copy and offline fake backend, CPU2 RAM3GiB
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df"
+          name="h0-t025-tools-$GITHUB_RUN_ID"
+          trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
+          timeout --signal=TERM --kill-after=10s 400 docker run --rm --name "$name" \
+            --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 96 --cpus 2 --memory 3g --user 65534:65534 \
+            --workdir /project --tmpfs /tmp:rw,nosuid,nodev,size=1024m,mode=1777 \
+            --env PYTHONDONTWRITEBYTECODE=1 --env PYTHONHASHSEED=0 \
+            --env OPENBLAS_NUM_THREADS=1 --env OMP_NUM_THREADS=1 --env MKL_NUM_THREADS=1 \
+            --mount "type=bind,src=$RUNNER_TEMP/upstream,dst=/project,readonly" \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_sciresearch_dispatch_t025.py,dst=/controller/t025.py,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/t025-wheels,dst=/wheels,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/t025-site,dst=/site" \
+            --mount "type=bind,src=$RUNNER_TEMP/t025-results,dst=/results" \
+            "$image" sh -c '
+              python -m pip install --no-index --no-deps --find-links=/wheels --target=/site \
+                numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+                iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 \
+                >/tmp/pip.log 2>&1
+              code=$?
+              if [ "$code" -ne 0 ]; then echo T025_OFFLINE_INSTALL_EXIT="$code"; exit "$code"; fi
+              echo T025_OFFLINE_INSTALL_PASS=true
+              PYTHONPATH=/site:/project/src python /controller/t025.py
+              code=$?
+              echo T025_EVALUATOR_EXIT="$code"
+              exit "$code"
+            '
+          test -f "$RUNNER_TEMP/t025-results/t025_summary.json"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t025-results/t025_summary.json"
+          j=json.loads(p.read_text())
+          assert j["source_code_modified_upstream"] is False and j["model_real_calls"]==0
+          assert j["unpatched_harness"]["statuses"]==["success","success","error","success"]
+          assert j["patched_harness"]["statuses"]==["error","success","error","success"]
+          print("T025_RETAINED_JSON_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest(),flush=True)
+          print("T025_JSON_SCHEMA_CHECK_PASS=true",flush=True)
+          PY
