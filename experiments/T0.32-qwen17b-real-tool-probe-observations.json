@@ -1,0 +1,79 @@
+{
+  "kind": "sanitized_allowlist_reconstruction_from_GitHub_Actions_not_original_ephemeral_json",
+  "date": "2026-11-20",
+  "unit": "T0.32",
+  "stage": "H0",
+  "preregister": "experiments/T0.32-qwen17b-toolonly-science-preregister-2026-11-20.md",
+  "preregister_git_blob": "419e32fe1badc0a173dea10cf68c128f293c6be3",
+  "first_trigger_cancelled": {
+    "run_id": 44819394903,
+    "conclusion": "cancelled",
+    "step_reached": "pin source",
+    "reason": "workflow Python heredoc escaped newline correction caused concurrency cancellation before model preparation"
+  },
+  "effective_run": {
+    "run_id": 44819424064,
+    "job_id": 136576188900,
+    "url": "https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44819424064",
+    "head_sha": "3293e6b3a3e4e8af01795580f9077f0994762429",
+    "conclusion": "success (technical workflow only; science not started)"
+  },
+  "model": {
+    "served_name": "qwen3:1.7b-q4_K_M",
+    "model_digest_full": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+    "official_tag_prefix": "8f68893c685c",
+    "official_prefix_match": true,
+    "source_license": "Apache-2.0 Qwen3-1.7B",
+    "ollama_runtime_image": "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+    "model_calls": 1
+  },
+  "source": {
+    "sciresearch_upstream": "Btwestyo/sciresearch-eval@9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0",
+    "grader_original_untouched": true,
+    "source_pins_pass": true,
+    "python_image": "python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df",
+    "seven_wheels_pin_match": true
+  },
+  "security": {
+    "docker_actor_has_only_model_weights": true,
+    "docker_evaluator_private_mount_unshared": true,
+    "internal_network": true,
+    "model_cpu_quota": 2,
+    "model_mem_gib": 5,
+    "evaluator_cpu_quota": 1,
+    "evaluator_mem_gib": 1,
+    "combined_cpu_quota": 3,
+    "combined_ram_gib": 6,
+    "guard_in_loaded_harness_copy": true,
+    "paid_api_usd": 0,
+    "gpu_used": false
+  },
+  "probe": {
+    "response_received": true,
+    "api_protocol": "OpenAI Chat Completions tools",
+    "expected": "exactly one budget_status tool_call with JSON-object input",
+    "valid": false,
+    "returned_tool_count_unknown": true,
+    "failed_subcondition_unknown": true,
+    "public_markers": "T032_PROBE_VALID_TOOL_CALL=False; T032_STATUS=NO_GO_MODEL_TOOL_CALL",
+    "science_started": false,
+    "scientific_score": null,
+    "submissions": 0
+  },
+  "resources": {
+    "trusted_controller_wall_sec": 11.759,
+    "original_ephemeral_summary_sha256": "6bf6472a833fabbed53afd50a3a2bd7d35b7d56432c70cbbc4a075287c9870d0",
+    "original_json_not_retained": true,
+    "private_transcript_uploaded": false,
+    "containers_removed": true,
+    "full_runner_cost_unknown": true
+  },
+  "limits": [
+    "A model's Ollama tools capability label does not prove a successful function call in a particular prompt/cutoff.",
+    "The probe can fail for zero/wrong/multiple/tool arguments, but it was not logged which: no inference of root cause.",
+    "One 1.7B probe invalid and two 0.6B probes mixed cannot establish statistical tool reliability.",
+    "No scientific episode was started, so no scientific judgment or grade was observed.",
+    "Unmodified original SciResearch scorer and separate private evaluator were prerequisites, not evidence of model scientific ability."
+  ],
+  "next": "Documentary source-level analysis of Qwen3 thinking/tool-call support and probe constraints before deciding whether an existing non-thinking instructed model or alternative interface is justified; no automatic 4B fallback or repeated blind probes."
+}
