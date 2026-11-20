@@ -1,0 +1,120 @@
+name: H0 T0.20 one-shot original Code Ocean image availability gate
+on:
+  push:
+    paths:
+      - .github/workflows/h0-codeocean-original-image-gate.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t020-single-original-image-gate
+  cancel-in-progress: true
+jobs:
+  manifest-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    env:
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+    steps:
+      - name: Verify original capsule and published REPRODUCING instructions; anonymous manifest only
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 270 python3 - <<'PY'
+          import hashlib,io,json,re,subprocess,sys,tarfile,urllib.request
+          from pathlib import PurePosixPath
+          src="https://corebench.cs.princeton.edu/capsules/capsule-2011424.tar.gz"
+          expected="012ff05f9c899452d95e279f1a3e59cffc3b660796645e893b56edf07dc05700"
+          print("T020_NO_PAID_API_OR_REGISTRY_CREDENTIALS=true",flush=True)
+          with urllib.request.urlopen(urllib.request.Request(src,headers={"User-Agent":"ASR-T0.20-once/1"}),timeout=25) as r:
+              raw=r.read(1048577)
+          if len(raw)>1048576 or hashlib.sha256(raw).hexdigest()!=expected:
+              print("T020_STOP=archive_integrity_or_size_gate",flush=True);sys.exit(0)
+          print("T020_CAPSULE_SHA256_MATCH=true",flush=True)
+          with tarfile.open(fileobj=io.BytesIO(raw),mode="r:gz") as tf:
+              ms=tf.getmembers()
+              if len(ms)!=36 or sum(m.size for m in ms if m.isfile())>5000000 or any(
+                   m.issym() or m.islnk() or m.isdev() or PurePosixPath(m.name).is_absolute()
+                   or ".." in PurePosixPath(m.name).parts for m in ms):
+                  print("T020_STOP=archive_structure_gate",flush=True);sys.exit(0)
+              def get_single(base):
+                  arr=[m for m in ms if m.isfile() and PurePosixPath(m.name).name==base]
+                  if len(arr)!=1 or arr[0].size>100000:
+                      raise ValueError("missing_or_multiple_"+base)
+                  return tf.extractfile(arr[0]).read().decode("utf-8","replace")
+              md=get_single("REPRODUCING.md")
+              dockerfile=get_single("Dockerfile")
+              print("T020_REPRODUCING_SHA256="+hashlib.sha256(md.encode()).hexdigest(),flush=True)
+              print("T020_DOCKERFILE_SHA256="+hashlib.sha256(dockerfile.encode()).hexdigest(),flush=True)
+              # Documentation can contain host commands; NEVER execute text from it.
+              words=["docker","image","registry","login","api key","token","pull","build","run","authentication","download"]
+              for line in md.splitlines():
+                  stripped=line.strip()
+                  if stripped and any(w in stripped.lower() for w in words):
+                      safe=re.sub(r"(?i)(token|password|api.?key)\s*[=:]\s*\S+",r"\1=[REDACTED]",stripped)
+                      # Quote only short public context, no credentials.
+                      print("T020_DOC_LINE="+json.dumps(safe[:200],ensure_ascii=True),flush=True)
+              bases=re.findall(r"(?im)^\s*FROM\s+([^\s#]+)",dockerfile)
+              if len(bases)!=1:
+                  print("T020_STOP=ambiguous_dockerfile_base",flush=True);sys.exit(0)
+              base=bases[0]
+              print("T020_DOCKER_BASE="+base,flush=True)
+              # A Code Ocean Dockerfile base is not a completed capsule image.
+              print("T020_DOCKERFILE_HAS_RUN_PIP_INSTALL="+str(bool(re.search(r"(?is)\bRUN\b.*?pip\s+install",dockerfile))),flush=True)
+              refs=sorted(set(re.findall(r"(?i)(?:registry\.[a-z0-9.-]*codeocean\.com|registry\.codeocean\.com)/[a-z0-9_./:-]+",md)))
+              print("T020_DOC_REGISTRY_REFS="+json.dumps(refs[:8]),flush=True)
+              # Select a unique explicitly documented *preserved* full image; not FROM base.
+              candidates=[r.rstrip('.,;') for r in refs if r.rstrip('.,;')!=base]
+              print("T020_PRESERVED_IMAGE_CANDIDATES="+json.dumps(candidates[:8]),flush=True)
+              if len(candidates)!=1:
+                  print("T020_STOP=no_unambiguous_published_complete_image",flush=True)
+                  sys.exit(0)
+              target=candidates[0]
+              if not target.startswith("registry.codeocean.com/") or len(target)>230:
+                  print("T020_STOP=registry_reference_not_allowed",flush=True);sys.exit(0)
+              if not re.fullmatch(r"[A-Za-z0-9_.:/@-]+",target):
+                  print("T020_STOP=registry_reference_bad_syntax",flush=True);sys.exit(0)
+              if target==base:
+                  print("T020_STOP=base_only_not_capsule_environment",flush=True);sys.exit(0)
+              print("T020_MANIFEST_TARGET="+target,flush=True)
+              try:
+                  p=subprocess.run(["docker","manifest","inspect",target],capture_output=True,
+                          text=True,timeout=45,check=False)
+              except subprocess.TimeoutExpired:
+                  print("T020_STOP=anonymous_manifest_timeout",flush=True);sys.exit(0)
+              print("T020_ANONYMOUS_MANIFEST_EXIT="+str(p.returncode),flush=True)
+              if p.returncode:
+                  stderr=(p.stderr+" "+p.stdout).lower()
+                  if any(k in stderr for k in ("unauthorized","authentication required","denied","401","403")):
+                      print("T020_STOP=anonymous_registry_auth_required",flush=True)
+                  elif "not found" in stderr or "manifest unknown" in stderr:
+                      print("T020_STOP=manifest_not_found",flush=True)
+                  else:
+                      print("T020_STOP=anonymous_registry_manifest_unavailable",flush=True)
+                  sys.exit(0)
+              try:
+                  manifest=json.loads(p.stdout)
+              except Exception:
+                  print("T020_STOP=unparseable_manifest",flush=True);sys.exit(0)
+              print("T020_MANIFEST_SCHEMA_VERSION="+str(manifest.get("schemaVersion")),flush=True)
+              media=manifest.get("mediaType","")
+              print("T020_MANIFEST_MEDIA_TYPE="+str(media)[:110],flush=True)
+              layers=manifest.get("layers") or []
+              mlist=manifest.get("manifests") or []
+              print("T020_LAYER_COUNT="+str(len(layers)),flush=True)
+              print("T020_MANIFEST_CHILD_COUNT="+str(len(mlist)),flush=True)
+              sizes=[v.get("size") for v in layers if isinstance(v.get("size"),int)]
+              print("T020_DECLARED_LAYER_BYTES="+str(sum(sizes)),flush=True)
+              plats=[v.get("platform",{}) for v in mlist]
+              print("T020_SUPPORTED_PLATFORMS="+json.dumps(plats[:12]),flush=True)
+              if mlist and not any(v.get("os")=="linux" and v.get("architecture")=="amd64" for v in plats):
+                  print("T020_STOP=no_linux_amd64_manifest",flush=True);sys.exit(0)
+              if not layers:
+                  print("T020_STOP=no_single_amd64_layer_size_verified",flush=True);sys.exit(0)
+              if sum(sizes)>1200000000 or len(layers)!=len(sizes):
+                  print("T020_STOP=image_exceeds_1p2GB_or_layers_unknown",flush=True);sys.exit(0)
+              if "@sha256:" not in target:
+                  print("T020_STOP=tag_manifest_not_pinned_to_digest",flush=True);sys.exit(0)
+              print("T020_GATE=manifest_candidate_PASS_requires_runtime_controls",flush=True)
+          PY
