@@ -1,0 +1,124 @@
+name: H0 T0.15 single official capsule static provenance preflight
+on:
+  push:
+    paths:
+      - .github/workflows/h0-corebench-capsule-static-preflight.yml
+
+permissions:
+  contents: read
+concurrency:
+  group: h0-t015-static-capsule-probe
+  cancel-in-progress: true
+
+jobs:
+  no-execution-bounded-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: One bounded HEAD and optional static tar inspection, no executable content
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "T015_PREFLIGHT_SCOPE=HEAD_and_static_archive_only"
+          timeout 210 python3 - <<'PY'
+          import os,sys,time,hashlib,io,tarfile,urllib.request,urllib.error,urllib.parse,re
+          from pathlib import PurePosixPath
+          URL="https://corebench.cs.princeton.edu/capsules/capsule-5975162.tar.gz"
+          MAX_COMPRESSED=64*1024*1024
+          MAX_EXPANDED=512*1024*1024
+          MAX_MEMBERS=10000
+          start=time.monotonic()
+          def req(method):
+              r=urllib.request.Request(URL,headers={"User-Agent":"H0-T0.15-CORE-static-preflight/1.0"},method=method)
+              return urllib.request.urlopen(r,timeout=20)
+          try:
+              with req("HEAD") as r:
+                  print("T015_HEAD_STATUS="+str(r.status),flush=True)
+                  print("T015_HEAD_HOST="+str(urllib.parse.urlsplit(r.url).hostname),flush=True)
+                  size=r.headers.get("Content-Length")
+                  print("T015_HEAD_CONTENT_LENGTH="+str(size or "unknown"),flush=True)
+                  print("T015_HEAD_CONTENT_TYPE="+str(r.headers.get("Content-Type","unknown")),flush=True)
+                  if size and int(size)>MAX_COMPRESSED:
+                      print("T015_ARCHIVE_TOO_LARGE_FOR_PROBE=true",flush=True)
+                      sys.exit(0)
+          except Exception as exc:
+              msg=type(exc).__name__
+              print("T015_HEAD_FAIL_TYPE="+msg,flush=True)
+              if isinstance(exc,urllib.error.HTTPError):
+                  print("T015_HEAD_HTTP_STATUS="+str(exc.code),flush=True)
+              # Continue with a single bounded GET because HEAD can be unsupported.
+          data=bytearray()
+          try:
+              with req("GET") as r:
+                  print("T015_GET_STATUS="+str(r.status),flush=True)
+                  print("T015_GET_HOST="+str(urllib.parse.urlsplit(r.url).hostname),flush=True)
+                  clen=r.headers.get("Content-Length")
+                  print("T015_GET_CONTENT_LENGTH="+str(clen or "unknown"),flush=True)
+                  if clen and int(clen)>MAX_COMPRESSED:
+                      print("T015_GET_REFUSED_SIZE_OVER_64M=true",flush=True)
+                      sys.exit(0)
+                  while True:
+                      if time.monotonic()-start>150:
+                          print("T015_GET_BUDGET_TIMEOUT=true",flush=True)
+                          sys.exit(0)
+                      chunk=r.read(min(1024*1024,MAX_COMPRESSED+1-len(data)))
+                      if not chunk: break
+                      data.extend(chunk)
+                      if len(data)>MAX_COMPRESSED:
+                          print("T015_GET_STREAM_EXCEEDED_64M=true",flush=True)
+                          sys.exit(0)
+          except Exception as exc:
+              print("T015_GET_FAIL_TYPE="+type(exc).__name__,flush=True)
+              if isinstance(exc,urllib.error.HTTPError):
+                  print("T015_GET_HTTP_STATUS="+str(exc.code),flush=True)
+              sys.exit(0)
+          print("T015_ARCHIVE_BYTES="+str(len(data)),flush=True)
+          print("T015_ARCHIVE_SHA256="+hashlib.sha256(data).hexdigest(),flush=True)
+          if not data[:2]==b"\x1f\x8b":
+              print("T015_ARCHIVE_MAGIC_INVALID=true",flush=True)
+              sys.exit(0)
+          try:
+              tar=tarfile.open(fileobj=io.BytesIO(data),mode="r:gz")
+              members=tar.getmembers()
+              file_bytes=sum(m.size for m in members if m.isfile())
+              unsafe=sum(1 for m in members if m.issym() or m.islnk() or m.isdev() or m.name.startswith("/") or ".." in PurePosixPath(m.name).parts)
+              print("T015_TAR_MEMBER_COUNT="+str(len(members)),flush=True)
+              print("T015_TAR_TOTAL_FILE_BYTES="+str(file_bytes),flush=True)
+              print("T015_TAR_UNSAFE_MEMBER_COUNT="+str(unsafe),flush=True)
+              if len(members)>MAX_MEMBERS or file_bytes>MAX_EXPANDED or unsafe:
+                  print("T015_TAR_REJECTED_FOR_EXTRACTION=true",flush=True)
+              # Read only metadata file bytes in memory; never extract or execute.
+              for m in members:
+                  name=m.name.lower().replace("\\","/")
+                  if not m.isfile(): continue
+                  base=name.split("/")[-1]
+                  if base in ("license","license.txt","license.md","licence","licence.md","reproducing.md","dockerfile","metadata.yml","metadata.yaml") and m.size<=98304:
+                      f=tar.extractfile(m)
+                      if f is None:continue
+                      raw=f.read(98305)
+                      print("T015_META_FILE="+base+",len="+str(len(raw))+",sha256="+hashlib.sha256(raw).hexdigest(),flush=True)
+                      if base=="dockerfile":
+                          text=raw.decode("utf-8","replace")
+                          for line in text.splitlines():
+                              if line.strip().upper().startswith("FROM "):
+                                  print("T015_DOCKER_BASE="+line.strip().split(None,1)[1][:160],flush=True)
+                      if base=="reproducing.md":
+                          t=raw.decode("utf-8","replace").lower()
+                          print("T015_REPRODUCING_GPU_STRING="+str("gpu" in t),flush=True)
+                          print("T015_REPRODUCING_CUDA_STRING="+str("cuda" in t),flush=True)
+                      if base.startswith("licen"):
+                          t=raw.decode("utf-8","replace").lower()
+                          print("T015_LICENSE_GPL_MARKER="+str("gnu general public license" in t),flush=True)
+                          print("T015_LICENSE_MIT_MARKER="+str("mit license" in t),flush=True)
+                  if base=="expsowithclassicalbenchmark02.py":
+                      print("T015_TARGET_SCRIPT_EXISTS=true,size="+str(m.size),flush=True)
+              print("T015_TAR_STATIC_INSPECTION_COMPLETE=true",flush=True)
+          except Exception as exc:
+              print("T015_TAR_READ_FAILURE_TYPE="+type(exc).__name__,flush=True)
+          print("T015_NO_THIRD_PARTY_CODE_EXECUTED=true",flush=True)
+          PY
+          echo "T015_NO_THIRD_PARTY_CODE_EXECUTED=true"
