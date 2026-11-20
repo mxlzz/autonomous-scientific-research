@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.13",
-  "task_title": "T0.13 — único micro-run local Qwen3 4B en DiscoveryWorld, con gate técnico de acción y seguridad",
-  "task_expected_output": "Adaptar de forma mínima bridge existente Qwen3 4B Q4_K_M en Actions público; verificar digest completo Ollama, tests de negativos/positivos, aislamiento scorer/agent, 1 run máximo bajo 4 acciones/6 requests/256 tokens salida por request, 240s controlador y 15min workflow, 3CPU/6GiB Ollama. Registrar CPU/RAM/tiempos/tokens/digests/resultado mundo y causas de fallo; sin costo API ni reclamaciones de autonomía científica. Si no viable, documentar negativo y priorizar CORE train con cápsula CPU y derechos.",
-  "task_acceptance": "Preflight antes de LLM: versión/digest runtime exactos, upstream DiscoveryWorld/scorer originales, validación 9 negativos y 3 positivos (o más) y prueba de no-oráculo, sin ejecución arbitraria ni publicación de raw traces. Un único run de 4B gratuito, límites verificables, conclusión técnica positiva solo si >=1 acción de mundo aceptada con evaluador consultado tras stop; si OOM/timeout o 0 acciones, resultado negativo clasificado sin repetir por tanteo, con logs allowlist/hashes/tiempos/costo. No cerrar H0 ni H1/H2 por mero éxito de acción. Si se requiere GPU/API paga, detener y pedir permiso.",
-  "next_action": "T0.13: comprobar HEAD/STATE y T0.12 más scripts/h0_discoveryworld_text_bridge.py y workflow h0-discoveryworld-local-llm-smoke.yml; parametrizar modelo a qwen3:4b sin cambiar scorer ni política de seguridad. Antes de pull/inferencia comprobar requisitos RAM/disk/timeout, gate JSON anti-oráculo, y digest esperado 359d7dd4bcda... (tag cambiado => parar). Ejecutar máximo una prueba CPU Actions pública con presupuestos 4/6/256/240s/15m, contenedor 3CPU/6GiB, sin datos gated ni secretos. Medir peak container RAM, tokens/prompt, tiempos y acciones aceptadas; sin éxito técnico registrar negativo y cambiar foco a cápsula CORE train CPU/score/licencia/aislamiento. Guardar evidence/audit/LOG, leer de vuelta, STATE último. No gasto ni GPU sin permiso.",
+  "current_task": "T0.14",
+  "task_title": "T0.14 — seleccionar y auditar una cápsula CORE-Bench train de paper real apta para CPU, datos/licencias, scorer y aislamiento",
+  "task_expected_output": "Preflight documental con fuentes primarias sobre instancias train/desarrollo CORE-Bench (versiones/SHAs, requisitos de cápsula/Docker, paper y datos reales, tamaños, CPU/GPU, licencia por capa y scorer determinista). Seleccionar una sola instancia auditable si existe, con presupuesto y gates de seguridad/traza, o declarar ausencia de opción corroborable. No ejecutar código ajeno, LLM, API ni infraestructura nueva; no mirar tareas test/gold ni gastar.",
+  "task_acceptance": "Revisar código y manual oficiales CORE, identificar al menos dos candidatos específicos de train si están accesibles o justificar que no pueden localizarse; contrastar licencias/repositorios de paper/data/cápsula y formato de evaluator original, CPU/RAM/almacenamiento/Docker privileged, nivel de aislamiento, tiempo/costo y condiciones de custodia de trayectorias. Congelar fuente/version y un ID de una instancia sólo si se puede verificar que existe y que no usa gold reservado; seleccionar gate posterior con criterio de cancelación. No sustituir un trabajo científico real por simulación ni declarar reproducibilidad sin correr. Si sólo GPU privada/API paga/reservas restringidas cumplen, detallar permiso requerido y detener antes del gasto.",
+  "next_action": "T0.14: leer HEAD/STATE y T0.13 negativo por timeout; consultar CORE-Bench repo original y documentación de datasets/cápsulas/papers, licencia MIT del harness (verificar), instancia train con paper/datos reales y scorer original evaluable, tamaño/recursos CPU, riesgos Docker --privileged y alternativa de sandbox aislado, derechos de trazas. No ejecutar CORE ni experimentar, no introducir arquitectura propia. Registrar matriz, evidencia, autoverificación, LOG, readback y STATE último. Si no hay instancia verificable apta, describir bloqueo sin inventar ID; si exige GPU/costo/secret, pedir permiso concreto.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -27,7 +27,8 @@
     "T0.9",
     "T0.10",
     "T0.11",
-    "T0.12"
+    "T0.12",
+    "T0.13"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -46,7 +47,8 @@
     "T0.9 autoauditoría del preflight, no científica independiente; sin baseline LLM, traza histórica completa no retenida, verificación de nombres de score no prueba aislamiento Python. Resolver en T0.10.",
     "T0.10 autoverificación documental no independiente; aislamiento del controlador textual y no acceso a oráculo/archivos aún por probar con tests negativos antes del LLM en T0.11.",
     "T0.11 self-audit: logical JSON/no-code boundary gates passed, no rigorous adversarial/independent review; LLM action baseline failed 0/4 actions, raw traces not retained, no scientific validity, must not generalize to model size or architecture.",
-    "T0.12 completada como revisión documental/autoverificación, no auditoría independiente; inferencia 4B sin ejecución; costo CPU real, trazas exactas y benchmark CORE con cápsula identificada aún pendientes. Revisar en cierre H0."
+    "T0.12 completada como revisión documental/autoverificación, no auditoría independiente; inferencia 4B sin ejecución; costo CPU real, trazas exactas y benchmark CORE con cápsula identificada aún pendientes. Revisar en cierre H0.",
+    "T0.13: autoverificación no independiente; run44652705085 cancelado a 15min sin resumen de inferencia, RAM del contenedor, acciones/tokens/scorer. No hay traza recuperable ni evidencia de validez; revisar instrumentación timeout 255 y posible think:false incompatibilidad antes de cualquier nuevo LLM, no atribuir causalidad."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -59,7 +61,8 @@
     "T0.9/T0.10 seguridad constructo: agente con referencia al objeto DiscoveryWorldAPI/world podría consultar getTaskScorecard y romper independencia del scorer. Aislar proceso/interfaz estricta y negar acceso a mundo/score antes de ejecutar LLM.",
     "T0.10: código de RandomAgent y ReCoMa original consulta scorecard durante acciones; no se ha implementado/probado yet la interfaz segura LLM-only. T0.11 debe rechazar JSON malicioso y evitar acceso a API/world; no habilitar herramientas Python o scoring durante razonamiento.",
     "T0.11 Qwen3 0.6B cannot produce a successful DiscoveryWorld world action under 4-action cap: 4 PICKUP repeats rejected (run44548747248). Structured JSON fixes syntax only. No proven viable local scientific baseline; T0.12 assess capacity/resources and opportunity cost before further runs.",
-    "T0.12: Qwen3 1.7B/4B archivos Ollama 1.4/2.5GB y runner 4CPU/16GB son hechos de fuentes; velocidad, pico RAM real de contenedor Ollama 6GiB y éxito en acciones sin medir. CORE-Bench requiere identificación de cápsula train CPU, licencias, acceso, Docker/seguridad y scorer antes de ejecutar; no cerrar H0 solo con simulación."
+    "T0.12: Qwen3 1.7B/4B archivos Ollama 1.4/2.5GB y runner 4CPU/16GB son hechos de fuentes; velocidad, pico RAM real de contenedor Ollama 6GiB y éxito en acciones sin medir. CORE-Bench requiere identificación de cápsula train CPU, licencias, acceso, Docker/seguridad y scorer antes de ejecutar; no cerrar H0 solo con simulación.",
+    "T0.13: modelo Qwen3 4B digest 359d7dd4... y gates validator/host PASS, pero workflow job44652705085 cancelled por timeout 15m durante --run sin marcadores de cierre ni score. Cantidad de acciones/tokens/RAM pico desconocida; raw private log perdido y retorno timeout 255 no observado. Modelo tag Thinking-2507 distinto de Instruct, no comparación emparejada. Priorizar CORE train real; no repetir inferencia sin observabilidad nueva."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -80,7 +83,8 @@
     "D-0016: T0.9 preflight real de DiscoveryWorld Plant Nutrients/Normal/seed0 con Python3.9.25/pygame SDL dummy y dos rotaciones/ticks ejecutado en Actions run44543963302; source original fd591323; scorecard procedural 0.0 completion false esperados, no LLM; 5 fallos de instrumentación auditados, corregida aserción de getStepCounter sin alterar upstream. H0 no cerrado, T0.10 aislamiento de evaluator/agent antes de LLM.",
     "D-0017: inspección de fuentes DiscoveryWorld revela consulta de scorecard en RandomAgent y tracking ReCoMa y acoplamiento al mismo objeto API, pero sin prueba de fuga a LLM original. Hypothesizer GPT4o no apto para costo cero. Para primera línea base elegir motor/scorer originales + controlador textual mínimo hacia Qwen3 0.6B Ollama CPU con JSON de acción validado, sin herramientas ejecutables, score al final, y procesos aislados solo si se agregara ejecución arbitraria. T0.11 test negativo+positivo antes de micro-run. T0.10 documental, H0 sin cerrar.",
     "D-0018: T0.11 completada con resultado mixto: 9 negativos y 3 positivos del validador JSON PASS, modelos texto sin herramientas de código ni scorecard; Qwen3 0.6B en DiscoveryWorld Normal seed0 produjo primero respuestas con campos JSON inválidos; Ollama schema las corrigió pero mundos rechazaron 4/4 PICKUP, incluso con UI feedback/affordance. Run44548747248 source pinned final, API paid0, scoreboard0 no validez científica; no iterar mismo prompt sin nueva hipótesis. Próxima T0.12 evaluación crítica de modelo local/benchmark real.",
-    "D-0019: T0.12 completada documentalmente tras reconciliar evidencia/auditoría ya escritas pero no reflejadas en STATE/LOG. Elegir un único micro-run Qwen3 4B Q4_K_M en Actions CPU público con digest/gates y máximo4 acciones/6 requests/256 tokens/controller240s/workflow15m/container3CPU6GiB; cancelación por recursos o 0 acciones y posterior foco CORE train CPU. Costo API paga0. No demuestra tamaño superior, autonomía científica, ni habilita H1/H2."
+    "D-0019: T0.12 completada documentalmente tras reconciliar evidencia/auditoría ya escritas pero no reflejadas en STATE/LOG. Elegir un único micro-run Qwen3 4B Q4_K_M en Actions CPU público con digest/gates y máximo4 acciones/6 requests/256 tokens/controller240s/workflow15m/container3CPU6GiB; cancelación por recursos o 0 acciones y posterior foco CORE train CPU. Costo API paga0. No demuestra tamaño superior, autonomía científica, ni habilita H1/H2.",
+    "D-0020: T0.13 único ensayo 4B CPU ejecutado con aceptación técnica NEGATIVA/INCONCLUSA por timeout global, no por score o acciones=0 verificados. Preflight 9 negativos/3 positivos, oráculo, recursos host y modelo digest PASS; no resumen score/acciones/tokens. Mantener H0 abierto, evitar tuning o ejecución repetida, abrir T0.14 para preflight documental CORE-Bench train CPU/licencias/evaluador/seguridad. API paga USD0, GPU no usada; autoverificación no independiente."
   ],
   "evidence_refs": [
     {
@@ -162,6 +166,10 @@
     {
       "path": "evidence/T0.12-free-model-and-real-science-options-2026-11-19.md",
       "status": "Fuentes oficiales Qwen3 1.7B/4B Apache2/Q4_K_M 1.4/2.5GB, runner público 4CPU/16GB/14GB, presupuesto nominal, CORE con licencias/privileged pendientes; selección un único 4B técnico sin experimento nuevo."
+    },
+    {
+      "path": "evidence/T0.13-qwen4b-single-cpu-probe-2026-11-19.md",
+      "status": "Una ejecución Qwen3 4B Actions run44652705085, bridge/validador PASS 9/3, host/model digest verificados; job cancelado 15m sin acciones/score/tokens/RAM reportados, resultado inconcluso. Log efímero inaccesible."
     }
   ],
   "audit_refs": [
@@ -183,13 +191,14 @@
     "audits/T0.9-DISCOVERYWORLD-PREFLIGHT-2026-11-19.md",
     "audits/T0.10-AGENT-EVALUATOR-BOUNDARY-2026-11-19.md",
     "audits/T0.11-LOCAL-LLM-BRIDGE-2026-11-19.md",
-    "audits/T0.12-LOCAL-MODEL-FEASIBILITY-2026-11-19.md"
+    "audits/T0.12-LOCAL-MODEL-FEASIBILITY-2026-11-19.md",
+    "audits/T0.13-QWEN4B-TIMEOUT-2026-11-19.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "8c43b3c0cd4d1879daff34eebf4aa2114b8d97d9"
+    "commit": "a1a7446ce2449e913b6a72fdd2d5492d300320bb"
   },
-  "last_confirmed_activity": "T0.12 análisis documental de Qwen3 1.7B/4B y benchmarks reales; evidencia y autoauditoría previas reconciliadas con documentos y LOG D-0019, lectura de retorno confirmada. 4B no ejecutado, H0 sigue abierto; T0.13 único smoke CPU 4B o negativo por recursos, sin pago.",
+  "last_confirmed_activity": "T0.13 única prueba de Qwen3 4B con run44652705085 cancelled por timeout15m tras PASS de fuente, validador, host y digest; inferencia/acciones/score no observables, no atribución de fracaso científico. Evidencia/audit/PLAN/RESEARCH/METHODOLOGY/README/LOG persistidos y releídos. Próxima T0.14 CORE train documental.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
