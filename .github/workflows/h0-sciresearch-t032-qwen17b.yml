@@ -105,7 +105,8 @@ jobs:
           matches=[x for x in models if x["name"]=="qwen3:1.7b-q4_K_M"]
           assert len(matches)==1
           assert matches[0]["digest"].startswith("8f68893c685c") and len(matches[0]["digest"])==64
-          print("T032_MODEL_DIGEST_MATCH_OFFICIAL_PREFIX=true",flush=True)\n          print("T032_MODEL_FULL_DIGEST="+matches[0]["digest"],flush=True)
+          print("T032_MODEL_DIGEST_MATCH_OFFICIAL_PREFIX=true",flush=True)
+          print("T032_MODEL_FULL_DIGEST="+matches[0]["digest"],flush=True)
           PY
           docker rm -f "$prep" >/dev/null
           echo T032_PREP_INTERNET_MODEL_SERVER_REMOVED=true
