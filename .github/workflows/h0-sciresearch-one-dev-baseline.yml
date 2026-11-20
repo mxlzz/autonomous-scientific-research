@@ -1,4 +1,4 @@
-name: H0 T0.21 diagnose original imports and attempt one dev naive baseline
+name: H0 T0.21 baseline after fixing native-library executable mount
 on:
   push:
     paths:
@@ -202,8 +202,8 @@ jobs:
         run: |
           set -euo pipefail
           pinned="$(cat "$RUNNER_TEMP/t021-image.txt")"
-          mkdir -p "$RUNNER_TEMP/t021-results"
-          chmod 777 "$RUNNER_TEMP/t021-results"
+          mkdir -p "$RUNNER_TEMP/t021-results" "$RUNNER_TEMP/t021-site"
+          chmod 777 "$RUNNER_TEMP/t021-results" "$RUNNER_TEMP/t021-site"
           # Source includes private DEV labels because original ThermalEnv reads
           # them internally. The original naive policy does not access env.private,
           # but OS/filesystem separation remains an explicit open limitation.
@@ -217,15 +217,16 @@ jobs:
              --mount "type=bind,src=$RUNNER_TEMP/t021-controller,dst=/controller,readonly" \
              --mount "type=bind,src=$RUNNER_TEMP/t021-wheels,dst=/wheels,readonly" \
              --mount "type=bind,src=$RUNNER_TEMP/t021-results,dst=/results" \
+             --mount "type=bind,src=$RUNNER_TEMP/t021-site,dst=/site" \
              "$pinned" sh -c '
-               python -m pip install --no-index --no-deps --find-links=/wheels --target=/tmp/site \
+               python -m pip install --no-index --no-deps --find-links=/wheels --target=/site \
                  numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
                  iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 \
                  >/tmp/install.log 2>&1
                rc=$?
                if [ "$rc" -ne 0 ]; then echo T021_OFFLINE_INSTALL_EXIT="$rc"; exit "$rc"; fi
                echo T021_OFFLINE_INSTALL_PASS=true
-               PYTHONPATH=/tmp/site:/project/src python /controller/run.py
+               PYTHONPATH=/site:/project/src python /controller/run.py
                rc=$?
                echo T021_SCIENCE_PROCESS_EXIT="$rc"
                exit "$rc"
