@@ -1,0 +1,114 @@
+name: H0 T0.19 single bounded CORE BorderT-GRAANK capsule viability probe
+on:
+  push:
+    paths:
+      - .github/workflows/h0-core-border-single-probe.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t019-single-official-capsule-probe
+  cancel-in-progress: true
+jobs:
+  archival-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    env:
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+    steps:
+      - name: One bounded HTTP GET and in-memory inspection with zero foreign execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 210 python3 - <<'PY'
+          import ast,hashlib,io,json,re,sys,tarfile,time,urllib.request
+          from pathlib import PurePosixPath
+          url="https://corebench.cs.princeton.edu/capsules/capsule-2011424.tar.gz"
+          max_download=64*1024*1024
+          max_expanded=256*1024*1024
+          print("T019_SCOPE=only_bound_HTTP_static_no_capsule_execution",flush=True)
+          try:
+              request=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"ASR-H0-T0.19-preflight/1"})
+              with urllib.request.urlopen(request,timeout=20) as r:
+                  print("T019_HEAD_STATUS="+str(r.status),flush=True)
+                  print("T019_HEAD_CONTENT_LENGTH="+str(r.headers.get("Content-Length","unknown")),flush=True)
+                  if int(r.headers.get("Content-Length") or "0")>max_download:
+                      print("T019_NO_GO=compressed_archive_over_64MiB",flush=True)
+                      sys.exit(0)
+          except Exception as exc:
+              print("T019_HEAD_FAILURE_TYPE="+type(exc).__name__,flush=True)
+          req=urllib.request.Request(url,headers={"User-Agent":"ASR-H0-T0.19-preflight/1"})
+          try:
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  print("T019_GET_STATUS="+str(r.status),flush=True)
+                  raw=r.read(max_download+1)
+          except Exception as exc:
+              print("T019_GET_FAIL_TYPE="+type(exc).__name__,flush=True)
+              sys.exit(0)
+          if len(raw)>max_download:
+              print("T019_NO_GO=stream_archive_over_64MiB",flush=True);sys.exit(0)
+          print("T019_ARCHIVE_BYTES="+str(len(raw)),flush=True)
+          print("T019_ARCHIVE_SHA256="+hashlib.sha256(raw).hexdigest(),flush=True)
+          if raw[:2]!=b"\x1f\x8b":
+              print("T019_NO_GO=not_gzip",flush=True);sys.exit(0)
+          try:
+              with tarfile.open(fileobj=io.BytesIO(raw),mode="r:gz") as tar:
+                  ms=tar.getmembers()
+                  files=[m for m in ms if m.isfile()]
+                  expanded=sum(m.size for m in files)
+                  unsafe=[m for m in ms if m.issym() or m.islnk() or m.isdev() or
+                          m.name.startswith("/") or ".." in PurePosixPath(m.name).parts]
+                  print("T019_TAR_MEMBERS="+str(len(ms)),flush=True)
+                  print("T019_TAR_REGULAR_BYTES="+str(expanded),flush=True)
+                  print("T019_TAR_UNSAFE_COUNT="+str(len(unsafe)),flush=True)
+                  if len(ms)>10000 or expanded>max_expanded or unsafe:
+                      print("T019_NO_GO=tar_static_safety_limits",flush=True);sys.exit(0)
+                  ext={}
+                  for m in files:
+                      suffix=PurePosixPath(m.name).suffix.lower()
+                      ext[suffix]=ext.get(suffix,0)+1
+                  print("T019_FILE_EXTENSION_COUNTS="+json.dumps(ext,sort_keys=True),flush=True)
+                  target=[m for m in files if m.name.endswith("/algorithms/border_tgraank.py")]
+                  print("T019_TARGET_FILE_COUNT="+str(len(target)),flush=True)
+                  print("T019_TARGET_SIZE="+str(target[0].size if len(target)==1 else "n/a"),flush=True)
+                  if len(target)==1 and target[0].size<=1048576:
+                      script=tar.extractfile(target[0]).read()
+                      print("T019_TARGET_SHA256="+hashlib.sha256(script).hexdigest(),flush=True)
+                      try:
+                          tree=ast.parse(script.decode("utf-8-sig"))
+                          imports=sorted(set([node.names[0].name for node in ast.walk(tree) if isinstance(node,ast.Import)] +
+                                              [("."*node.level+(node.module or "")) for node in ast.walk(tree) if isinstance(node,ast.ImportFrom)]))
+                          print("T019_TARGET_IMPORTS="+json.dumps(imports,ensure_ascii=True),flush=True)
+                          print("T019_TARGET_TOPLEVEL_KIND="+json.dumps([type(n).__name__ for n in tree.body[:18]]),flush=True)
+                          print("T019_TARGET_IF_COUNT="+str(sum(isinstance(n,ast.If) for n in tree.body)),flush=True)
+                      except (SyntaxError,UnicodeError):
+                          print("T019_NO_GO=target_script_not_parseable",flush=True)
+                  names=sorted({PurePosixPath(m.name).name for m in files})
+                  for base in ["LICENSE","LICENSE.md","LICENSE.txt","REPRODUCING.md","Dockerfile",
+                               "requirements.txt","environment.yml","environment.yaml","pyproject.toml","postInstall"]:
+                      relevant=[m for m in files if PurePosixPath(m.name).name==base]
+                      print("T019_FILE_"+base.upper().replace(".","_")+"="+str(len(relevant)),flush=True)
+                      for m in relevant[:4]:
+                          print("T019_META_SHA="+base+","+str(m.size)+","+hashlib.sha256(tar.extractfile(m).read(min(m.size,131072))).hexdigest(),flush=True)
+                          if m.size<=100000 and base in ["LICENSE","LICENSE.md","LICENSE.txt"]:
+                              s=tar.extractfile(m).read().decode("utf-8","replace").lower()
+                              print("T019_LICENSE_MARKER_MIT="+str("mit license" in s),flush=True)
+                              print("T019_LICENSE_MARKER_GPL="+str("gnu general public license" in s),flush=True)
+                          if m.size<=100000 and base in ["Dockerfile","requirements.txt","environment.yml","environment.yaml"]:
+                              s=tar.extractfile(m).read().decode("utf-8","replace")
+                              if base=="Dockerfile":
+                                  cmds=[x.strip().split(None,1)[0].upper() for x in s.splitlines() if x.strip() and not x.strip().startswith("#")]
+                                  baseimage=next((x.strip().split(None,1)[1] for x in s.splitlines() if x.strip().upper().startswith("FROM ")),"none")
+                                  print("T019_DOCKERFILE_INSTRUCTIONS="+json.dumps(cmds),flush=True)
+                                  print("T019_DOCKER_BASE="+baseimage[:100],flush=True)
+                                  print("T019_DOCKER_HAS_POSTINSTALL="+str("postinstall" in s.lower()),flush=True)
+                                  print("T019_DOCKER_HAS_GPU_MARKERS="+str(any(w in s.lower() for w in ("cuda","nvidia","gpu"))),flush=True)
+                              else:
+                                  print("T019_DEPS_TEXT="+base+":"+json.dumps(s.splitlines()[:20],ensure_ascii=True)[:1400],flush=True)
+                  print("T019_DATA_EXT_COUNT="+str(sum(v for k,v in ext.items() if k in (".csv",".tsv",".xlsx",".h5",".hdf5",".json",".zip",".pkl"))),flush=True)
+                  print("T019_STATIC_COMPLETE=true",flush=True)
+                  print("T019_FOREIGN_CODE_NOT_EXECUTED=true",flush=True)
+          except Exception as exc:
+              print("T019_STATIC_ERROR_TYPE="+type(exc).__name__,flush=True)
+          PY
