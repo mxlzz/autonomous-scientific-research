@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""H0 T0.11: bounded, text-only DiscoveryWorld adapter. NOT a scientific baseline.
+"""H0 T0.11 adapter, reused for bounded T0.13 technical probe. NOT a scientific baseline.
 
 Only the trusted controller imports DiscoveryWorld. Untrusted Ollama output is a
 single JSON action, not Python, shell, method names, or tool invocations.
@@ -17,6 +17,10 @@ import urllib.request
 SCENARIO = "Plant Nutrients"
 DIFFICULTY = "Normal"
 SEED = 0
+MODEL_ID = os.environ.get("H0_MODEL_ID", "qwen3:0.6b")
+MODEL_DIGEST = os.environ.get("H0_MODEL_DIGEST", "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435")
+if MODEL_ID not in ("qwen3:0.6b", "qwen3:4b") or len(MODEL_DIGEST) != 64 or any(ch not in "0123456789abcdef" for ch in MODEL_DIGEST):
+    raise RuntimeError("unapproved_model_identifier_or_digest")
 MAX_ACTIONS = 4
 MAX_CALLS = 6
 MAX_NEW_TOKENS = 256
@@ -176,7 +180,7 @@ def action_json_schema():
 
 def ask_local_model(prompt):
     payload = {
-        "model": "qwen3:0.6b",
+        "model": MODEL_ID,
         "stream": False,
         "format": action_json_schema(),
         "think": False,
@@ -296,7 +300,7 @@ def run():
         raise RuntimeError("invalid_scorer_range")
     record = {
         "source_commit": "fd591323920be0d3786ef350955de1945aa571e5",
-        "model_digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+        "model_digest": MODEL_DIGEST,
         "scenario": SCENARIO, "difficulty": DIFFICULTY, "seed": SEED,
         "max_actions": MAX_ACTIONS, "max_calls": MAX_CALLS, "max_generated_tokens": MAX_NEW_TOKENS,
         "stats": stats, "failure_categories": sorted(set(reasons)),
