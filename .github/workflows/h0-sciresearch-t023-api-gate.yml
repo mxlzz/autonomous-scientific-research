@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile scripts/h0_sciresearch_api_gate_t023.py
-          test "$(grep -c '^UPSTREAM = "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0"' scripts/h0_sciresearch_pair_t023.py)" = 1
+          test "$(grep -c '^UPSTREAM = "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0"' scripts/h0_sciresearch_api_gate_t023.py)" = 1
           cd "$RUNNER_TEMP"
           git clone --no-checkout --filter=blob:none --quiet https://github.com/Btwestyo/sciresearch-eval.git upstream
           cd upstream
@@ -90,7 +90,7 @@ jobs:
             --env PYTHONDONTWRITEBYTECODE=1 --env PYTHONHASHSEED=0 \
             --env OPENBLAS_NUM_THREADS=1 --env OMP_NUM_THREADS=1 --env MKL_NUM_THREADS=1 \
             --mount "type=bind,src=$RUNNER_TEMP/upstream,dst=/project,readonly" \
-            --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_sciresearch_pair_t023.py,dst=/controller/t023.py,readonly" \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_sciresearch_api_gate_t023.py,dst=/controller/t023.py,readonly" \
             --mount "type=bind,src=$RUNNER_TEMP/t023-wheels,dst=/wheels,readonly" \
             --mount "type=bind,src=$RUNNER_TEMP/t023-site,dst=/site" \
             --mount "type=bind,src=$RUNNER_TEMP/t023-results,dst=/results" \
