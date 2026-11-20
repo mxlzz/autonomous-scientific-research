@@ -1,4 +1,4 @@
-name: H0 T0.21 original direct test functions and single dev scripted baseline
+name: H0 T0.21 isolated import diagnostics and same dev scripted baseline
 on:
   push:
     paths:
@@ -73,6 +73,16 @@ jobs:
               spec.loader.exec_module(module)
           except BaseException as e:
               note("ORIGINAL_TESTS_LOAD_ERROR_CLASS",type(e).__name__)
+              # Module import is before task truth access; log normalized clues only.
+              import re
+              missing=getattr(e,"name",None) or "none"
+              if re.fullmatch(r"[A-Za-z][A-Za-z0-9_.]*",missing):
+                  note("ORIGINAL_TESTS_LOAD_MODULE",missing[:100])
+              msg=str(e)
+              symbol=re.search(r"cannot import name '([A-Za-z][A-Za-z0-9_]*)'",msg)
+              if symbol: note("ORIGINAL_TESTS_LOAD_SYMBOL",symbol.group(1))
+              no_module=re.search(r"No module named '([A-Za-z][A-Za-z0-9_.]*)'",msg)
+              if no_module: note("ORIGINAL_TESTS_MISSING_MODULE",no_module.group(1))
               raise SystemExit(8)
           for test_name in ("test_interval_score","test_tool_outputs_never_contain_private_fields"):
               try:
