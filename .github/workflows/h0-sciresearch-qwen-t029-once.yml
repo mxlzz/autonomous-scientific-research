@@ -1,0 +1,193 @@
+name: H0 T0.29 one isolated Qwen3 0.6B tool-only science gate
+on:
+  push:
+    paths:
+      - .github/workflows/h0-sciresearch-qwen-t029-once.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t029-one-isolated-qwen-science
+  cancel-in-progress: true
+jobs:
+  model-gate-then-conditional-science:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      HF_TOKEN: ""
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Checkout trusted controller with no retained credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify protocol and pin original benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/h0_sciresearch_qwen_toolonly_t029.py
+          test -f experiments/T0.29-qwen3-06b-ollama-toolonly-prereg-2026-11-20.md
+          echo T029_PREREGISTERED_PROTOCOL_READ=true
+          git init -q "$RUNNER_TEMP/t029-upstream"
+          git -C "$RUNNER_TEMP/t029-upstream" fetch -q --depth=1 https://github.com/Btwestyo/sciresearch-eval.git 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          git -C "$RUNNER_TEMP/t029-upstream" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/t029-upstream" rev-parse HEAD)" = 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git -C "$RUNNER_TEMP/t029-upstream" hash-object src/sciresearch_eval/agents/harness.py)" = 194a4b36caf4cd702caee34044ec457247644aee
+          test "$(git -C "$RUNNER_TEMP/t029-upstream" hash-object src/sciresearch_eval/agents/openai_backend.py)" = 62226f9e814af28593763281ed8cf5e25dc6cc5d
+          test "$(git -C "$RUNNER_TEMP/t029-upstream" hash-object src/sciresearch_eval/grader.py)" = 8194044d11b17b6d9d2b040a5115ff35bb798b64
+          echo T029_UPSTREAM_AND_SCORER_PIN_PASS=true
+          mkdir -p "$RUNNER_TEMP/t029-models" "$RUNNER_TEMP/t029-wheels" "$RUNNER_TEMP/t029-site" "$RUNNER_TEMP/t029-summary" "$RUNNER_TEMP/t029-private"
+          chmod 777 "$RUNNER_TEMP/t029-models" "$RUNNER_TEMP/t029-wheels" "$RUNNER_TEMP/t029-site" "$RUNNER_TEMP/t029-summary" "$RUNNER_TEMP/t029-private"
+      - name: Download exact Ollama image and Qwen3 model into preparation-only container
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+          timeout 140 docker pull "$image" >/dev/null
+          test "$(docker image inspect "$image" --format '{{.Os}} {{.Architecture}}')" = "linux amd64"
+          echo T029_OLLAMA_IMAGE_PIN_PASS=true
+          docker run -d --name t029-model-prep --network bridge --cap-drop ALL \
+            --security-opt no-new-privileges --read-only --cpus 1 --memory 2g \
+            --pids-limit 96 --tmpfs /tmp:rw,nosuid,nodev,size=256m,mode=1777 \
+            --mount "type=bind,src=$RUNNER_TEMP/t029-models,dst=/root/.ollama" \
+            --env OLLAMA_HOST=0.0.0.0:11434 "$image" > /dev/null
+          trap 'docker rm -f t029-model-prep >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 35); do
+            if docker exec t029-model-prep ollama list >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          timeout 180 docker exec t029-model-prep ollama pull qwen3:0.6b > "$RUNNER_TEMP/t029-private/model-pull.log" 2>&1
+          python3 - <<'PY'
+          import hashlib,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"t029-models"
+          manifest=root/"models/manifests/registry.ollama.ai/library/qwen3/0.6b"
+          assert manifest.is_file(), "missing qwen model manifest"
+          digest=hashlib.sha256(manifest.read_bytes()).hexdigest()
+          assert digest=="7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435", "manifest digest mismatch"
+          print("T029_QWEN3_06B_MANIFEST_SHA256="+digest,flush=True)
+          print("T029_MODEL_WEIGHT_PREP_DONE=true",flush=True)
+          PY
+          docker rm -f t029-model-prep >/dev/null
+          trap - EXIT
+      - name: Stage exact Python binary wheels for offline trusted scientific evaluator
+        shell: bash
+        run: |
+          set -euo pipefail
+          img="python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df"
+          timeout 100 docker pull "$img" >/dev/null
+          timeout 140 docker run --rm --network bridge --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --cpus 1 --memory 1g --pids-limit 96 \
+            --user 65534:65534 --tmpfs /tmp:rw,nosuid,nodev,size=512m,mode=1777 \
+            --mount "type=bind,src=$RUNNER_TEMP/t029-wheels,dst=/wheels" \
+            "$img" python -m pip download --no-cache-dir --only-binary=:all: --no-deps \
+              -d /wheels numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+              iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 > /dev/null
+          python3 - <<'PY'
+          import hashlib,os,pathlib
+          wheels=pathlib.Path(os.environ["RUNNER_TEMP"])/"t029-wheels"
+          expected={
+           "iniconfig-2.3.1-py3-none-any.whl":"9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+           "numpy-2.4.6-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl":"90f9849678c75fe7afa2d348ac842c168b0a4d3d61919687216dfc547976d853",
+           "packaging-26.3-py3-none-any.whl":"d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+           "pluggy-1.7.0-py3-none-any.whl":"7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec",
+           "pygments-2.21.0-py3-none-any.whl":"2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+           "pytest-9.1.1-py3-none-any.whl":"37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+           "scipy-1.17.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl":"02ae3b274fde71c5e92ac4d54bc06c42d80e399fec704383dcd99b301df37458"
+          }
+          got={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in wheels.glob("*.whl")}
+          assert got==expected, "wheel source identity mismatched"
+          print("T029_ALL_7_WHEELS_MATCH_T021=true",flush=True)
+          PY
+      - name: Start isolated actor, inspect no private/code/socket mounts, then evaluate tool compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          actor_image="ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+          eval_image="python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df"
+          net="t029-internal"
+          docker network create --internal "$net" >/dev/null
+          docker run -d --name t029-ollama-actor --network "$net" --network-alias ollama \
+            --cap-drop ALL --security-opt no-new-privileges --read-only \
+            --cpus 1 --memory 2g --pids-limit 96 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=256m,mode=1777 \
+            --mount "type=bind,src=$RUNNER_TEMP/t029-models,dst=/root/.ollama" \
+            --env OLLAMA_HOST=0.0.0.0:11434 "$actor_image" > /dev/null
+          trap 'docker rm -f t029-ollama-actor >/dev/null 2>&1 || true; docker network rm t029-internal >/dev/null 2>&1 || true' EXIT
+          python3 - <<'PY'
+          import json,subprocess
+          c=json.loads(subprocess.check_output(["docker","inspect","t029-ollama-actor"],text=True))[0]
+          mounts=c["Mounts"]
+          assert len(mounts)==1 and mounts[0]["Destination"]=="/root/.ollama", "actor mount is not solely model store"
+          assert "/var/run/docker.sock" not in str(mounts)
+          cfg=c["HostConfig"]
+          assert cfg["Privileged"] is False
+          assert "ALL" in cfg["CapDrop"]
+          assert cfg["Memory"] <= 2*1024**3 and cfg["NanoCpus"]<=10**9
+          assert c["NetworkSettings"]["Networks"]["t029-internal"],"not on internal network"
+          n=json.loads(subprocess.check_output(["docker","network","inspect","t029-internal"],text=True))[0]
+          assert n["Internal"] is True,"network not internal"
+          print("T029_ACTOR_MODEL_ONLY_MOUNT_PASS=true",flush=True)
+          print("T029_DOCKER_INTERNAL_NETWORK_PASS=true",flush=True)
+          print("T029_ACTOR_MEMORY_2G_CPU_1_PASS=true",flush=True)
+          PY
+          # EVALUATOR mounts are distinct. The model Ollama container has ZERO source/data paths.
+          set +e
+          timeout --signal=TERM --kill-after=5s 260 docker run --rm --name t029-science-evaluator \
+             --network "$net" --read-only --cap-drop ALL --security-opt no-new-privileges \
+             --cpus 1 --memory 1g --pids-limit 96 --user 65534:65534 \
+             --workdir /project --tmpfs /tmp:rw,nosuid,nodev,size=256m,mode=1777 \
+             --tmpfs /scratch:rw,nosuid,nodev,size=16m,mode=1777 \
+             --env PYTHONDONTWRITEBYTECODE=1 --env PYTHONHASHSEED=0 \
+             --env OPENBLAS_NUM_THREADS=1 --env OMP_NUM_THREADS=1 \
+             --mount "type=bind,src=$RUNNER_TEMP/t029-upstream,dst=/project,readonly" \
+             --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_sciresearch_qwen_toolonly_t029.py,dst=/controller/t029.py,readonly" \
+             --mount "type=bind,src=$RUNNER_TEMP/t029-wheels,dst=/wheels,readonly" \
+             --mount "type=bind,src=$RUNNER_TEMP/t029-site,dst=/site" \
+             --mount "type=bind,src=$RUNNER_TEMP/t029-summary,dst=/summary" \
+             --mount "type=bind,src=$RUNNER_TEMP/t029-private,dst=/private-outputs" \
+             "$eval_image" sh -c '
+               python -m pip install --no-index --no-deps --find-links=/wheels --target=/site \
+                 numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+                 iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 \
+                 >/tmp/pip.log 2>&1
+               rc=$?
+               if [ "$rc" -ne 0 ]; then echo T029_OFFLINE_INSTALL_EXIT=$rc; exit "$rc"; fi
+               echo T029_OFFLINE_INSTALL_PASS=true
+               PYTHONPATH=/site:/project/src python /controller/t029.py
+             ' > "$RUNNER_TEMP/t029-private/eval-stdout.log" 2>&1
+          rc=$?
+          set -e
+          python3 - <<'PY'
+          import hashlib,os,pathlib,re
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t029-private/eval-stdout.log"
+          raw=p.read_bytes()
+          print("T029_EVALUATOR_LOG_SHA256="+hashlib.sha256(raw).hexdigest(),flush=True)
+          for line in raw.decode("utf-8","replace").splitlines():
+              if re.fullmatch(r"T029_[A-Z0-9_]+=(?:[A-Za-z0-9._:/,-]| )+",line) and len(line)<300:
+                  print(line,flush=True)
+          PY
+          echo "T029_EVALUATOR_EXIT=$rc"
+          test "$rc" -eq 0
+          python3 - <<'PY'
+          import json,os,pathlib,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"t029-summary/t029_summary.json"
+          assert p.is_file(), "missing summary"
+          j=json.loads(p.read_text())
+          assert j["public_task"]=="task_525abee377" and j["model"]=="qwen3:0.6b"
+          assert j["paid_api_used"] is False
+          print("T029_SUMMARY_SHA256_VERIFIED="+hashlib.sha256(p.read_bytes()).hexdigest(),flush=True)
+          print("T029_STATUS_VERIFIED="+j["status"],flush=True)
+          print("T029_GATE_VERIFIED="+j["gate"],flush=True)
+          print("T029_ORIGINAL_SCIENTIFIC_SCORE_OBSERVED="+str(j["score"] is not None),flush=True)
+          PY
+      - name: Release actor and assert no private transcript upload
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f t029-ollama-actor t029-model-prep >/dev/null 2>&1 || true
+          docker network rm t029-internal >/dev/null 2>&1 || true
+          echo T029_PRIVATE_TRAJECTORY_ARTIFACT_UPLOADED=false
+          echo T029_ISOLATED_ACTOR_STOPPED=true
