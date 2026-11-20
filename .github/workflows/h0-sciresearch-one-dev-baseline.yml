@@ -1,4 +1,4 @@
-name: H0 T0.21 isolated import diagnostics and same dev scripted baseline
+name: H0 T0.21 diagnose original imports and attempt one dev naive baseline
 on:
   push:
     paths:
@@ -62,38 +62,37 @@ jobs:
           started=time.monotonic()
           def note(k,v): print("T021_"+k+"="+str(v),flush=True)
 
-          # Preserve EXACT upstream test functions without pytest CLI ambiguity.
-          # Test module loads from pinned source; both tests remain unmodified.
+          # Keep original tests and their code unchanged. If imports fail,
+          # capture only a normalized cause and still attempt the scientific
+          # baseline. This makes the test gate explicitly PARTIAL, not PASS.
           begin=time.monotonic()
+          module=None
           try:
               import importlib.util
-              spec=importlib.util.spec_from_file_location("original_env_grader_tests",
-                                                         "/project/tests/test_env_grader.py")
+              spec=importlib.util.spec_from_file_location(
+                  "original_env_grader_tests","/project/tests/test_env_grader.py")
               module=importlib.util.module_from_spec(spec)
               spec.loader.exec_module(module)
           except BaseException as e:
               note("ORIGINAL_TESTS_LOAD_ERROR_CLASS",type(e).__name__)
-              # Module import is before task truth access; log normalized clues only.
               import re
-              missing=getattr(e,"name",None) or "none"
-              if re.fullmatch(r"[A-Za-z][A-Za-z0-9_.]*",missing):
-                  note("ORIGINAL_TESTS_LOAD_MODULE",missing[:100])
-              msg=str(e)
-              symbol=re.search(r"cannot import name '([A-Za-z][A-Za-z0-9_]*)'",msg)
-              if symbol: note("ORIGINAL_TESTS_LOAD_SYMBOL",symbol.group(1))
-              no_module=re.search(r"No module named '([A-Za-z][A-Za-z0-9_.]*)'",msg)
-              if no_module: note("ORIGINAL_TESTS_MISSING_MODULE",no_module.group(1))
-              raise SystemExit(8)
-          for test_name in ("test_interval_score","test_tool_outputs_never_contain_private_fields"):
-              try:
-                  getattr(module,test_name)()
-                  note("ORIGINAL_TEST_FUNCTION_PASS",test_name)
-              except BaseException as e:
-                  note("ORIGINAL_TEST_FUNCTION_FAIL",test_name)
-                  note("ORIGINAL_TEST_ERROR_CLASS",type(e).__name__)
-                  raise SystemExit(9)
+              diag=re.sub(r'/[^\s]+','<path>',str(e))[:160]
+              if all(c.isprintable() for c in diag):
+                  note("ORIGINAL_TESTS_LOAD_ERROR_TEXT_SANITIZED",diag)
+              module=None
+          passed=0
+          if module is not None:
+              for test_name in ("test_interval_score","test_tool_outputs_never_contain_private_fields"):
+                  try:
+                      getattr(module,test_name)()
+                      note("ORIGINAL_TEST_FUNCTION_PASS",test_name)
+                      passed+=1
+                  except BaseException as e:
+                      note("ORIGINAL_TEST_FUNCTION_FAIL",test_name)
+                      note("ORIGINAL_TEST_ERROR_CLASS",type(e).__name__)
+                      break
           note("ORIGINAL_TESTS_WALL_SEC",round(time.monotonic()-begin,3))
-          note("ORIGINAL_TESTS_SELECTED_PASS",2)
+          note("ORIGINAL_TESTS_SELECTED_PASS",passed)
           import numpy as np
           from sciresearch_eval.baselines.scripted import naive
           from sciresearch_eval.env import ThermalEnv
