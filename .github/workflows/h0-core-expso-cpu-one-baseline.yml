@@ -1,0 +1,40 @@
+name: H0 T0.17 one bounded ExPSO CPU reproduction and separate CORE scorer
+on:
+  push:
+    paths:
+      - .github/workflows/h0-core-expso-cpu-one-baseline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h0-t017-single-scientific-baseline
+  cancel-in-progress: true
+
+jobs:
+  single-cpu-baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    env:
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      DOCKER_BUILDKIT: "0"
+    steps:
+      - name: Checkout immutable trigger commit without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Syntax and pinned protocol check before contacting archives or running code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/h0_core_expso_cpu_baseline.py
+          grep -Fq "CAPSULE_SHA = \"5668df380ab8b4f2cb7e3724d6fb2d6d2151714d7a571545e6c256c74b598e48\"" scripts/h0_core_expso_cpu_baseline.py
+          docker version --format '{{.Server.Version}}'
+          echo "T017_INSTRUMENT_SYNTAX_PASS=true"
+      - name: One scientific script run under Docker nonprivileged, then external original scorer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u scripts/h0_core_expso_cpu_baseline.py
