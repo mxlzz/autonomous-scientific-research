@@ -54,7 +54,7 @@ jobs:
                           calls=sorted({(n.func.id if isinstance(n.func,ast.Name) else n.func.attr if isinstance(n.func,ast.Attribute) else "dynamic") for n in ast.walk(tree) if isinstance(n,ast.Call)})
                           print("T016_TARGET_AST_IMPORTS="+",".join(imports)[:1000],flush=True)
                           print("T016_TARGET_AST_CALL_NAMES="+",".join(calls)[:1200],flush=True)
-                          print("T016_TARGET_AST_NODE_COUNT="+str(len(list(ast.walk(tree))),flush=True)
+                          print("T016_TARGET_AST_NODE_COUNT="+str(len(list(ast.walk(tree)))),flush=True)
                           print("T016_TARGET_HAS_MAIN_GUARD="+str(any(isinstance(n,ast.If) for n in tree.body)),flush=True)
                       for n in ast.walk(tree):
                           if isinstance(n,ast.Call):
