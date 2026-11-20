@@ -31,7 +31,7 @@ SCALAR_KEYS=("param_interval_score","param_coverage","param_log10_error",
     "compute_fraction","experiments_used")
 STATS={"status":"STARTED","science_status":"NOT_STARTED","model":MODEL,
     "task":TASK,"upstream_commit":UPSTREAM,"model_calls":0,"api_paid_usd":0,
-    "actor_has_evaluator_mount":False,"os_isolation_proven":False,
+    "actor_has_evaluator_mount":None,"os_isolation_proven":False,
     "source_is_upstream_unmodified":True,"scientific_scorer_original":True,
     "score":None,"tool_names":[],"tool_statuses":[],"probe_pass":False,
     "guard_integrated_in_loaded_copy":False}
@@ -111,8 +111,9 @@ def setup():
 
 def scalar(v):
     if v is None:return None
-    if isinstance(v,(bool,)):return bool(v)
-    if isinstance(v,(int,float)) and math.isfinite(float(v)):return float(v)
+    import numpy as np
+    if isinstance(v,(bool,np.bool_)):return bool(v)
+    if isinstance(v,(int,float,np.integer,np.floating)) and math.isfinite(float(v)):return float(v)
     raise ValueError("metric_unexpected_type")
 
 def finish():
@@ -129,6 +130,10 @@ def finish():
 
 def run():
     a,h,tools,np=setup()
+    if os.environ.get("T029_MOUNT_GATE_VERIFIED")!="yes":
+        raise RuntimeError("mount_gate_not_verified")
+    STATS["actor_has_evaluator_mount"]=False
+    STATS["docker_mount_check_pass"]=True
     if {"exec","read_file","shell"} & {t["name"] for t in tools.specs()}:
         raise RuntimeError("model_tools_expose_fs")
     # Probe the actual OpenAI-compatible endpoint using an original tool schema.
