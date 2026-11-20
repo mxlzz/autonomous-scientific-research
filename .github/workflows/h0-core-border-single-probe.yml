@@ -82,6 +82,17 @@ jobs:
                           print("T019_TARGET_IMPORTS="+json.dumps(imports,ensure_ascii=True),flush=True)
                           print("T019_TARGET_TOPLEVEL_KIND="+json.dumps([type(n).__name__ for n in tree.body[:18]]),flush=True)
                           print("T019_TARGET_IF_COUNT="+str(sum(isinstance(n,ast.If) for n in tree.body)),flush=True)
+                          top_if=[n for n in tree.body if isinstance(n,ast.If)]
+                          for n in top_if[:2]:
+                              print("T019_TOP_IF_TEST="+ast.dump(n.test,include_attributes=False)[:650],flush=True)
+                              print("T019_TOP_IF_BODY_TYPES="+json.dumps([type(x).__name__ for x in n.body[:18]]),flush=True)
+                              for child in n.body[:18]:
+                                  if isinstance(child,ast.Expr) and isinstance(child.value,ast.Call):
+                                      call=child.value
+                                      fn=call.func.id if isinstance(call.func,ast.Name) else call.func.attr if isinstance(call.func,ast.Attribute) else "dynamic"
+                                      print("T019_MAIN_CALL="+fn+",argc="+str(len(call.args)),flush=True)
+                                  if isinstance(child,ast.Assign):
+                                      print("T019_MAIN_ASSIGN_NAMES="+json.dumps([getattr(t,"id","complex") for t in child.targets]),flush=True)
                       except (SyntaxError,UnicodeError):
                           print("T019_NO_GO=target_script_not_parseable",flush=True)
                   names=sorted({PurePosixPath(m.name).name for m in files})
@@ -95,6 +106,10 @@ jobs:
                               s=tar.extractfile(m).read().decode("utf-8","replace").lower()
                               print("T019_LICENSE_MARKER_MIT="+str("mit license" in s),flush=True)
                               print("T019_LICENSE_MARKER_GPL="+str("gnu general public license" in s),flush=True)
+                              lead=" ".join(s.split())[:160]
+                              print("T019_LICENSE_HEAD="+base+":"+json.dumps(lead),flush=True)
+                              print("T019_LICENSE_CC_MARKER="+str("creative commons" in s),flush=True)
+                              print("T019_LICENSE_BSD_MARKER="+str("redistributions of source code" in s or "redistribution and use in source and binary forms" in s),flush=True)
                           if m.size<=100000 and base in ["Dockerfile","requirements.txt","environment.yml","environment.yaml"]:
                               s=tar.extractfile(m).read().decode("utf-8","replace")
                               if base=="Dockerfile":
