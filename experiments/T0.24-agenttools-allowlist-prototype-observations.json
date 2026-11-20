@@ -1,0 +1,88 @@
+{
+  "artifact_kind": "CI_allowlist_observations_reconstructed_not_original_ephemeral_json",
+  "date": "2026-11-20",
+  "unit": "T0.24",
+  "upstream": {
+    "repo": "Btwestyo/sciresearch-eval",
+    "commit": "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0",
+    "license": "CC-BY-4.0"
+  },
+  "run": {
+    "id": 44810721415,
+    "job_id": 136546263793,
+    "url": "https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44810721415",
+    "conclusion": "success",
+    "workflow_commit": "0b404e8a7af5b4c139f9add758ed84b20548ff4e",
+    "image_digest": "python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df",
+    "cpu_limit": 2,
+    "memory_limit_gib": 3,
+    "network": "none",
+    "gpu": false,
+    "paid_api": false,
+    "model_calls": 0
+  },
+  "method": {
+    "guard": "if name not in {s['name'] for s in tools.specs()}: raise ToolError",
+    "executed_only_as_local_trusted_wrapper": true,
+    "original_agenttools_source_changed": false,
+    "original_harness_patched": false,
+    "original_dispatcher_still_allows_A_update_state": true,
+    "actual_llm_backend_tested": false,
+    "actor_fs_isolation_proven": false
+  },
+  "conditions": [
+    {
+      "condition": "A",
+      "tool_count": 8,
+      "denied": 7,
+      "authorized_fit": true,
+      "authorized_update_state": false,
+      "unadvertised_recommend_experiment_rejected": true
+    },
+    {
+      "condition": "B",
+      "tool_count": 8,
+      "denied": 7,
+      "authorized_fit": true,
+      "authorized_update_state": false,
+      "unadvertised_recommend_experiment_rejected": true
+    },
+    {
+      "condition": "C",
+      "tool_count": 9,
+      "denied": 6,
+      "authorized_fit": true,
+      "authorized_update_state": true,
+      "unadvertised_recommend_experiment_rejected": true
+    },
+    {
+      "condition": "D",
+      "tool_count": 10,
+      "denied": 5,
+      "authorized_fit": true,
+      "authorized_update_state": true,
+      "recommend_experiment_advertised_but_not_executed": true
+    }
+  ],
+  "unknown_tool_calls_rejected": [
+    "read_file",
+    "exec",
+    "shell",
+    "filesystem",
+    "browser"
+  ],
+  "prototype_gate_status": "PASS_LOCAL_WRAPPER_ONLY",
+  "permission_gate_on_actual_harness": "NOT_INTEGRATED",
+  "observed": {
+    "wall_sec": 1.03,
+    "controller_maxrss_kib": 84100,
+    "original_ephemeral_json_sha256": "5cc5eb9490accbe93d4a76ca3a7413abe54ece02ca2ea69900b085669d17ec4b",
+    "original_ephemeral_json_not_retained": true
+  },
+  "limits": [
+    "Four conditions on one dev task, no models or independent OS actor",
+    "Original AgentTools.call still bypasses condition schema; safe use requires guard in actual model's dispatch path",
+    "No private values observed or leaked; OS process isolation not established",
+    "No claim about full original pytest suite, independent audits, or scientific performance"
+  ]
+}
