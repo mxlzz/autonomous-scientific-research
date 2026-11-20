@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.17",
-  "task_title": "T0.17 — ejecutar una reproducción científica basal CPU de un solo intento o descartar ExPSO por bloqueo verificable",
-  "task_expected_output": "Una unidad experimental de H0: verificar rápidamente si la cápsula CORE train/capsule-5975162/codeocean_hard puede correr con dependencias realmente necesarias en sandbox efímero CPU-only, no privileged, sin socket Docker/secret/gold y con scorer original fuera del sandbox. Si pasa los gates, efectuar UNA reproducción determinista corta con salida report.json, métricas de tiempo/memoria/CPU y watchdog más logs sanitizados recuperables, puntuar por scorer original al finalizar y registrar negativos. Si no puede pasar gate de sandbox/CPU/costo/rights, detener ExPSO como primer piloto, registrar bloqueo medido y seleccionar una tarea científica alternativa concreta más liviana. No LLM ni arquitectura en esta unidad salvo que STATE cambie por evidencia y autorización.",
-  "task_acceptance": "Partir de HEAD/STATE y evidencia T0.16; no construir Dockerfile original con RUN /postInstall ni usar benchmark/benchmark.py privileged=True o tar.extractall inseguro; no consumir APIs/VM/GPU pagas. Un solo intento de reproducción si dependencias/sandbox se validan con condiciones verificables, red controlada, límites CPU/RAM/PIDs/tiempo y sin leak de results; registrar SHA de archivo, comandos/imagen/digest, recursos y cutoff, salida y score externo original (no otorgar al agente gold). Test de fallo del watchdog/log recuperación y privacidad por destino; no declarar ciencia autónoma por reproducir código. Si fracaso de gate, no reintentar por tanteo ni prolongar preflight: producir diagnóstico específico de por qué ExPSO se descarta y alternativa concreta con fuente/CPU/scorer para siguiente unidad. Auditar y persistir evidence/audit/LOG, STATE última. Es una muestra piloto, sin inferencia sobre H1/H2.",
-  "next_action": "T0.17: contrastar HEAD/STATE, fuente T0.16 y criterio H0. Decidir go/no-go inmediato para un solo ensayo CPU/seguro de reproducción de ExPSO; si no cabe/imagen y dependencias exigen infraestructura desproporcionada o insegura, declarar NO-GO con evidencia y migrar a alternativa CPU científica específica, sin añadir preflights sucesivos. Si GO, ejecutar un solo script en sandbox sin privileged ni acceso a gold, con límite/historial log/escorer original separado y registrar costos completos. No modelos/entornos pagos ni arquitectura multiagente. Persistir evidencia, auditoría, RESEARCH/PLAN/LOG, verificar, STATE último.",
+  "current_task": "T0.18",
+  "task_title": "T0.18 — reparar una sola vez la observabilidad del fallo SCIENCE de CORE ExPSO, reintentar idéntico o descartar candidato",
+  "task_expected_output": "Una recuperación instrumental acotada del único run negativo 44724071731: identificar sin publicar logs raw la fase de fallo wheel_install vs script_runtime mediante código de error, clase de excepción y marcador de progreso; sin cambiar cápsula CORE train/capsule-5975162 SHA256 5668df380ab8b4f2cb7e3724d6fb2d6d2151714d7a571545e6c256c74b598e48, imagen Docker python@sha256:a02e9c..., paquete ExPSO0.1.4, numpy1.26.2, scipy1.13.1, seed0, CPU2/RAM3GiB, timeout240s, scorer original externo ni separación de gold. Máximo una corrida completa. Si produce report.json, puntuar con scorer CORE original y registrar métricas, tiempos, costos y limitaciones; si falla, NO-GO definitivo de ExPSO como primer piloto y transición al candidato CORE train/capsule-2011424 BorderT-GRAANK, cuyo tar/licencia/CPU deben verificarse sin asumir viabilidad. Ninguna nueva arquitectura ni LLM.",
+  "task_acceptance": "Antes del único retry: verificar HEAD, evidencia T0.17 y programa actual, instrumentación que discrimine fase/exit/exception_type sin imprimir stdout/stderr raw, y que recupere estado incluso tras timeout. No cambiar seed/tarea/paquetes/scorer para conseguir un acierto, no pagos ni GPU. Una vez ejecutar en Docker aislado no privileged sin socket/gold/secret con red none para SCIENCE, scratch y resource limits; scorer original sólo fuera del sandbox tras reporte completo. Registrar resultados reales o bloqueo preciso con hashes de imagen/wheels/tar, CPU/RAM/tiempos y costo o desconocidos. Tras un único segundo fallo no añadir otra preflight/sonda ExPSO: registrar cierre de ExPSO y seleccionar alternativa oficial capsule-2011424 para siguiente unidad. No cerrar H0 ni H1-H6 por éxito de código publicado.",
+  "next_action": "T0.18: leer HEAD/STATE y evidencia/autoverificación T0.17; corregir solo scripts/h0_core_expso_cpu_baseline.py para distinguir exit de pip install vs runpy y mostrar error class allowlist, sin filtrar materias privadas, con traza de etapa recuperable; comprobar sintaxis/readback. Ejecutar como máximo una nueva corrida en Actions con misma cápsula imagen (digest congelado), paquete/versiones, seed, límites y scorer. Si éxito, score original fuera del sandbox y métricas honestas; si fracaso, cerrar ExPSO en H0 como primera baseline y planear capsule-2011424 (1 pregunta numérica) con gate legal/CPU; no seguir tuning. Guardar evidence/audit/PLAN/RESEARCH/LOG y readbacks; STATE.json ULTIMO. Sin recursos pagos.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -31,7 +31,8 @@
     "T0.13",
     "T0.14",
     "T0.15",
-    "T0.16"
+    "T0.16",
+    "T0.17"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -54,7 +55,8 @@
     "T0.13: autoverificación no independiente; run44652705085 cancelado a 15min sin resumen de inferencia, RAM del contenedor, acciones/tokens/scorer. No hay traza recuperable ni evidencia de validez; revisar instrumentación timeout 255 y posible think:false incompatibilidad antes de cualquier nuevo LLM, no atribuir causalidad.",
     "T0.14 autoverificación del mismo agente, sin independencia: selección documental CORE train capsules 5975162 y 2916503, sin inspección del tar/licencias/datos/recursos ni scorer separado real; reevaluar antes de experimento y cierre H0.",
     "T0.15 autoverificación no independiente de preflight archivo CORE: SHA recibido no firmado, tests estáticos de paths y licencia indicativa, sin comprobación de seguridad de código dependencias, CPU/GPU, scorer separado ni trazas; auditar antes de cualquier experimento.",
-    "T0.16 autoverificación no independiente: cuatro tests sintéticos CORE scorer y AST no prueban sandbox, duración CPU, separación real de gold, watchdog persistente, ni investigación autónoma. Cierre H0 y próximos experimentos requieren auditoría según AGENTS."
+    "T0.16 autoverificación no independiente: cuatro tests sintéticos CORE scorer y AST no prueban sandbox, duración CPU, separación real de gold, watchdog persistente, ni investigación autónoma. Cierre H0 y próximos experimentos requieren auditoría según AGENTS.",
+    "T0.17 autoverificación del mismo ejecutor, no independiente: un contenedor CPU no privileged falló exit1 sin reporte/score, error de pipeline no diagnosticado por pérdida de stderr; no implica incapacidad del modelo/código; T0.18 único retry instrumental antes de descartar o puntuar."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -71,7 +73,8 @@
     "T0.13: modelo Qwen3 4B digest 359d7dd4... y gates validator/host PASS, pero workflow job44652705085 cancelled por timeout 15m durante --run sin marcadores de cierre ni score. Cantidad de acciones/tokens/RAM pico desconocida; raw private log perdido y retorno timeout 255 no observado. Modelo tag Thinking-2507 distinto de Instruct, no comparación emparejada. Priorizar CORE train real; no repetir inferencia sin observabilidad nueva.",
     "T0.14: CORE train contiene gold results junto a prompts; harness usa privileged Docker y tar.extractall; licencia MIT de harness/dataset NO cubre necesariamente cápsula/paper/datos. capsule-5975162 seleccionada solo condicionalmente (Python, 2 preguntas numéricas): archivo tar oficial no recuperado/validado (HEAD/DNS no disponible en entorno), tamaño/hash/licencia CPU/GPU y recursos desconocidos; no ejecutar hasta T0.15.",
     "T0.15: CORE capsule-5975162 tar oficial disponible y SHA verificado; ejecución aún BLOQUEADA hasta revisión de imports/dependencias/tiempos/CPU e imagen Code Ocean no pin digest, aplicación real de sandbox no privileged, protección de gold del scorer, licencia de todos los datasets y registros resilientes a timeout. Upstream ExPSO pyproject classifier MIT contradice LICENSE y README GPL; no redistribuir.",
-    "T0.16: Dockerfile original CORE ExPSO contiene tensorflow2.15.0.post1, torch2.1.1 y RUN /postInstall (código tercero en build), base registry sin digest; recursos CPU/ram reales desconocidos y privileged harness prohibido. Sólo tests sintéticos del scorer/proyección/watchdog pasaron; sandbox sin gold/retención aún no implementado. T0.17 decidir una sola reproducción segura o NO-GO y cambio a alternativa real más ligera, sin extra infraestructura."
+    "T0.16: Dockerfile original CORE ExPSO contiene tensorflow2.15.0.post1, torch2.1.1 y RUN /postInstall (código tercero en build), base registry sin digest; recursos CPU/ram reales desconocidos y privileged harness prohibido. Sólo tests sintéticos del scorer/proyección/watchdog pasaron; sandbox sin gold/retención aún no implementado. T0.17 decidir una sola reproducción segura o NO-GO y cambio a alternativa real más ligera, sin extra infraestructura.",
+    "T0.17: ruta ExPSO minimal wheels/imagen verificadas pero SCIENCE exit1 2.461s y logs crudos descartados. Se desconoce fallo de instalación o runtime; no existe reporte JSON ni score CORE y no hay baseline científica. T0.18 permite UNA corrección de diagnóstico y UNA repetición idéntica, luego abandonar ExPSO como primer piloto si falla, con alternativa train capsule-2011424 cuya licencia/CPU aún no verificadas."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -96,7 +99,8 @@
     "D-0020: T0.13 único ensayo 4B CPU ejecutado con aceptación técnica NEGATIVA/INCONCLUSA por timeout global, no por score o acciones=0 verificados. Preflight 9 negativos/3 positivos, oráculo, recursos host y modelo digest PASS; no resumen score/acciones/tokens. Mantener H0 abierto, evitar tuning o ejecución repetida, abrir T0.14 para preflight documental CORE-Bench train CPU/licencias/evaluador/seguridad. API paga USD0, GPU no usada; autoverificación no independiente.",
     "D-0021: T0.14 completada como revisión documental de CORE-Bench original e inventario train45; preselección NO operativa train/capsule-5975162/codeocean_hard y reserva capsule-2916503, ambos con DOI/prompts/keys verificadas sin gold. Scorer determinista para preguntas numéricas, pero sin validez científica completa; harness MIT desactualizado usa privileged=True/tar.extractall. Gate experimental BLOQUEADO hasta verificar licencias/tar/CPU/sandbox/retención en T0.15. Costo API pagada0; autoverificación no independiente.",
     "D-0022: T0.15 pasó preflight de archivo oficial CORE train capsule-5975162 mediante 1 run gratis Actions44663284462 HEAD/GET200 303245B sha256 5668df380ab8b4f2cb7e3724d6fb2d6d2151714d7a571545e6c256c74b598e48, 47 miembros 428305B tamaño regular declarado sin unsafe paths/links/devices detectados; script 856B presente, LICENSE GPL, Dockerfile Python3.9 sin digest y reproducing sin menciones GPU. Artículo autor GPL, upstream pyproject classifier MIT contradice README/Licencia GPL. Ejecución de código ajeno NO habilitada: falta CPU/imagen/deps, sandbox no privileged, scorer separado y observabilidad. Siguiente T0.16 preflight estático sin gasto. H0 abierto/autoverificación no independiente.",
-    "D-0023: T0.16 completada como preflight técnico de CORE ExPSO. Run44721731017 falló por SyntaxError de inspector; fix único y run44721833765 PASS: tar SHA256 congelado, AST 8 .py (script importa ExPSO/numpy, sin main guard); Dockerfile original exige tensorflow2.15.0.post1/torch2.1.1 y RUN /postInstall, sin prueba CPU/recursos. Función original CORE eval_result_json blob SHA ecf1d777... corrió 4 fixtures sintéticos PASS, proyección sin gold y watchdog sintético PASS; no aislamiento/traza/science real. No construir Dockerfile inseguro ni considerar H0 logrado; en T0.17 un solo ensayo de reproducción científica CPU/no privileged con scorer separado o NO-GO y sustituto concreto si no viable; evitar preflights indefinidos."
+    "D-0023: T0.16 completada como preflight técnico de CORE ExPSO. Run44721731017 falló por SyntaxError de inspector; fix único y run44721833765 PASS: tar SHA256 congelado, AST 8 .py (script importa ExPSO/numpy, sin main guard); Dockerfile original exige tensorflow2.15.0.post1/torch2.1.1 y RUN /postInstall, sin prueba CPU/recursos. Función original CORE eval_result_json blob SHA ecf1d777... corrió 4 fixtures sintéticos PASS, proyección sin gold y watchdog sintético PASS; no aislamiento/traza/science real. No construir Dockerfile inseguro ni considerar H0 logrado; en T0.17 un solo ensayo de reproducción científica CPU/no privileged con scorer separado o NO-GO y sustituto concreto si no viable; evitar preflights indefinidos.",
+    "D-0024: T0.17 ejecutó UNA ruta basal CPU/no privileged de CORE train capsule-5975162 con tar SHA256 verificado y wheels binarios PyPI ExPSO0.1.4/numpy1.26.2/scipy1.13.1 e imagen Docker pinned en run44724071731. SCIENCE exit1 a 2.461s sin report.json ni scorer: causa desconocida por descarte de log pip/stderr. Resultado científico NO observable, NO asignar score0 ni inferir que ExPSO necesita GPU; API pagada0, costo total no medido. Permitir exactamente una corrección de observabilidad/fase y una repetición idéntica T0.18. Si falla, NO-GO del candidato como primera baseline y evaluar CORE train capsule-2011424 BorderT-GRAANK para reemplazo, con licencia/deps desconocidos. H0 abierto, auditoría no independiente."
   ],
   "evidence_refs": [
     {
@@ -194,6 +198,10 @@
     {
       "path": "evidence/T0.16-exPSO-static-code-scorer-gate-2026-11-20.md",
       "status": "Run44721731017 SyntaxError instrumental; run44721833765 PASS AST script ExPSO/numpy/optimize, 8 .py, pinned capsule hash, Dockerfile TF2.15 torch2.1+postInstall; original CORE scorer Git blob verified, 4 synthetic tests pass, fake no-gold projection and timeout pass; no third-party capsule executed, no real benchmark."
+    },
+    {
+      "path": "evidence/T0.17-expso-single-cpu-baseline-failure-2026-11-20.md",
+      "status": "Run44724071731 single attempt: CORE capsule hash verified, Python Docker image digest and wheel hashes pinned, CPU2 mem3GiB no-network/no-privileges; wheel download PASS then SCIENCE exit1 at 2.461s without stage-specific stderr, no report or scorer, no metric/score; failure instrumentally opaque. Alternative CORE train capsule-2011424 identified from official metadata; permissions/runtime not yet tested."
     }
   ],
   "audit_refs": [
@@ -219,13 +227,14 @@
     "audits/T0.13-QWEN4B-TIMEOUT-2026-11-19.md",
     "audits/T0.14-CORE-CAPSULE-REVIEW-2026-11-19.md",
     "audits/T0.15-CAPSULE-STATIC-2026-11-19.md",
-    "audits/T0.16-STATIC-SCORER-2026-11-20.md"
+    "audits/T0.16-STATIC-SCORER-2026-11-20.md",
+    "audits/T0.17-CPU-BASELINE-NEGATIVE-2026-11-20.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "58b48473f00e46725068ce292fcdc8767e44aa11"
+    "commit": "12456d6b8d9806e865180fc8ba9135a2478486e3"
   },
-  "last_confirmed_activity": "T0.16: preflight estático AST de CORE ExPSO y 4 tests sintéticos de función scorer original PASS en run44721833765 tras reparar SyntaxError de primer run44721731017; el entorno científico original requiere TensorFlow/PyTorch y ejecuta postInstall en build; no cápsula/LLM ejecutado. Evidencia, autoverificación, PLAN/RESEARCH/METHODOLOGY/README/LOG persistidos y verificados (RESEARCH reconciliado con lectura fresca). Próxima T0.17 ejecutar una reproducción basal solo si sandbox gratuito seguro, o NO-GO con alternativa concreta.",
+  "last_confirmed_activity": "T0.17 ejecutó un único run44724071731 de ExPSO en Docker no privileged CPU2 mem3GiB; archive, script, image digest and ExPSO/NumPy/SciPy wheel downloads verified, SCIENCE exit1 2.461s sin reporte ni scorer; logs descartaron causa exacta. Evidencia/auditoría/documentos/LOG persistidos con readback; D-0024 recuperación de diagnóstico máximo un retry en T0.18 o cambio a capsule-2011424. H0 abierto, sin LLM ni APIs pagas.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
