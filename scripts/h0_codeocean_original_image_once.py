@@ -74,7 +74,7 @@ def main():
             if m.issym() or m.islnk() or m.isdev() or p.is_absolute() or ".." in p.parts:
                 raise ValueError("archive_unsafe_member")
         files=[m for m in ms if m.isfile()]
-        target=[m for m in files if m.name.endswith("/code/algorithms/border_tgraank.py")]
+        target=[m for m in files if m.name.endswith("code/algorithms/border_tgraank.py")]
         if len(target)!=1 or hashlib.sha256(tar.extractfile(target[0]).read()).hexdigest()!="c2819e5914693614800c2e8bf88ec011237ef59813776ed206d1833058c402ec":
             raise ValueError("target_script_gate")
         licenses=[m for m in files if PurePosixPath(m.name).name=="LICENSE"]
