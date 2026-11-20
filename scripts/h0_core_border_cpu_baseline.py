@@ -136,7 +136,7 @@ def main():
         code=script.read_bytes()
         if hashlib.sha256(code).hexdigest()!="c2819e5914693614800c2e8bf88ec011237ef59813776ed206d1833058c402ec":
             raise ValueError("target hash changed")
-        ast.parse(code.decode("utf8-sig"))
+        ast.parse(code.decode("utf-8-sig"))
         log("TARGET_SHA_MATCH",True)
     # Original task says just Run algorithms/border_tgraank.py, with no user CLI flags.
     if rel.parts[-2:]!=("algorithms","border_tgraank.py"):
