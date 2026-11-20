@@ -1,0 +1,61 @@
+{
+  "kind": "sanitized_GitHub_Actions_marker_reconstruction_not_original_ephemeral_json",
+  "date": "2026-11-20",
+  "unit": "T0.30",
+  "stage": "H0",
+  "protocol": "experiments/T0.30-qwen-science-timeout-transport-preregister-2026-11-20.md",
+  "protocol_git_blob_sha": "778fd11d877a35a8bf17a2de3dfc214437050331",
+  "run": {
+    "id": 44817585135,
+    "job_id": 136569800084,
+    "url": "https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44817585135",
+    "workflow_commit": "9bdbb835d74a74cea9c7265390668692e5e1f7a8",
+    "status": "completed",
+    "conclusion": "success only of protocol execution, NOT science"
+  },
+  "model": {
+    "name": "qwen3:0.6b",
+    "digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+    "source_runtime": "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+    "calls_completed": 1,
+    "request_timeout_seconds": 90,
+    "retries": 0
+  },
+  "source": {
+    "sciresearch_eval_upstream_commit": "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0",
+    "source_pins_pass": true,
+    "original_env_and_grader_unchanged": true,
+    "agent_receiver_allowlist_guard_in_loaded_copy": true,
+    "model_and_eval_container_private_mount_separate": true,
+    "docker_internal_network": true,
+    "combined_cpu_limit": 2,
+    "combined_ram_gib_limit": 3,
+    "paid_api_cost_usd": 0
+  },
+  "gate": {
+    "label": "real_OpenAI_tool_calls_budget_status",
+    "valid": false,
+    "response_received": true,
+    "expected": "exactly one budget_status function call with JSON-object input",
+    "reason_unobserved": "could be text only, zero calls, wrong tool, multiple calls or malformed arguments: public allowlist did not retain which condition failed",
+    "science_episode_started": false,
+    "scientific_submission_observed": false,
+    "scientific_score": null,
+    "scientific_error_class_observed": null
+  },
+  "fixes_preregistered": {
+    "transport_per_request_timeout_45_to_90": true,
+    "network_error_retry_path_patched_to_propagate_underlying_exception": true,
+    "actual_transport_error_handling_exercised": false,
+    "model_prompts_conditions_weight_task_unchanged": true
+  },
+  "metric": {
+    "controller_wall_seconds": 11.705,
+    "original_ephemeral_summary_sha256": "47546d668420df8798ec7c883a6e4995eb75c4b864402994d7e4c3ef5ee88401",
+    "original_json_not_retained": true,
+    "private_transcript_uploaded": false,
+    "containers_removed": true
+  },
+  "comparability_note": "T0.29 same model/digest/one budget_status probe passed, while T0.30 did not pass; each one request, no explicit generation seed, does not establish statistical tool reliability nor why the second failed",
+  "decision": "Stop repetitive Qwen3 0.6B prompt/timeout tuning under this same budget; next decision should evaluate existing model/agent alternatives using public evidence or require approved resources without pretending H0 achieved."
+}
