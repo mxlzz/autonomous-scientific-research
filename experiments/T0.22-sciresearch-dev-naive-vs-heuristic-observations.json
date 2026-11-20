@@ -1,0 +1,124 @@
+{
+  "artifact_type": "observations_reconstructed_from_original_GitHub_Actions_allowlist_NOT_original_ephemeral_t022_pair_json",
+  "date_utc": "2026-11-20",
+  "task": "T0.22",
+  "stage": "H0",
+  "source_repository": "Btwestyo/sciresearch-eval",
+  "source_commit": "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0",
+  "license": "CC-BY-4.0",
+  "source_image_digest": "python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df",
+  "workflow_commit": "9811ce2a84d8ca655e4b5301df4cb85dd3ec83c3",
+  "run": {
+    "id": 44809114440,
+    "job_id": 136540794559,
+    "url": "https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44809114440",
+    "status": "completed",
+    "conclusion": "success",
+    "cpu_limit": 2,
+    "memory_limit_gib": 3,
+    "pids_limit": 96,
+    "network": "none",
+    "docker_capabilities": "ALL dropped",
+    "gpu_used": false,
+    "paid_api_used": false,
+    "llm_calls": 0
+  },
+  "task_spec": {
+    "split": "dev",
+    "public_task_id": "task_525abee377",
+    "seed": 0,
+    "scorer": "original sciresearch_eval.grader.grade",
+    "original_policy_sources": "original sciresearch_eval.baselines.scripted.naive and .heuristic",
+    "test_heldout_not_run": true
+  },
+  "pretests": {
+    "original_test_functions_passed": [
+      "test_interval_score",
+      "test_tool_outputs_never_contain_private_fields"
+    ],
+    "count": 2,
+    "entire_upstream_pytest_suite_passed": null
+  },
+  "naive": {
+    "actions": 28,
+    "new_experiments": 0,
+    "compute_units": 71300,
+    "policy_wall_seconds": 0.2378,
+    "metrics": {
+      "param_interval_score": 0.36173429876716306,
+      "param_coverage": 0,
+      "param_log10_error": 0.009468901331882051,
+      "target_interval_score": 6,
+      "target_rel_interval_score": 0.016632909594960665,
+      "target_covered": true,
+      "target_abs_error_over_sigma": 2.2743674101377565,
+      "adequacy_correct": 1,
+      "attribution_correct": 0,
+      "stop_correct": null,
+      "experiment_selection": null,
+      "proposal_score": null,
+      "compute_fraction": 0.000005802408854166666,
+      "experiments_used": 0
+    }
+  },
+  "heuristic": {
+    "actions": 36,
+    "new_experiments": 0,
+    "compute_units": 33175201,
+    "policy_wall_seconds": 7.9945,
+    "metrics": {
+      "param_interval_score": 0.0008399380270350532,
+      "param_coverage": 1,
+      "param_log10_error": 0.00007049910371606516,
+      "target_interval_score": 6.000000000001819,
+      "target_rel_interval_score": 0.016632909594960665,
+      "target_covered": true,
+      "target_abs_error_over_sigma": 0.10413258986261553,
+      "adequacy_correct": 1,
+      "attribution_correct": 1,
+      "stop_correct": null,
+      "experiment_selection": null,
+      "proposal_score": null,
+      "compute_fraction": 0.0026998047688802083,
+      "experiments_used": 0
+    }
+  },
+  "paired_difference_heuristic_minus_naive": {
+    "param_interval_score": -0.36089436074012804,
+    "param_coverage": 1,
+    "target_interval_score": 1.8189894035458565e-12,
+    "compute_fraction": 0.0026940023600260416
+  },
+  "derived_ratios": {
+    "heuristic_compute_units_over_naive": 465.2903366058906,
+    "heuristic_policy_wall_over_naive": 33.61858704793944
+  },
+  "controls": {
+    "upstream_sha_verified": true,
+    "original_scorer_verified": true,
+    "seven_wheel_hashes_same_as_T021": true,
+    "naive_prior_param_interval_match_abs_tolerance_1e_8": true,
+    "naive_prior_param_coverage_match": true,
+    "naive_prior_target_interval_match": true,
+    "naive_prior_adequacy_attribution_match": true,
+    "naive_trace_action_count_prior": 29,
+    "naive_trace_action_count_this_run": 28,
+    "trace_discrepancy_cause": "not investigated; code versions and compute_units verified identical; do not claim perfect trace identity",
+    "private_tool_field_leak_test_passed": true,
+    "os_file_isolation_of_private_truth": false
+  },
+  "measurement": {
+    "wrapper_wall_sec": 9.0939,
+    "controller_maxrss_kib": 90332,
+    "ephemeral_original_t022_pair_json_sha256": "7947f002922729448a4bdcfc117b13baa64cdfdb2957d80646601e9db0ae0160",
+    "original_json_content_persisted": false
+  },
+  "limits": [
+    "Single public development task, no statistical uncertainty or blind generalization",
+    "Both policies deterministic and no AI/model requests",
+    "Agent/evaluator share private dev files within trusted evaluator; original Tool API tests pass but OS/private isolation NOT passed",
+    "CPU quota is a limit; actual container peak RSS/CPU runtime and total free-runner/engineering cost not measured",
+    "Metrics reconstructed from GitHub allowlist, not the original ephemeral t022_pair.json bytes"
+  ],
+  "next_security_gate": "Before any LLM file/shell tool access, prove distinct actor process/mount scope or use external model with strictly tool-only interface and no filesystem access; not currently verified."
+}
