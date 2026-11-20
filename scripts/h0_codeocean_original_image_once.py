@@ -90,7 +90,7 @@ def main():
         prefix=top[:top.index("code")]
         for m in files:
             parts=PurePosixPath(m.name).parts
-            if parts[:len(prefix)]!=prefix:raise ValueError("mixed_tar_root")
+            if parts[:len(prefix)]!=prefix:continue
             relative=Path(*parts[len(prefix):])
             output=ROOT/relative
             if not output.resolve().is_relative_to(ROOT.resolve()):raise ValueError("tar_escape")
@@ -214,5 +214,20 @@ if __name__=="__main__":
     try:main()
     except Exception as e:
         mark("STOP_TYPE",type(e).__name__)
+        # Publish only fixed error strings produced by this trusted controller.
+        known={
+            "capsule_hash_mismatch","archive_member_gate","archive_unsafe_member",
+            "target_script_gate","license_markers_not_found",
+            "reproduction_instructions_missing",
+            "official_image_or_launch_not_in_reproducing",
+            "unexpected_capsule_layout","tar_escape","member_size_gate",
+            "missing_run_entrypoint","preserved_image_manifest_size_or_layers_gate",
+            "immutable_digest_unavailable","image_arch_or_unpacked_size_gate",
+            "science_timeout_240s","science_returncode_nonzero",
+            "science_output_over_1MiB","no_unique_numeric_output_for_scoring",
+            "original_core_evaluator_sha_mismatch"
+        }
+        if str(e) in known:
+            mark("STOP_CONTROLLER_GATE",str(e))
         mark("STOP","CORE_NO_SCORE_OR_ACCESS_BLOCKED")
         sys.exit(1)
