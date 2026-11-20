@@ -1,0 +1,35 @@
+name: H0 T0.19 one adapted CORE BorderT-GRAANK CPU reproduction
+on:
+  push:
+    paths:
+      - .github/workflows/h0-core-border-one-cpu-baseline.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t019-one-adapted-science-baseline
+  cancel-in-progress: true
+jobs:
+  one-adapted-run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      HF_TOKEN: ""
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+    steps:
+      - name: Checkout pinned SHA no token persistence
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Syntax check and scientific protocol identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/h0_core_border_cpu_baseline.py
+          grep -Fq 'EXPECTED_SHA = "012ff05f9c899452d95e279f1a3e59cffc3b660796645e893b56edf07dc05700"' scripts/h0_core_border_cpu_baseline.py
+          echo T019_CONTROLLER_SYNTAX_PASS=true
+      - name: Single read-only no-privilege CPU run and separate original scorer if successful
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u scripts/h0_core_border_cpu_baseline.py
