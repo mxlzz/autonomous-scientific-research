@@ -89,8 +89,8 @@ def setup():
     src=replace_once(src,"timeout_s: float = 900.0","timeout_s: float = 90.0")
     src=replace_once(src,"for attempt in range(6):","for attempt in range(1):")
     src=replace_once(src,
-        'if attempt == 5:\\n                    raise RuntimeError(f"OpenAI-compatible endpoint failed: {exc}") from exc',
-        'if attempt == 0:\\n                    raise')
+        'if attempt == 5:\n                    raise RuntimeError(f"OpenAI-compatible endpoint failed: {exc}") from exc',
+        'if attempt == 0:\n                    raise')
     ha=replace_once(harness_src,"MAX_TURNS = 80","MAX_TURNS = 4")
     ha=replace_once(ha,"MAX_TOOL_CALLS = 60","MAX_TOOL_CALLS = 4")
     ha=replace_once(ha,"MAX_OUTPUT_TOKENS_PER_TURN = 32000","MAX_OUTPUT_TOKENS_PER_TURN = 256")
