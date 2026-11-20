@@ -1,0 +1,90 @@
+{
+  "artifact_type": "allowlist_observations_reconstructed_from_GitHub_Actions_log_NOT_original_ephemeral_summary",
+  "date_utc": "2026-11-20",
+  "unit": "T0.29",
+  "stage": "H0",
+  "preparation_failure_prior_to_prereg_for_this_run": {
+    "run_id": 44815239008,
+    "job_id": 136561743565,
+    "conclusion": "failure",
+    "stage": "model_preparation",
+    "message_class": "AssertionError",
+    "public_log_message": "manifest digest mismatch",
+    "model_inference_started": false,
+    "reason_for_new_protocol": "old checker hashed local manifest bytes; new protocol queries Ollama /api/tags digest and compares to previously verified model identity",
+    "comment": "One prior technical CI attempt; no scientific inference in the first run. Do not count as independent scientific repetition."
+  },
+  "provenance": {
+    "run_id": 44816315367,
+    "job_id": 136565478186,
+    "url": "https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44816315367",
+    "conclusion": "success (workflow and gate execution; scientific episode NOT scored)",
+    "commit": "a7b61fc919f1139b19e1166ec7ebc5c123b02eda",
+    "source_upstream_commit": "9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0",
+    "ollama_image": "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+    "ollama_model_tag": "qwen3:0.6b",
+    "ollama_model_digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+    "python_image": "python@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df",
+    "python_wheels_sha_match_prior": true,
+    "protocol_path": "experiments/T0.29-qwen-sciresearch-preregister-2026-11-20.md",
+    "protocol_blob_sha": "61d139d2585486ec8e5cd6410e3a98f41219649b"
+  },
+  "security": {
+    "actor_docker_mount_only_model_weights_verified": true,
+    "evaluator_private_mount_unshared_verified": true,
+    "internal_docker_network_verified": true,
+    "combined_quota_cpu": 2,
+    "combined_quota_ram_gib": 3,
+    "actor_no_shell_or_file_tools": true,
+    "tool_name_guard_applied_to_loaded_harness_copy": true,
+    "original_scientific_env_grader_not_modified": true,
+    "no_paid_api_gpu_secrets": true,
+    "never_claim_universal_isolation": true,
+    "original_repo_unmodified": true
+  },
+  "probe": {
+    "backend": "Ollama OpenAI-compatible /v1/chat/completions",
+    "mode": "tool-only",
+    "offered_tool": "budget_status",
+    "real_tool_call_returned": true,
+    "returned_tool_name": "budget_status",
+    "response_json_arguments_valid": true,
+    "real_llm_calls": 1
+  },
+  "science": {
+    "episode_task": "dev task_525abee377",
+    "condition": "A",
+    "source_grader": "sciresearch_eval.grader.grade",
+    "episode_attempted": true,
+    "stop_category": "error",
+    "submitted": false,
+    "scorer_score": null,
+    "prompt_tokens_observed": 0,
+    "completion_tokens_observed": 0,
+    "tool_calls_observed": 0,
+    "tool_errors_observed": 0,
+    "episode_result": "NO_SCORE",
+    "exact_exception_class_not_retained": true,
+    "elapsed_seconds_until_error_approx": 47,
+    "possible_cause": "45s per-request timeout during longer scientific prompt; a plausible hypothesis, NOT proven from sanitized log",
+    "instrumentation_limitation": "retry patch changed for attempt in range(6) to range(1) but left if attempt == 5 conditional; on transport exception, the adapter may raise generic RuntimeError('unreachable'), masking the underlying exception",
+    "models_ability_to_do_science_not_established": true
+  },
+  "measurement": {
+    "trusted_controller_wall_seconds": 55.017,
+    "original_ephemeral_json_sha256": "fe4721ae2ea6a946f50a436a852c808483bff98580d495f44204b0597cce3f28",
+    "original_json_content_retained": false,
+    "private_transcript_uploaded": false,
+    "model_and_evaluator_ephemeral_containers_removed": true,
+    "paid_api_usd": 0,
+    "runner_energy_human_cost_unknown": true
+  },
+  "inference_limits": [
+    "CI success does not mean scientific score",
+    "The probe proves one real model function call, not a scientific hypothesis or conclusion",
+    "0 observed tokens/tool_calls in science may reflect a request-level transport failure, not a failed science strategy",
+    "Model security evidence is scoped to mounts/network of one CI run; not a proof of general isolation",
+    "Tool_choice is listed as supported in current official Ollama docs, contrary to outdated T0.28 wording; omission from copied adapter is a documented treatment, not demonstrated necessity"
+  ],
+  "next": "Conclude T0.29 as technically partial and scientifically NO_SCORE, audit and preregister one focused T0.30 to preserve actual network error class and isolate longer prompt latency, with same model/CPU/RAM/scorer; do not silently retry same treatment."
+}
