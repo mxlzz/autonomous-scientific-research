@@ -24,6 +24,12 @@ CORE_COMMIT = "e32a2980e72fe6eb04ee04eb749458f570625663"
 TRAIN_BLOB = "8ea09677fd4d98a4995144b959ba6f65bb2a85aa"
 SCORER_BLOB = "ecf1d77718c3a7e07bf48c37d7263656b5f7f06f"
 IMAGE_TAG = "python:3.9-slim-bookworm"
+EXPECTED_IMAGE_DIGEST = "python@sha256:a02e9c5406c416c504d6c9a1a306ff4080c3173f1008d192f953bd20382a2d5c"
+EXPECTED_WHEELS = {
+    "ExPSO-0.1.4-py3-none-any.whl": "64765466dd707e1ddaa9e4d827604e328bc51b49fbb25d31b959f705bdeac5da",
+    "numpy-1.26.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl": "baf8aab04a2c0e859da118f0b38617e5ee65d75b83795055fb66c0d5e9e9b818",
+    "scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl": "637e98dcf185ba7f8e663e122ebf908c4702420477ae52a04f9908707456ba4d",
+}
 RUN_ID = os.getenv("GITHUB_RUN_ID", "local")
 BASE = Path(os.environ["RUNNER_TEMP"]) / "t017-sandbox"
 WORK, WHEELS, OUT, EVAL = (BASE / part for part in ("work", "wheels", "out", "evaluator"))
@@ -128,8 +134,8 @@ def main():
         ["docker", "image", "inspect", IMAGE_TAG, "--format", "{{index .RepoDigests 0}}"],
         text=True,
     ).strip()
-    if "@sha256:" not in image_id:
-        raise ValueError("unfrozen Docker image")
+    if image_id != EXPECTED_IMAGE_DIGEST:
+        raise ValueError("Docker image digest mismatch from T0.17; stop")
     print("T017_IMAGE_DIGEST=" + image_id, flush=True)
 
     # Dependency downloads are isolated from the runner. Binary wheels only, no builds.
@@ -150,14 +156,21 @@ def main():
     if len(wheel_files) != 3:
         raise ValueError("expected 3 pinned binary wheels")
     for wf in wheel_files:
-        print("T017_WHEEL_SHA256=" + wf.name + "," + hashlib.sha256(wf.read_bytes()).hexdigest(), flush=True)
+        digest = hashlib.sha256(wf.read_bytes()).hexdigest()
+        print("T017_WHEEL_SHA256=" + wf.name + "," + digest, flush=True)
+        if EXPECTED_WHEELS.get(wf.name) != digest:
+            raise ValueError("wheel hash mismatch from T0.17; stop")
 
     runner = '''import contextlib, io, json, math, resource, runpy, time
 import numpy as np
 np.random.seed(0)
 t0=time.monotonic()
-with contextlib.redirect_stdout(io.StringIO()):
-    record=runpy.run_path("/work/ExPSOWithClassicalBenchmark02.py",run_name="__main__")
+try:
+    with contextlib.redirect_stdout(io.StringIO()):
+        record=runpy.run_path("/work/ExPSOWithClassicalBenchmark02.py",run_name="__main__")
+except BaseException as exc:
+    print("T017_SCRIPT_EXCEPTION_CLASS="+type(exc).__name__,flush=True)
+    raise
 metrics=record["best_solution"]["Metrics"]
 mean=float(metrics["MEAN"])
 fes=float(metrics["Avg_FES"])
@@ -182,8 +195,11 @@ print("T017_REPORT_FIELDS=2",flush=True)
     ) + [
         "sh", "-c",
         "python -m pip install --no-index --find-links=/wheels --no-deps "
-        "--target /tmp/site ExPSO==0.1.4 numpy==1.26.2 >/tmp/pip.log 2>&1 "
-        "&& PYTHONPATH=/tmp/site python /work/run_once.py",
+        "--target /tmp/site ExPSO==0.1.4 numpy==1.26.2 >/tmp/pip.log 2>&1; "
+        "rc=$?; if [ \"$rc\" -ne 0 ]; then echo T017_WHEEL_INSTALL_EXIT=$rc; exit \"$rc\"; fi; "
+        "echo T017_WHEEL_INSTALL_PASS=true; "
+        "PYTHONPATH=/tmp/site python /work/run_once.py; rc=$?; "
+        "echo T017_SCRIPT_RUNTIME_EXIT=$rc; exit \"$rc\"",
     ]
     try:
         run_step("SCIENCE", cmd, timeout=240)
