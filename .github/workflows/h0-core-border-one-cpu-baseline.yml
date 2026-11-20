@@ -1,4 +1,4 @@
-name: H0 T0.19 one adapted CORE BorderT-GRAANK CPU reproduction
+name: H0 T0.19 one corrected-codec BorderT-GRAANK CPU baseline
 on:
   push:
     paths:
