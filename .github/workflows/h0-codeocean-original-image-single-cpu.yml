@@ -1,4 +1,4 @@
-name: H0 T0.20 preserved image run after tar path gate fix
+name: H0 T0.20 final original image gate and bounded CPU attempt
 on:
   push:
     paths:
