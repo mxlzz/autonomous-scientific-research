@@ -1,4 +1,4 @@
-name: H0 T0.21 SciResearch-Eval pinned single dev scripted baseline
+name: H0 T0.21 original direct test functions and single dev scripted baseline
 on:
   push:
     paths:
@@ -62,24 +62,27 @@ jobs:
           started=time.monotonic()
           def note(k,v): print("T021_"+k+"="+str(v),flush=True)
 
-          # Run *upstream tests only*, with private values kept out of public logs.
-          tests=[
-              "tests/test_env_grader.py::test_interval_score",
-              "tests/test_env_grader.py::test_tool_outputs_never_contain_private_fields",
-          ]
+          # Preserve EXACT upstream test functions without pytest CLI ambiguity.
+          # Test module loads from pinned source; both tests remain unmodified.
           begin=time.monotonic()
           try:
-              result=subprocess.run([sys.executable,"-m","pytest","-q","--disable-warnings",
-                  "--maxfail=1",*tests],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
-                  text=True,timeout=150,check=False)
-          except subprocess.TimeoutExpired:
-              note("ORIGINAL_TESTS_TIMEOUT",True)
+              import importlib.util
+              spec=importlib.util.spec_from_file_location("original_env_grader_tests",
+                                                         "/project/tests/test_env_grader.py")
+              module=importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+          except BaseException as e:
+              note("ORIGINAL_TESTS_LOAD_ERROR_CLASS",type(e).__name__)
               raise SystemExit(8)
+          for test_name in ("test_interval_score","test_tool_outputs_never_contain_private_fields"):
+              try:
+                  getattr(module,test_name)()
+                  note("ORIGINAL_TEST_FUNCTION_PASS",test_name)
+              except BaseException as e:
+                  note("ORIGINAL_TEST_FUNCTION_FAIL",test_name)
+                  note("ORIGINAL_TEST_ERROR_CLASS",type(e).__name__)
+                  raise SystemExit(9)
           note("ORIGINAL_TESTS_WALL_SEC",round(time.monotonic()-begin,3))
-          note("ORIGINAL_TESTS_EXIT",result.returncode)
-          if result.returncode:
-              # Do not publish potentially private strings in upstream assertion output.
-              raise SystemExit(9)
           note("ORIGINAL_TESTS_SELECTED_PASS",2)
           import numpy as np
           from sciresearch_eval.baselines.scripted import naive
