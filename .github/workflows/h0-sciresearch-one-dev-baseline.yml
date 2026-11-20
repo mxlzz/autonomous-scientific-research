@@ -1,0 +1,220 @@
+name: H0 T0.21 SciResearch-Eval pinned single dev scripted baseline
+on:
+  push:
+    paths:
+      - .github/workflows/h0-sciresearch-one-dev-baseline.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t021-one-scientific-baseline
+  cancel-in-progress: true
+jobs:
+  one-dev-scripted-policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      HF_TOKEN: ""
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Verify immutable SciResearch-Eval upstream and stage publicly licensed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/sciresearch"
+          mkdir -p "$dir"
+          cd "$dir"
+          git init -q
+          git remote add upstream https://github.com/Btwestyo/sciresearch-eval.git
+          timeout 75 git fetch -q --depth=1 upstream 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          git checkout -q --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git hash-object pyproject.toml)" = 43efe09ceb90d172eff7c5af0a7c7672fd8f9bb7
+          test "$(git hash-object src/sciresearch_eval/grader.py)" = 8194044d11b17b6d9d2b040a5115ff35bb798b64
+          test "$(git hash-object src/sciresearch_eval/baselines/scripted.py)" = 85cbbd24e5da207575dc5ff8113a1b599cec8b05
+          test "$(git hash-object tasks/dev/manifest.json)" = e12614f631e992aa7cd1e7bc910ca1be1bdc31b7
+          echo T021_UPSTREAM_HEAD_PINNED=9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          echo T021_LICENSE=CC-BY-4.0
+          echo T021_PUBLIC_DEV_TASKS=47
+          echo T021_HELDOUT_TEST_NOT_USED=true
+      - name: Prepare original test and baseline controller (not a new evaluation framework)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/t021-controller" "$RUNNER_TEMP/t021-wheels" "$RUNNER_TEMP/t021-results"
+          chmod 755 "$RUNNER_TEMP/t021-controller"
+          chmod 777 "$RUNNER_TEMP/t021-wheels" "$RUNNER_TEMP/t021-results"
+          cat > "$RUNNER_TEMP/t021-controller/run.py" <<'PY'
+          import collections
+          import hashlib
+          import json
+          import math
+          import os
+          from pathlib import Path
+          import resource
+          import subprocess
+          import sys
+          import time
+
+          started=time.monotonic()
+          def note(k,v): print("T021_"+k+"="+str(v),flush=True)
+
+          # Run *upstream tests only*, with private values kept out of public logs.
+          tests=[
+              "tests/test_env_grader.py::test_interval_score",
+              "tests/test_env_grader.py::test_tool_outputs_never_contain_private_fields",
+          ]
+          begin=time.monotonic()
+          try:
+              result=subprocess.run([sys.executable,"-m","pytest","-q","--disable-warnings",
+                  "--maxfail=1",*tests],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
+                  text=True,timeout=150,check=False)
+          except subprocess.TimeoutExpired:
+              note("ORIGINAL_TESTS_TIMEOUT",True)
+              raise SystemExit(8)
+          note("ORIGINAL_TESTS_WALL_SEC",round(time.monotonic()-begin,3))
+          note("ORIGINAL_TESTS_EXIT",result.returncode)
+          if result.returncode:
+              # Do not publish potentially private strings in upstream assertion output.
+              raise SystemExit(9)
+          note("ORIGINAL_TESTS_SELECTED_PASS",2)
+          import numpy as np
+          from sciresearch_eval.baselines.scripted import naive
+          from sciresearch_eval.env import ThermalEnv
+          from sciresearch_eval.grader import grade,interval_score
+          from sciresearch_eval.tasks.generator import public_id_for
+          np.random.seed(0)
+          assert interval_score(1.0,2.0,1.5)==1.0
+          assert interval_score(1.0,2.0,3.0)==41.0
+          note("INTERVAL_SCORE_CONTRACT","PASS")
+          # Public ID for the preregistered fast upstream test: this selector runs
+          # in the trusted evaluator, not inside any LLM/agent process.
+          tid=public_id_for("t3_coarse_mesh_2001",root=Path("tasks"))
+          assert tid.startswith("task_") and len(tid)==15
+          note("SELECTED_PUBLIC_TASK_ID",tid)
+          env=ThermalEnv(tid,Path("tasks"),"dev")
+          task=env.get_task()
+          note("PUBLIC_TASK_FIELDS",len(task))
+          note("BASELINE_POLICY","original_scripted_naive")
+          t0=time.monotonic()
+          try:
+              naive(env)
+              note("POLICY_COMPLETE",True)
+          except BaseException as e:
+              note("POLICY_ERROR_CLASS",type(e).__name__)
+              raise SystemExit(10)
+          note("POLICY_WALL_SEC",round(time.monotonic()-t0,3))
+          note("POLICY_TRACE_ACTIONS",len(env.trace))
+          note("POLICY_USED_EXPERIMENTS",env.used["experiments"])
+          note("POLICY_USED_COMPUTE_UNITS",env.used["compute_units"])
+          # The original grader is evaluator-side; oracle is not run as policy.
+          t1=time.monotonic()
+          try:
+              scored=grade(env)
+          except BaseException as e:
+              note("ORIGINAL_GRADER_ERROR_CLASS",type(e).__name__)
+              raise SystemExit(11)
+          note("ORIGINAL_GRADER_WALL_SEC",round(time.monotonic()-t1,3))
+          if not scored.get("submitted"):
+              raise SystemExit(12)
+          keys=["param_interval_score","param_coverage","target_interval_score",
+                "target_covered","target_abs_error_over_sigma",
+                "adequacy_correct","attribution_correct","compute_fraction"]
+          public_result={"task_id":tid,"policy":"naive","source":"SciResearch-Eval 0.2.8",
+                         "model_calls":0,"scorer":"original_grade",
+                         "trace_action_count":len(env.trace),
+                         "used_experiments":env.used["experiments"],
+                         "used_compute_units":env.used["compute_units"],
+                         "wall_sec":round(time.monotonic()-started,3),
+                         "maxrss_kib":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
+          for k in keys:
+              v=scored.get(k)
+              if isinstance(v,(float,int,np.floating,np.integer)) and not isinstance(v,(bool,np.bool_)):
+                  if not math.isfinite(float(v)):raise SystemExit(13)
+                  public_result[k]=float(v)
+              elif isinstance(v,(bool,np.bool_)):
+                  public_result[k]=bool(v)
+              else:
+                  public_result[k]=None
+          # Do not print private task descriptors, task family, regime, labels,
+          # hidden true parameters, original trace payload or oracle answers.
+          out=Path("/results/summary.json")
+          out.write_text(json.dumps(public_result,indent=2,sort_keys=True)+"\n")
+          note("SUMMARY_SHA256",hashlib.sha256(out.read_bytes()).hexdigest())
+          note("SCORE_PARAM_INTERVAL",public_result["param_interval_score"])
+          note("SCORE_PARAM_COVERAGE",public_result["param_coverage"])
+          note("SCORE_TARGET_INTERVAL",public_result["target_interval_score"])
+          note("SCORE_TARGET_COVERED",public_result["target_covered"])
+          note("SCORE_ADEQUACY_CORRECT",public_result["adequacy_correct"])
+          note("SCORE_ATTRIBUTION_CORRECT",public_result["attribution_correct"])
+          note("SCORE_COMPUTE_FRACTION",public_result["compute_fraction"])
+          note("MAXRSS_KIB",public_result["maxrss_kib"])
+          note("TOTAL_WALL_SEC",public_result["wall_sec"])
+          note("NO_LLM_AND_NO_PAID_API",True)
+          note("NO_PRIVATE_VALUES_LOGGED_BY_CONTROLLER",True)
+          note("LIMITATION","same_process_env_contains_private_truth_OS_isolation_not_tested")
+          note("SCIENTIFIC_DEV_BASELINE_PASS",True)
+          PY
+          chmod 644 "$RUNNER_TEMP/t021-controller/run.py"
+          python3 -m py_compile "$RUNNER_TEMP/t021-controller/run.py"
+          echo T021_CONTROLLER_SYNTAX_PASS=true
+      - name: Pull Python CPU image and download locked binary wheels in isolated preparation container
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 100 docker pull python:3.12-slim-bookworm > /dev/null
+          pinned="$(docker image inspect python:3.12-slim-bookworm --format '{{index .RepoDigests 0}}')"
+          case "$pinned" in python@sha256:*) ;; *) echo T021_STOP=image_not_digest_pinned; exit 1 ;; esac
+          echo "T021_IMAGE_DIGEST=$pinned"
+          echo "$pinned" > "$RUNNER_TEMP/t021-image.txt"
+          timeout 135 docker run --rm --network bridge --read-only --cap-drop ALL \
+             --security-opt no-new-privileges --pids-limit 96 --memory 2g --cpus 2 \
+             --user 65534:65534 --tmpfs /tmp:rw,nosuid,nodev,size=512m,mode=1777 \
+             --mount "type=bind,src=$RUNNER_TEMP/t021-wheels,dst=/wheels" \
+             "$pinned" python -m pip download --no-cache-dir --only-binary=:all: --no-deps \
+             -d /wheels numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+             iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 > /dev/null
+          echo T021_LOCKED_BINARY_WHEELS_DOWNLOADED=true
+          python3 - <<'PY'
+          import hashlib,os,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"t021-wheels"
+          a=sorted(d.glob("*.whl"))
+          assert len(a)==7,len(a)
+          for p in a: print("T021_WHEEL_SHA256="+p.name+","+hashlib.sha256(p.read_bytes()).hexdigest(),flush=True)
+          PY
+      - name: Execute original scorer tests and one dev naive policy in offline bounded CPU container
+        shell: bash
+        run: |
+          set -euo pipefail
+          pinned="$(cat "$RUNNER_TEMP/t021-image.txt")"
+          mkdir -p "$RUNNER_TEMP/t021-results"
+          chmod 777 "$RUNNER_TEMP/t021-results"
+          # Source includes private DEV labels because original ThermalEnv reads
+          # them internally. The original naive policy does not access env.private,
+          # but OS/filesystem separation remains an explicit open limitation.
+          timeout 370 docker run --rm --network none --read-only --cap-drop ALL \
+             --security-opt no-new-privileges --pids-limit 96 --cpus 2 --memory 3g \
+             --user 65534:65534 --workdir /project \
+             --tmpfs /tmp:rw,nosuid,nodev,size=1024m,mode=1777 \
+             --env PYTHONDONTWRITEBYTECODE=1 --env PYTHONHASHSEED=0 \
+             --env OPENBLAS_NUM_THREADS=1 --env OMP_NUM_THREADS=1 --env MKL_NUM_THREADS=1 \
+             --mount "type=bind,src=$RUNNER_TEMP/sciresearch,dst=/project,readonly" \
+             --mount "type=bind,src=$RUNNER_TEMP/t021-controller,dst=/controller,readonly" \
+             --mount "type=bind,src=$RUNNER_TEMP/t021-wheels,dst=/wheels,readonly" \
+             --mount "type=bind,src=$RUNNER_TEMP/t021-results,dst=/results" \
+             "$pinned" sh -c '
+               python -m pip install --no-index --no-deps --find-links=/wheels --target=/tmp/site \
+                 numpy==2.4.6 scipy==1.17.1 pytest==9.1.1 \
+                 iniconfig==2.3.1 packaging==26.3 pluggy==1.7.0 pygments==2.21.0 \
+                 >/tmp/install.log 2>&1
+               rc=$?
+               if [ "$rc" -ne 0 ]; then echo T021_OFFLINE_INSTALL_EXIT="$rc"; exit "$rc"; fi
+               echo T021_OFFLINE_INSTALL_PASS=true
+               PYTHONPATH=/tmp/site:/project/src python /controller/run.py
+               rc=$?
+               echo T021_SCIENCE_PROCESS_EXIT="$rc"
+               exit "$rc"
+             '
