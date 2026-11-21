@@ -15,6 +15,16 @@
 - Distinguir **hito Hn** (PLAN) de **hipótesis Hn** (OBJECTIVE) al registrar una tarea. El hito de enrutamiento es H2 y estudia la hipótesis H3. Medir la continuidad del agente experimental exige observarlo en episodios sucesivos.
 - Un bloqueo de custodia o permisos se aplica a las operaciones y afirmaciones que dependen de él. Respetar la decisión pendiente y seguir solo una unidad independiente identificada en STATE, dentro del alcance y de los recursos autorizados.
 
+## Control de esfuerzo y valor científico marginal
+
+**Mandato transversal confirmado por el usuario el 2026-11-21:** antes de continuar, verificar que la unidad agregue evidencia hacia `OBJECTIVE.md`, no solo que sea implementable. Repetir el juicio en cada cierre y auditoría.
+
+- **Pregunta de valor obligatoria:** ¿qué decisión científica o de ingeniería cambiaría si esta unidad da PASS, FAIL o resulta inconclusa? Si ninguna respuesta cambia la siguiente decisión, **no ejecutar la unidad**; documentar NO-GO o elegir la alternativa más informativa ya existente.
+- **No confundir instrumental con ciencia:** éxito de CI, cifrado, logs o más modelos no son por sí solos validez científica ni beneficio de descomposición. No añadir un helper, workflow, framework o capa de agentes cuando baste inspeccionar el evaluador original o reutilizar una herramienta.
+- **Stop-loss:** tras fallos repetidos de calidad de una misma configuración, suspender el ajuste de infraestructura y comparar viabilidad/costo con alternativas ya disponibles. Una corrección técnica adicional requiere justificar un **observable faltante decisivo**, criterio y presupuesto. No rerun para conseguir un score favorable.
+- **Costo completo:** considerar tiempo de CPU/GPU, tokens, tiempo del ejecutor/auditor, CI, repetición y mantenimiento; ausencia de precio no significa costo cero. Especificar el presupuesto *antes* de una prueba; usar exploración acotada cuando no haya potencia confirmatoria.
+- **Registro de retorno:** en cada auditoría anotar `beneficio esperado / evidencia lograda / esfuerzo y costos / próximo STOP-GO`, incluyendo discontinuar una línea improductiva como conclusión válida. El proyecto busca **entender cuándo funciona la autonomía científica**, no garantizar que una arquitectura determinada funcione.
+
 ## Ejecutar
 - Ejecutar una unidad completa y comprobable **por iteración**, y encadenar las siguientes cuando su estado confirmado lo permita. Búsqueda, análisis, experimento o desarrollo según la tarea; no convertir investigaciones en programación innecesaria.
 - Consultar antecedentes para evitar duplicación y clasificar evidencia A/B/C/D según METHODOLOGY.md.
