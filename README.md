@@ -1,5 +1,7 @@
 # Autonomous Scientific Research
 
+**Estado T0.72 / D-0090 (2026-11-21):** [inventario de notebook reportado por Codex](evidence/T0.72-notebook-actor-inventory-no-go-2026-11-21.md): SciResearch instalado pero **ningún actor local versionado ni endpoint OpenAI-compatible activo identificado**; RAM libre instantánea ~2,5 GiB y VRAM libre ~5,3 GiB no prueban capacidad simultánea ni calidad. [Autoverificación, no independiente](audits/T0.72-NOTEBOOK-LOCAL-ACTOR-STOP-SELF-AUDIT-2026-11-21.md). **H0 CORREGIR/PAUSADO:** no nueva prueba ni desarrollo hasta disponibilidad/autorización explícita de modelo local o proveedor remoto no-training y presupuesto. T0.71/T0.70 cerradas con sus limitaciones.
+
 **Estado operativo T0.71 / D-0089 (2026-11-21):** [comparación T0.55 evaluada](evidence/T0.71-T055-comparison-feasibility-decision-2026-11-21.md): **NO-GO** a A/B causal con ChatGPT GUI y relé manual; el harness SciResearch original ya registra tools/transcripción/score, pero **no hay modelo/endpoint apto y controlable ni custodia/no-training/costo confirmados**. [Autoverificación, no independiente](audits/T0.71-T055-COMPARABILITY-SELF-AUDIT-2026-11-21.md). **T0.72 bloqueada** a evidencia de actor/recursos o permiso explícito para servicio compatible. **H0 CORREGIR; no se autorizan experimentos nuevos.**
 
 
