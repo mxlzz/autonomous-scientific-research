@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.56",
-  "task_title": "T0.56 — Integrar y comprobar offline custodia age en el harness original sin ejecutar LLM",
-  "task_expected_output": "evidence/T0.56-age-harness-isolated-integration-2026-11-21.md, auditoría audits/T0.56-TRACE-INTEGRATION-2026-11-21.md y, solo si corresponde, scripts/workflow fixture. Inspeccionar el harness SciResearch pinned y ciclo original result/transcript/env_trace/state_log; simular su salida sin datos privados, demostrar captura cifrada solo dentro evaluador y cleanup antes de artifact, comprobar mounts, derechos/atribución y retención; sin ciencia real, claves privadas, permiso nuevo ni gasto.",
-  "task_acceptance": "Recuperar HEAD y D-0065; no repetir el ensayo de T0.54. Verificar en fuente exacta de SciResearch original cómo se escriben 4 archivos por episodio, dónde se monta el contenedor y cuándo se elimina. Prueba de integración end-to-end en mismo layout y código fuente (o bloqueo explícito), fail-closed si no están los 4 archivos, si algún artifact/log/cache incluye plaintext, o si falla age. Conservar solo el ciphertext en destino autorizado y proyección pública tipada separada. Revisar licencia CC BY4 y prohibición training/held-out, más outputs de terceros. Documentar reversibilidad y plan para comprobación local con clave del usuario sin solicitar la privada. No ejecutar LLM ni inferir H0 cerrado; self-audit no independiente, evidencia/LOG/STATE final readback.",
-  "next_action": "T0.56 offline: probar integración de scripts/t054_age_trace_archive.sh con harness SciResearch pinned, rutas originales y cleanup usando solo fixtures. El usuario confirmó que age -d creó trace.tar del artifact sintético con su propia clave privada (declaración no inspeccionada); no pedir privada de nuevo. Persisten derechos/atribución, retención y chequeos contra salida de plaintext en runner real. No LLM ni publicación de trazas reales hasta superar esos gates.",
+  "current_task": "T0.57",
+  "task_title": "T0.57 — Comparar STOP versus alternativas existentes para una línea base científica con validez y costo controlados",
+  "task_expected_output": "experiments/T0.57-baseline-feasibility-decision-2026-11-21.md + audits/T0.57-SCIENCE-OPPORTUNITY-COST-2026-11-21.md, fuentes verificadas de benchmarks y modelos candidatos, matriz de validez/presupuesto/esfuerzo y GO-NO-GO. Ningún LLM, infraestructura paga, nuevo framework ni ciphertext científico real en esta unidad.",
+  "task_acceptance": "Basarse en episodios T0.49/T0.52 y dictamen D-0062, revisar alternativas y costos ya investigados en RESEARCH.md sin duplicación, consultar proyectos de fuente primaria actuales solo cuando haga falta; comparar al menos: STOP/suspender Qwen4B/CPU, SciResearch con actor viable y misma interfaz si gratis, u otro caso benchmark científico con evaluador externo y datos accesibles. Cada opción debe precisar validez científica, disponibilidad concreta, test/train leakage, derechos, infraestructura CPU/GPU, costo y tiempo humano, controles de comparación y límites. Elegir UNA decisión de continuidad o NO-GO reproducible; si requiere autorización/pago, registrar bloqueo y pedirla sin ejecutar. Evitar expansión de herramientas. Registrar evidencia y autoverificación, LOG, STATE último y readback. No declarar H0 completado ni abrir H1/H2.",
+  "next_action": "T0.57 offline de costo/oportunidad: decidir si tiene sentido seguir con SciResearch Qwen4B/CPU o si existe alternativa científica verificable de menor costo y con baseline válida. Priorizar experimentos que puedan cambiar la conclusión; no más CI de trazas ni nuevos LLM sin calidad piso, presupuesto y derechos/seguridad. No inventar capacidades. Auditoría de T0.56 marcó NO-GO técnico; wrapper T0.56 no probado y sigue excluido de cualquier ejecución real.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -70,7 +70,8 @@
     "T0.52",
     "T0.53",
     "T0.55",
-    "T0.54"
+    "T0.54",
+    "T0.56"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -134,7 +135,8 @@
     "Verificar T0.55 contra benchmarks/H0-DECISION-BASELINE.md y los criterios originales de H0. Validación por terceros y auditoría de razonamiento de n1/n2 siguen pendientes; no hay trazas históricas recuperables.",
     "T0.54 D-0063: elección A registrada y autoverificada documentalmente por el mismo ejecutor, no es auditoría criptográfica independiente; falta recipiente público, prueba de cifrado/decrypt sintética, revisión de derechos y verificación del pipeline antes de trazas reales.",
     "T0.55: autoverificación misma instancia; lógica equivalente de 4 unittest probada offline, sin CI de blobs exactos; N=2 pares aún no ejecutados ni autorizados; no infiere efecto causal ni valida calidad Qwen.",
-    "T0.54: self-audit non-independent of GitHub Actions synthetic encryption; no decrypt test with user-held private identity, no independently inspected downloaded ZIP, no original SciResearch harness integration, rights to publish real traces/output unconfirmed. T0.56 must test integration and retention without LLM before science."
+    "T0.54: self-audit non-independent of GitHub Actions synthetic encryption; no decrypt test with user-held private identity, no independently inspected downloaded ZIP, no original SciResearch harness integration, rights to publish real traces/output unconfirmed. T0.56 must test integration and retention without LLM before science.",
+    "D-0067 T0.56 same-executor audit reports integration NOT_TESTED; source contract inspected only, no deployed CI run, no actual evaluator cleanup or real-data rights proof. Qwen4B/CPU line is paused pending T0.57 viability decision. No independent review."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -187,7 +189,7 @@
     "T0.51 tool category instrumentation currently only offline compiler/fixtures; no runtime stream proof yet. T0.52 original dev Qwen4B repeat allowed solely if privacy/time/memory/source preflight pass. Soft input24k trigger can overrun final submit and must report effective spend. H0 still scientific quality/cost/replication gap.",
     "T0.52 no-submit despite completed final turn and original grader not submitted; cannot inspect cause without private trace (not publicly stored). Soft24k effective31,351 n2 and28,248 n1, category error counts don't prove causes. Need T0.53 audit of stop/budget and safe private trace storage or NO-GO, avoid paid/perms automatically. H0 CORREGIR.",
     "T0.53 H0 blocked by absence of retrievable full scientific traces for external audit; public repo artifacts are readable by repo readers, so cannot store private raw. T0.54 requires user decision on age-encrypted public ciphertext (private key user-held), authorized separate private repo with checked minutes/storage, or continuing summary-only with explicit limitation. No new research LLM until approved custody; H0 CORREGIR.",
-    "D-0066: age recipient y CI sintético PASS y propietario confirma generación local de trace.tar tras descifrar artifact sintético; el agente NO verificó contenido del tar ni identidad privada. Falta integración de SciResearch original, derechos/licencias/retención, limpieza y no-filtración reales, y revisión independiente. Prohibida publicación de traces reales (raw o ciphertext) y nuevas inferencias LLM hasta gates de T0.56; H0 CORREGIR."
+    "D-0067 T0.56: source contract PIN verified, new wrapper NOT EXECUTED; CI synthetic integration creation BLOCKED by tool safety check, no run. Original evaluator capture/cleanup, artifact-only safety and long-term retention remain unproven. Qwen4B/CPU dev n1 poor science/n2 NO_SCORE, so no more infra spending until T0.57 decides viability. H0 CORREGIR; H1/H2 no."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -255,7 +257,8 @@
     "D-0063 (2026-11-21 AR): el usuario confirmó opción A de T0.54, usar cifrado age con recipient público del usuario y eventual publicación SOLO de ciphertext autorizado en Actions. Constancia evidence/T0.54-age-option-A-authorization-awaiting-recipient-2026-11-21.md y autoverificación administrativa audits/T0.54-AGE-CHOICE-RECORD-2026-11-21.md verificadas. No se recibió recipient ni se generó clave; implementación y trazas reales bloqueadas hasta recipient, derechos por fuente y pruebas fail-closed sintéticas. H0 CORREGIR; T0.55 offline sigue siendo current_task.",
     "D-0064 (2026-11-21 AR): T0.55 diseño experimental offline con 2 pares dev, contrastes A libre/B descomposición en mismo agente, score en sigma y aceptación por auditoría separada de cribado. Scripts y 4 pruebas de fixtures sintéticos locales de lógica equivalente; tasa confirmada 1/4 y techo2/4, fallos pre-ciencia fuera del denominador, costo CPU desconocido no imputado; cero válidos costo/válido indeterminado. Protocolo/auditoría/readback registrados, no CI sobre blobs publicados ni experimento LLM. NO-GO ciencia comparativa con Qwen4B/CPU hasta custodia age, presupuesto efectivo y señal de calidad. H0 CORREGIR. Usuario facilitó recipient público age X25519 Bech32 válido; siguiente tarea T0.54 de prueba sintética.",
     "D-0065 (2026-11-21 AR): T0.54 completada solo como gate de cifrado age con datos sintéticos. Recipient del usuario age1896rlr8duy7x3jzhd2u8jgylcywr5r6clwuch3m4xk4rddpx4dssg0wava, validación Bech32 X25519 32 bytes y checksum; privada no recibida/almacenada. scripts/t054_age_trace_archive.sh y workflow h0-t054-age-synthetic.yml, GitHub Actions run44916003316 job136881629521 success con age1.1.1; 4 marcadores PASS: roundtrip con identidad de prueba, encriptación con recipient usuario, negativos y artifact allowlist. Artifact14711272958 solo ciphertext sintético (uploader declara 1 archivo), ZIP sha256 1b300222ea6adfb0266afc8c56c16b55cd871cb909020fc9c52538f847624281, retención1 día. No decrypt del usuario ni inspección posterior de ZIP, no integración harness SciResearch, derechos de outputs reales por verificar, marcadores sintéticos sí salen en logs por fuente shell. No nuevas inferencias ni gastos. H0 CORREGIR, H1/H2 no iniciados. T0.56 próximo offline.",
-    "D-0066 (2026-11-21 AR): el usuario confirma «lo genero bien» después de age -d -i age-private-key.txt -o trace.tar trace.age sobre el artifact cifrado sintético de CI44916003316. Es declaración del usuario de que generó trace.tar en su equipo, NO inspección independiente del contenido ni de cuatro archivos del tar. La identidad privada nunca fue solicitada/recibida. Evidencia y addendum de auditoría registrados; el bloqueante de prueba local de decrypt sintético reportada queda satisfecho, pero NO los de integración SciResearch, legalidad/retención ni auditoría externa. T0.56 sigue activa, H0 CORREGIR y no LLM nuevos."
+    "D-0066 (2026-11-21 AR): el usuario confirma «lo genero bien» después de age -d -i age-private-key.txt -o trace.tar trace.age sobre el artifact cifrado sintético de CI44916003316. Es declaración del usuario de que generó trace.tar en su equipo, NO inspección independiente del contenido ni de cuatro archivos del tar. La identidad privada nunca fue solicitada/recibida. Evidencia y addendum de auditoría registrados; el bloqueante de prueba local de decrypt sintético reportada queda satisfecho, pero NO los de integración SciResearch, legalidad/retención ni auditoría externa. T0.56 sigue activa, H0 CORREGIR y no LLM nuevos.",
+    "D-0067 (2026-11-21 AR): T0.56 cerrado como NO-GO de integración, NO éxito técnico. Inspección directa de SciResearch pinned@9d391b3 harness blob194a4b36 confirma cuatro JSON en out_dir/run_id y posibles error.txt/running.lock; se persistió un wrapper mínimo scripts/t056_sciresearch_capture_age.sh, NO EJECUTADO. Un intento de escribir nuevo CI sintético fue bloqueado por herramienta antes de commit; ningún run ni artifact de T0.56. Age T0.54 probado solo en fixture, decrypt local declarado por usuario D-0066. Para trazas reales falta runner integrado, limpieza, derechos y retención. Qwen4B/CPU n1 muy mala calidad y n2 NO_SCORE; continuar perfeccionando infraestructura ahora no cambia ciencia. AGENTS actualizado con regla valor científico marginal/stop-loss. Próxima T0.57 evaluación STOP vs alternativas existentes, sin LLM/pagos ni framework. H0 CORREGIR."
   ],
   "evidence_refs": [
     {
@@ -629,6 +632,18 @@
     {
       "path": "evidence/T0.54-age-synthetic-custody-2026-11-21.md",
       "status": "D-0066: propietario reportó que descifrado local age del artifact sintético creó trace.tar correctamente; evidencia de usuario, no verificación independiente; sin acceso a clave privada ni tar."
+    },
+    {
+      "path": "evidence/T0.56-sciresearch-trace-integration-no-go-2026-11-21.md",
+      "status": "D-0067 source-pinned SciResearch original writer mapped, wrapper added but not tested or integrated; CI tool blocked, NO-GO to real trace capture."
+    },
+    {
+      "path": "scripts/t056_sciresearch_capture_age.sh",
+      "status": "Minimal four-JSON selection adapter for original run_dir, source only; NOT EXECUTED; cannot claim security/cleanup."
+    },
+    {
+      "path": "AGENTS.md",
+      "status": "D-0067 user-directed marginal-scientific-value and stop-loss gates for all future units."
     }
   ],
   "audit_refs": [
@@ -695,13 +710,14 @@
     "audits/DICTAMEN-DIRECCION-CIENTIFICA-2026-11-21.md",
     "audits/T0.54-AGE-CHOICE-RECORD-2026-11-21.md",
     "audits/T0.55-DECISION-H0.md",
-    "audits/T0.54-AGE-CUSTODY-GATE-2026-11-21.md"
+    "audits/T0.54-AGE-CUSTODY-GATE-2026-11-21.md",
+    "audits/T0.56-TRACE-INTEGRATION-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
-    "path": "audits/T0.54-AGE-CUSTODY-GATE-2026-11-21.md",
-    "commit": "25531176a646a5e409e7995bcab8feb4fbe29f42"
+    "path": "LOG.md",
+    "commit": "33a59a4d471bf3f20197c7b894ee9a31c443a028"
   },
-  "last_confirmed_activity": "D-0066 user-report: artifact sintético CI44916003316 descifrado localmente y generó trace.tar según usuario; constancia GitHub evidence/audit/LOG y readback; no comprobación de contenido ni clave privada. T0.56 offline sigue como próxima acción. H0 CORREGIR.",
+  "last_confirmed_activity": "D-0067: T0.56 source contract verified, wrapper added but untested, workflow blocked, status explicit NO-GO. Evidence/audit/AGENTS/RESEARCH/PLAN/README/LOG read back. H0 CORREGIR; T0.57 offline cost/opportunity decision now.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
@@ -711,5 +727,12 @@
     "independent_audit": false,
     "details": "audits/INIT-2026-11-17.md"
   },
-  "deferred_tasks": []
+  "deferred_tasks": [
+    {
+      "id": "T0.56-integration-gate",
+      "status": "NO_GO_NOT_TESTED",
+      "reason": "Original harness runtime adaptation, artifact-only upload and cleanup fail-closed NOT TESTED due to blocked CI creation; defer until science baseline viability justifies it. Never store real traces as ciphertext without rights and deployed gate.",
+      "resume_when": "T0.57 finds a viable scientific baseline requiring private audit traces and rights/retention are explicitly resolved."
+    }
+  ]
 }
