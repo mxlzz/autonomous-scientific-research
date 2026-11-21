@@ -153,7 +153,7 @@ def self_test():
     assert not score("outlier",{**good_b,"b":4},[5])["pass"]
     assert not check_x("outlier",{"x":6})
     assert measure("outlier",5)=={"value":17.1}
-    print("T064_ORIGINAL_SYNTHETIC_CASES=PASS; two tasks, 21 adversarial and fixture checks")
+    print("T064_ORIGINAL_SYNTHETIC_CASES=PASS; two tasks and adversarial fixture checks")
 
 if __name__ == "__main__":
     if sys.argv[1:] != ["--self-test"]:
