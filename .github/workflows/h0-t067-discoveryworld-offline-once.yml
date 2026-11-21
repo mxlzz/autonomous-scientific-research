@@ -1,0 +1,43 @@
+name: T0.67 DiscoveryWorld pinned offline headless feasibility, no Gemini
+
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t067-discoveryworld-offline-once.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-offline-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Fetch pinned public scientific simulator with no secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/discoveryworld-pinned
+          git -C /tmp/discoveryworld-pinned init -q
+          git -C /tmp/discoveryworld-pinned remote add origin https://github.com/allenai/discoveryworld.git
+          git -C /tmp/discoveryworld-pinned fetch -q --depth 1 origin fd591323920be0d3786ef350955de1945aa571e5
+          git -C /tmp/discoveryworld-pinned checkout --detach -q FETCH_HEAD
+          test "$(git -C /tmp/discoveryworld-pinned rev-parse HEAD)" = fd591323920be0d3786ef350955de1945aa571e5
+          echo "T067_UPSTREAM_PIN_VERIFIED=1"
+      - name: CPU-only dependency installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet -r /tmp/discoveryworld-pinned/requirements.txt
+      - name: One local text observation and separate scorecard, no API call
+        shell: bash
+        env:
+          PYTHONPATH: /tmp/discoveryworld-pinned
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          set -euo pipefail
+          python3 scripts/t067_discoveryworld_offline_probe.py
