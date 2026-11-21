@@ -1,0 +1,23 @@
+# Auditoría formal H0 / T0.73 — Autoverificación de resultados acumulados y continuidad
+
+**Fecha:** 2026-11-21 (AR). **Autor y auditor son la misma instancia; NO es auditoría independiente.** Criterio independiente del resultado: `OBJECTIVE.md`, `PLAN.md` H0, `METHODOLOGY.md` y auditorías H0 T0.6/T0.27/D-0062. Evidencia de análisis: [T0.73](../evidence/T0.73-h0-scientific-milestone-after-t069-t070-2026-11-21.md).
+
+## Criterio preexistente contra evidencia
+
+1. **Instrumento:** SciResearch original `@9d391b3` con scorer matemático, experimentos dev, policies scripted y datos de control → **PASS restringido** en ciclo corto simulado (T0.26/T0.69, no inferir investigación abierta general). Costo `compute_units` no equivale a CPU ni dinero.
+2. **Agente generativo que realmente interviene en ciencia:** ahora **SÍ hubo** episodios efectivos (Qwen4B 2, GPT/ChatGPT temporal 1, distintos tratamientos/casos) — corrige el negativo histórico “cero LLM científico” de T0.27; pero un Qwen score pésimo, otro NO_SCORE, GPT score con intervalo ancho y pérdida de texto/trajectoria → **0 elegibles por cribado**, sin repetibilidad/validez independiente. **No** cuentan como N=3 casos IID, ni hacen inferencia de capacidad comparativa.
+3. **Rigor y custodia:** T0.70 fue evaluado localmente por Codex según reporte transmitido del usuario. El ejecutor actual **no accedió a archivos brutos** ni recuperó el chat entero. Su `submit` texto cualitativo se perdió por usar `rationale` en lugar de `conclusions`; 400025600 `compute_units` gastados en `window_refit` fallida. Ausencia de proceso auditable → **FAIL** para baseline científica generativa.
+4. **Calidad y costos:** T0.69 muestra beneficio mecánico dependiente de caso para checker determinista; no constituye H1/H5 generalizable. Sin resultados generativos elegibles el costo por válido no es finito/estimable; costo de CPU, tokens/tiempo humano/energía faltante. **FAIL** para validez/costo de autonomía científica en el objetivo.
+5. **Transferencia y autonomía prolongada:** SciResearch cubre estimación térmica por episodios cortos, no búsqueda de literatura, diseño/desarrollo de herramientas nuevas, memoria/reentrada en otro día ni cooperación entre agentes. **NO TESTADO**; no confundir buen estado de GitHub del ejecutor con un brazo experimental controlado de H4/H6.
+6. **Control del objetivo:** ninguna nueva llamada de modelo, CI, descarga ni benchmark. Bloqueo D-0090 de actor/servidor local permanece **por operación**; sin pago, claves ni permiso nuevo. No crear un T0.74 instrumental por tener una siguiente tarea.
+7. **No duplicación:** el mismo caso de calibración Qwen apareció en n1/n2 y otro caso fue usado por ChatGPT; no retestear, no reutilizar como holdout. Historial D-0081 de DiscoveryWorld/Gemini toys se respetó. Alternativas R01–R14 documentadas y no presentadas como nuevas.
+8. **Contrafactual:** score IA válido bajo cribado, razonamiento/transcripción completos, costo medible y replicabilidad cambiarían a GO hacia baseline y luego comparador; si nuevamente se obtiene `NO_SCORE` o calidad baja bajo condiciones comparables, STOP/replantear. Hoy **no hay actor comprobado que haga admisible esa prueba**: descartar instalación ciega como sustituto de hipótesis.
+
+## Retorno del trabajo y decisión
+
+**Beneficio esperado:** resolver si nueva evidencia cambia el hito H0 y evitar repetir instrumentación.
+**Evidencia lograda:** discriminación instrumental/scripta/LLM, tres episodios generativos no intercambiables, 0 resultados IA elegibles, coste por válido no estimable, límites de inferencia y constructo prolongado.
+**Esfuerzo/costo:** lectura documental y razonamiento sin medición de minutos, cero ejecuciones científicas/API/CI adicionales.
+**STOP/GO:** **CORREGIR H0 / NO CERRAR / H1-H2 BLOQUEADOS**. Retener como única posible prueba decisiva un **episodio de actor cientificamente apto y controlable en harness original, con campos y transcripción íntegros y criterio fijado ANTES**, pero aún **no admisible** sin recurso/modelo/no-training/custodia y costos aprobados. No completar artificialmente otra tarea si no hay insumos. Si aparece otra pregunta falsable con archivos ya disponibles, deberá pasar D-0081 y declararse en STATE antes de trabajar.
+
+**Limitación:** autoverificación del mismo investigador, no validación externa de las conclusiones ni revisión raw del episodio GPT. H0 conserva un resultado negativo/limitado, no fracaso de la pregunta general.
