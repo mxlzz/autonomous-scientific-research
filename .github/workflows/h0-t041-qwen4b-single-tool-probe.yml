@@ -1,0 +1,140 @@
+name: H0 T0.40 Qwen3 4B Instruct no-inference metadata preflight
+on:
+  push:
+    paths:
+      - .github/workflows/h0-t041-qwen4b-single-tool-probe.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t041-one-synthetic-qwen4b-tool-probe
+  cancel-in-progress: true
+jobs:
+  cpu-model-metadata-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+      OLLAMA_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      MODEL: "qwen3:4b-instruct-2507-q4_K_M"
+      IMAGE: "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+    steps:
+      - name: Checkout pinned preregistration without persisting credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify prereg scripts and both synthetic fixture suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/T0.40-qwen4b-instruct-q4-metadata-only-preregister-2026-11-20.md)" = aa2dbbf40ebeaa74cf270653cc756947b7415fa5
+          test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
+          test "$(git hash-object scripts/h0_qwen4b_tool_probe_t041.py)" = 1ad7e1928ad93a5f6e520280cb7b70c51ca58909
+          python3 -m py_compile scripts/h0_qwen4b_preflight_t040.py scripts/h0_qwen4b_tool_probe_t041.py
+          python3 scripts/h0_qwen4b_preflight_t040.py --offline-test
+          python3 scripts/h0_qwen4b_tool_probe_t041.py --offline-test
+          echo T041_PREREG_SCRIPT_PIN_VERIFIED=true
+          echo T041_TASK_DATA_NOT_READ=true
+          echo T041_LLM_REQUESTS_MAX=1
+      - name: Download exact Ollama model and send one capped synthetic tool probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo T041_MODEL_STAGE=DOWNLOAD_THEN_ONE_SYNTHETIC_TOOL_PROBE
+          avail=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T041_DISK_AVAILABLE_BEFORE_BYTES=$avail"
+          if [ "$avail" -lt 5368709120 ]; then
+            echo T041_DECISION=NO_GO_DISK_PRECHECK
+            exit 0
+          fi
+          timeout 120 docker pull "$IMAGE" >/dev/null
+          echo T041_IMAGE_DIGEST_PIN=true
+          vol="h0t041-model-$GITHUB_RUN_ID"
+          actor="h0t041-actor-$GITHUB_RUN_ID"
+          docker volume create "$vol" >/dev/null
+          docker run -d --name "$actor" --network bridge -p 127.0.0.1:11434:11434 \
+            --cpus 2 --memory 5g --pids-limit 96 --cap-drop ALL \
+            --security-opt no-new-privileges --read-only \
+            --env OLLAMA_HOST=0.0.0.0:11434 \
+            --env OLLAMA_CONTEXT_LENGTH=4096 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=384m,mode=1777 \
+            --mount "type=volume,src=$vol,dst=/root/.ollama" "$IMAGE" >/dev/null
+          docker inspect "$actor" > "$RUNNER_TEMP/t041-inspect-private.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          v=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"t041-inspect-private.json").read_text())[0]
+          h=v["HostConfig"]
+          assert h["ReadonlyRootfs"] and not h["Privileged"]
+          assert h["NanoCpus"]==2000000000 and h["Memory"]==5*1024**3
+          assert "ALL" in h["CapDrop"] and "no-new-privileges" in h["SecurityOpt"]
+          assert all(m["Destination"]!="/var/run/docker.sock" for m in v["Mounts"])
+          assert len(v["Mounts"])==1 and v["Mounts"][0]["Destination"]=="/root/.ollama"
+          assert v["HostConfig"]["PortBindings"]["11434/tcp"][0]["HostIp"]=="127.0.0.1"
+          print("T041_CPU_2_MEM_5G_READONLY_AND_MODEL_ONLY_MOUNT=true",flush=True)
+          print("T041_ONLY_LOOPBACK_SERVER_PORT=true",flush=True)
+          PY
+          ready=no
+          for i in $(seq 1 35); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then
+              ready=yes; break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != yes ]; then
+            echo T041_DECISION=NO_GO_SERVER_START
+            exit 0
+          fi
+          set +e
+          timeout 420 docker exec "$actor" ollama pull "$MODEL" >"$RUNNER_TEMP/t041-pull-private.log" 2>&1
+          rc=$?
+          set -e
+          echo "T041_PULL_EXIT_CODE=$rc"
+          if [ "$rc" -ne 0 ]; then
+            echo T041_DECISION=NO_GO_PULL
+            exit 0
+          fi
+          echo T041_MODEL_PULL_COMPLETED=true
+          python3 scripts/h0_qwen4b_preflight_t040.py --inspect-runtime
+          # cgroup v2 peak includes model preparation, not just token inference.
+          peak_before=$(docker exec "$actor" cat /sys/fs/cgroup/memory.peak 2>/dev/null || true)
+          if [[ "$peak_before" =~ ^[0-9]+$ ]]; then
+            echo "T041_ACTOR_CGROUP_PEAK_BEFORE_REQUEST_BYTES=$peak_before"
+          else
+            echo T041_ACTOR_CGROUP_PEAK_BEFORE_REQUEST_BYTES=UNVERIFIED
+          fi
+          set +e
+          timeout --signal=TERM --kill-after=5s 110 python3 scripts/h0_qwen4b_tool_probe_t041.py --run-one
+          probe_rc=$?
+          set -e
+          echo "T041_PROBE_EXIT_CODE=$probe_rc"
+          if [ "$probe_rc" = 124 ]; then
+            echo T041_DECISION=NO_GO_TIMEOUT
+          elif [ "$probe_rc" != 0 ]; then
+            echo T041_PROBE_GATE_FAILED=true
+          else
+            echo T041_PROBE_GATE_FAILED=false
+          fi
+          peak_after=$(docker exec "$actor" cat /sys/fs/cgroup/memory.peak 2>/dev/null || true)
+          if [[ "$peak_after" =~ ^[0-9]+$ ]]; then
+            echo "T041_ACTOR_CGROUP_PEAK_AFTER_REQUEST_BYTES=$peak_after"
+          else
+            echo T041_ACTOR_CGROUP_PEAK_AFTER_REQUEST_BYTES=UNVERIFIED
+          fi
+          oom=$(docker inspect --format '{{.State.OOMKilled}}' "$actor" 2>/dev/null || true)
+          case "$oom" in true|false) echo "T041_ACTOR_OOM_KILLED=$oom";; *) echo T041_ACTOR_OOM_KILLED=UNVERIFIED;; esac
+          echo T041_PRIVATE_TRANSCRIPT_UPLOADED=false
+          echo T041_API_PAID_USD=0
+          after=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T041_DISK_AVAILABLE_AFTER_BYTES=$after"
+      - name: Cleanup ephemeral model and local files
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f "h0t041-actor-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          docker volume rm -f "h0t041-model-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          rm -f "$RUNNER_TEMP/t041-pull-private.log" "$RUNNER_TEMP/t041-inspect-private.json"
+          echo T041_EPHEMERAL_MODEL_REMOVED=true
+          echo T041_NO_RAW_UPLOAD=true
