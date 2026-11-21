@@ -30,3 +30,6 @@ En un chat con acceso de lectura/escritura al repositorio, usar las instruccione
 
 
 **Decisión T0.62:** [comparar más modelos en el mismo toy es poco informativo](experiments/T0.62-gemini-model-comparison-marginal-value-2026-11-21.md) (posible efecto techo). Se propone **solo condicionalmente** un pequeño estudio pareado de Flash-Lite y Flash sobre casos originales más difíciles, con autorización y scorer previos; alternativa STOP a toys y volver a H0 con tratamiento de datos apto. Estado persistido en STATE, H0 CORREGIR.
+
+
+**Actualización T0.65:** [cuatro episodios exploratorios Gemini Free](evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md) con dos tareas sintéticas y dos modelos: Gemini 3.5 Flash-Lite obtuvo 1 `GRADED_PASS` y 1 `GRADED_FAIL`; Gemini 3.8 Flash obtuvo 2 `NO_SCORE HTTP503` (sin respuestas), no comparables en capacidad. [Run44940482339](https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44940482339), evaluadores/mocks PASS, sin reintentos ni uso de benchmarks de terceros. Siguiente T0.66 evalúa STOP-LOSS y alternativas con evaluación científica más robusta; **H0 CORREGIR**.
