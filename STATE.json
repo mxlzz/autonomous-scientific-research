@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.65",
-  "task_title": "T0.65 — Ejecutar piloto Gemini Free emparejado 2 tareas×2 modelos, con gate de instrumento",
-  "task_expected_output": "Runner Python stdlib limitado que reusa T0.64 original cases; tests mock y preflight de modelo Free; un único job Actions que ejecute máximo 4 episodios (orden A Lite, A Flash, B Flash, B Lite), ≤3 solicitudes generativas y ≤2 medidas por episodio, sin reintentos por score, mismo contrato/threshold por tarea, NO_SCORE con fallas HTTP/red separadas; resumen allowlist, evidencia de run, autoverificación, LOG, STATE último. STOP si falla tests, secretos, datos, cuota o costo.",
-  "task_acceptance": "Releer HEAD/STATE T0.65/AGENTS y T0.64 prereg/scorer. Antes de API validar Python compile, adversariales T0.64 y mock de interacción, acotar ≤12 solicitudes LLM total y ≤2 mediciones/episodio, modelo Free=gemini-3.5-flash-lite o gemini-3.8-flash solamente, cero servicios pagados ni búsqueda, permisos contents:read. Separar casos/scorer de mensajes, rechazar medidas fuera allowlist y no publicar salida raw ni clave/rationale. Verificar evento exactly once y desactivar push tras encolarlo, readback. Guardar cada episodio con casos/modelos/orden, JSON allowlist y categorías infra sin false score. Si todo PASS, 4 episodios exploratorios n1, no inferir ventaja causal general ni H0 completo. No usar material SciResearch con Google Unpaid. Registrar coste/beneficio y autoverificación, LOG y STATE último, H0 CORREGIR.",
-  "next_action": "T0.65: diseñar controlador mínimo que importe scripts/t064_cases.py y reusa patrones HTTP de T0.61; auto-tests con mock ANTES de llamadas reales, luego una ejecución 2×2 bajo autorización usuario Gemini Free D-0076. NO utilizar datos SciResearch, ni facturación, ni quota indiscriminada; parar si el scorer tiene fugas o el modelo no aparece/429. Ejecutar orden A Lite, A Flash, B Flash, B Lite; medir y registrar. Auto-trigger GitHub one-shot y luego manual-only. H0 CORREGIR.",
+  "current_task": "T0.66",
+  "task_title": "T0.66 — STOP-LOSS y búsqueda documental de línea base científica robusta con Gemini Free o proveedor no-training",
+  "task_expected_output": "Dictamen offline a partir de T0.65 (Lite 1 GRADED_PASS /1 GRADED_FAIL; Flash 2 NO_SCORE HTTP503) sobre si seguir consumiendo cuota con modelos Flash o reemplazar por benchmark científico externo legalmente compatible, sin ingeniería improductiva. Evaluar fuentes de evaluación con derechos/condiciones de entrenamiento, costo y reproducibilidad; proponer una decisión científicamente útil o PAUSA, sin llamar API T0.66.",
+  "task_acceptance": "Releer HEAD/STATE/OBJECTIVE/METHODOLOGY/AGENTS/RESEARCH, y evidencia T0.65; explicar model_3.8 Flash con dos HTTP503 no es comparación de capacidad y Lite n1 pass/fail no estima validez general. Aplicar stop-loss: no reruns de toys ni generadores sin valor marginal. Investigar de forma acotada si existe benchmark/fixture científico de terceros con licencia explícita para uso en Gemini Unpaid que permite mejora entrenamiento o si se necesita proveedor con condiciones no-training; distinguir permiso de uso de código vs permiso de datos/evaluadores. Evaluar tiempo de implementación, sesgos/valor, recomendar STOP/GO con razones y presupuesto. Sin llamadas Gemini, permisos ni gastos pagos. Persistir evidencia/auditoría/LOG, STATE último. H0 CORREGIR, H1/H2 no iniciados.",
+  "next_action": "T0.66 SOLO OFFLINE: contrastar resultado 4 celdas T0.65 contra OBJETIVO científico y derechos de benchmark. Flash 3.8 dio HTTP503 dos veces, Google lo atribuye normalmente a saturación, no a cuota ni fallo de razonamiento. Lite un PASS y un FAIL en dos tareas sintéticas, sin explicación textual auditada. Evaluar STOP definitivo a toys; buscar alternativa robusta que permita usar un evaluador con validez externa bajo Gemini Unpaid (training allowed) o recomendar proveedor con no-training explícito sin pedir pago no autorizado. No consumir más Gemini por inercia; costo humano/CI importa. H0 CORREGIR.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -79,7 +79,8 @@
     "T0.61",
     "T0.62",
     "T0.63",
-    "T0.64"
+    "T0.64",
+    "T0.65"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -151,7 +152,8 @@
     "D-0071 T0.58 same-executor audit: no independently audited model response; actual remote request arrival, quota consumption and transport root-cause unobserved. No user billing read. No repeated experiment authorized. T0.59 offline diagnostic only.",
     "D-0073 same-executor self-verification only; checker file not CI-executed, revised runner unimplemented, no Gemini API response or scientific score; need new user approval and actual free quota inspection before another run.",
     "D-0074 self-audit same executor: numeric synthetic PASS n1 from original project scorer, no independent scientific judgment or full rationale; free quota and provider billing not independently inspected, no comparison between Gemini models. H0 still CORREGIR.",
-    "D-0075 same-executor research-plan audit only; no independent scoring, effect ceiling hypothesis untested, new case/evaluator not yet built or approved; comparative n1 would be exploratory not statistical."
+    "D-0075 same-executor research-plan audit only; no independent scoring, effect ceiling hypothesis untested, new case/evaluator not yet built or approved; comparative n1 would be exploratory not statistical.",
+    "D-0078 same-executor audit only: scientific rationale not stored, external independent benchmark absent, 2 Flash HTTP503 leave outcomes missing, numerical Lite FAIL cause not established, quota/billing not independently inspected. No causal model ranking from n1."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -283,7 +285,8 @@
     "D-0074 (2026-11-21 AR): T0.61 concluida con un episodio Free Gemini 3.5 Flash-Lite bajo protocolo corregido original T0.60; usuario autorizó segunda prueba gratis, dijo cuota no agotada y preguntó probar otros modelos. Fuente oficial confirmó Free Tier de 3.5 Flash-Lite/3.8 Flash y OpenAI-compatible tools. Run44938583860 job136950583011 attempt1 completed/success: T060/T061 tests offline PASS, metadata modelo visible, 3 model requests/3 responses, 2 experimentos (0,3) y (1,0), no target(3,0), coeficientes correctos, predicción 11°C error0, zero tool errors, 1199 input/206 output tokens reportados, wall2.106s; method_review NOT_REVIEWED (solo hash/longitud rationale). SOLO material propio sintético, ninguna tarea SciResearch; no API paga ni facturación verificada. Workflow creado push one-shot commit85b595f, inmediatamente protegido manual-only commit9061e49, última lista de runs sin adicionales. No comparación causal ni validación H0: solo calibration n1, problema sencillo. Evidence, audit self same executor, RESEARCH/PLAN/README/LOG guardados y readback. T0.62 próximo OFFLINE analizar comparación de modelos con mayor dificultad vs costo marginal; H0 CORREGIR, H1/H2 sin empezar.",
     "D-0075 (2026-11-21 AR): T0.62 evaluación SOLO DOCUMENTAL de valor marginal cerrada. T0.58 Gemini3.8 Flash NO_SCORE/timeout bajo scorer inválido y T0.61 Gemini3.5 Flash-Lite GRADED_PASS n1 toy v2 con 3 requests y 2 medidas no se pueden comparar causalmente. Repetir mismo toy en 3.8 tiene bajo valor por probable efecto techo. Google docs permiten Free Tier en ambos, cuotas reales de cuenta no confirmadas; versión 3.7 reported routing to 3.8 no asumir como modelo diferente. Matriz experiments/T0.62-gemini-model-comparison-marginal-value-2026-11-21.md propone SOLO si autorizado y costo proporcional estudio exploratorio máximo 2 modelos x 2 casos originales más difíciles = 4 episodios, mismo contrato por tarea, oracle determinista adversarial, n1 por par no confirmatorio. Alternativa STOP a toys y foco H0 benchmark con proveedor no-training. Autoverificación mismo agente audits/T0.62-GEMINI-MODEL-COMPARISON-STOP-2026-11-21.md, README/RESEARCH/PLAN/LOG persistidos/readback; 0 nuevas APIs/modelos/pagos. T0.63 BLOCKED esperando permiso de nueva serie delimitada o PAUSA. H0 CORREGIR, H1/H2 sin iniciar.",
     "D-0076 (2026-11-21 AR): usuario autorizó usar toda cuota diaria disponible de Gemini AI Studio FREE y avanzar, entendida como permiso amplio dentro Free/no pagos/no SciResearch y no como mandato de gastar tokens sin valor científico. Se liberó bloqueo T0.63; alcance y 2x2 inicial condicional limitado a máximo 4 episodios, 3 requests/2 herramientas cada uno, tras scorrers sintéticos originales y pruebas adversariales; resultados NO_SCORE separados y sin reruns por score. Google precios Free Tier, términos Unpaid y rate limits documentados; cuotas reales de usuario no vistas, user reporta libre. Evidence evidence/T0.63-free-gemini-authorization-scope-2026-11-21.md, autoverificación audits/T0.63-GEMINI-QUOTA-AUTHORIZATION-2026-11-21.md, PLAN/LOG leídos de vuelta. Sin API ni gasto T0.63. T0.64 diseño offline siguiente, H0 CORREGIR/H1/H2 sin iniciar.",
-    "D-0077 (2026-11-21 AR): T0.64 COMPLETADA como diseño y validación OFFLINE, no inferencia. Se preregistraron dos casos originales (A discriminación entre leyes lineal/cuadrática con x3 bajo error acotado; B regresión con outlier x3 e intervalo predictivo, validación x5/x7) con target reservado, misma herramienta/oráculo por modelo, máximo 2 muestras y 3 turnos. scripts/t064_cases.py incluye scorers y casos adversarios rechazo de adivinar, medir target, error, outlier/CI falso. CI GitHub run44940203262 job136955512093 completed/success, T064_ORIGINAL_SYNTHETIC_CASES=PASS, sin API/secret. Workflow offline dejó solo manual commit4e8f758; evidencia evidence/T0.64-two-original-science-cases-offline-gate-pass-2026-11-21.md y autoverificación misma instancia audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md; PLAN/RESEARCH/LOG guardados/readback. Costo=1 pequeño CI offline + trabajo humano no cronometrado, cero API/gasto. T0.65 runner mínimo 2 modelos×2 casos Free bajo cuota autorizada, no probar superioridad estadística n1. H0 CORREGIR."
+    "D-0077 (2026-11-21 AR): T0.64 COMPLETADA como diseño y validación OFFLINE, no inferencia. Se preregistraron dos casos originales (A discriminación entre leyes lineal/cuadrática con x3 bajo error acotado; B regresión con outlier x3 e intervalo predictivo, validación x5/x7) con target reservado, misma herramienta/oráculo por modelo, máximo 2 muestras y 3 turnos. scripts/t064_cases.py incluye scorers y casos adversarios rechazo de adivinar, medir target, error, outlier/CI falso. CI GitHub run44940203262 job136955512093 completed/success, T064_ORIGINAL_SYNTHETIC_CASES=PASS, sin API/secret. Workflow offline dejó solo manual commit4e8f758; evidencia evidence/T0.64-two-original-science-cases-offline-gate-pass-2026-11-21.md y autoverificación misma instancia audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md; PLAN/RESEARCH/LOG guardados/readback. Costo=1 pequeño CI offline + trabajo humano no cronometrado, cero API/gasto. T0.65 runner mínimo 2 modelos×2 casos Free bajo cuota autorizada, no probar superioridad estadística n1. H0 CORREGIR.",
+    "D-0078 (2026-11-21 AR): T0.65 completada una matriz Free Gemini 2 modelos×2 casos sintéticos originales en run44940482339 job136956348737 attempt1. Tests de scorer y mock PASS antes API. 4 episodios, 8 requests generativas iniciadas: Lite mechanisms GRADED_FAIL error1.6 tras medidas x2,x3 (3/3 respuestas, causa textual desconocida), Flash mechanisms NO_SCORE HTTP503 (1 req/0 replies), Flash outlier NO_SCORE HTTP503 (1 req/0 replies), Lite outlier GRADED_PASS error0 con x5,x7 (3/3). 1 PASS/1 FAIL/2 NO_SCORE, 2448 input/680 output tokens Lite declarados, 0 resultados Flash; Google support dice 503 sobrecarga temporal (no inferir backend real). No reruns; workflow encolado una vez commit709ee3d y desactivado push commit2240ede, readback manual-only. Material propio sin SciResearch, key secret no expuesto, ninguna facturación pagada autorizada ni comprobada. Evidence evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md y autoverificación misma instancia audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md, RESEARCH/PLAN/README/LOG guardados/readback. No se puede concluir superioridad/capacidad Flash por NO_SCORE ni H0 general; STOP a repetir toys, T0.66 offline evaluar baseline científico más robusto y licitud Free. H0 CORREGIR/H1/H2 no iniciados."
   ],
   "evidence_refs": [
     {
@@ -741,6 +744,18 @@
     {
       "path": "scripts/t064_cases.py",
       "status": "D-0077 original science fixtures and deterministic adversarial scorers, tested in GitHub Actions."
+    },
+    {
+      "path": "experiments/T0.65-gemini-free-paired-run-execution-plan-2026-11-21.md",
+      "status": "D-0078 prereg equal-contract 2x2 with ≤4 episodes/12 requests before GitHub run."
+    },
+    {
+      "path": "scripts/t065_paired_gemini.py",
+      "status": "D-0078 original paired scientific controller; mock passed and four attempted cells in run44940482339."
+    },
+    {
+      "path": "evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md",
+      "status": "D-0078 GitHub Actions run44940482339: Lite 1 PASS/1 FAIL, Flash 2 NO_SCORE HTTP503, no rerun."
     }
   ],
   "audit_refs": [
@@ -818,13 +833,14 @@
     "audits/T0.61-GEMINI-FREE-V2-PASS-SELF-AUDIT-2026-11-21.md",
     "audits/T0.62-GEMINI-MODEL-COMPARISON-STOP-2026-11-21.md",
     "audits/T0.63-GEMINI-QUOTA-AUTHORIZATION-2026-11-21.md",
-    "audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md"
+    "audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md",
+    "audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "6ff7fabe1547c7715e6391d28f2d7a22d0abba0f"
+    "commit": "e40c8fde78fd8f7c1fa4aecbd59e3d0e477982cd"
   },
-  "last_confirmed_activity": "D-0077: T0.64 offline science fixtures and adversarial tests in GitHub Actions #44940203262 PASS, no Gemini. Ready T0.65 bounded 2x2 experiment under user Free quota authorization; H0 CORREGIR.",
+  "last_confirmed_activity": "D-0078: T0.65 Free Gemini four-cell run44940482339 completed with 1 PASS/1 FAIL/2 NO_SCORE HTTP503, scorer+mock CI PASS, no reruns/paid/SciResearch. Evidence, same-executor audit, PLAN/RESEARCH/README/LOG read back. Next T0.66 offline stop-loss external scientific validity direction; H0 CORREGIR.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
