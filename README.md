@@ -25,3 +25,5 @@ Investigación metodológica y experimental sobre **autonomía científica verif
 
 ## Inicio
 En un chat con acceso de lectura/escritura al repositorio, usar las instrucciones de [PROJECT_INSTRUCTIONS.md](PROJECT_INSTRUCTIONS.md) y escribir **Continuá**. Empezar por la unidad vigente y aplicar las reglas de cierre y recuperación de AGENTS.md.
+
+**Actualización T0.61:** [Gemini 3.5 Flash-Lite Free completó una calibración sintética corregida](evidence/T0.61-gemini-3.5-flash-lite-one-authorized-v2-pass-2026-11-21.md) (run [44938583860](https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44938583860)): dos mediciones discriminantes, coeficientes correctos, 11°C con error 0°C, en 3 solicitudes y ~2.1 s de controlador. **No constituye validación del hito H0 ni comparación de modelos**; rationale no evaluada independientemente. El workflow queda manual-only y siguiente T0.62 evalúa en forma offline si merece la pena diseñar comparaciones entre modelos con casos más difíciles. H0 CORREGIR.
