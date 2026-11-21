@@ -1,5 +1,18 @@
 # Plan y criterios de aceptación — versión 1
 
+## Prioridad de ejecución D-0081 — Recuperar el objeto científico, no reiniciar H0
+
+[Auditoría de desvío T0.68](evidence/T0.68-course-correction-objective-drift-2026-11-21.md) y [autoverificación](audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md). **Esta decisión prevalece sobre la falsa disyuntiva histórica T0.68 «API paga o pausa».**
+
+1. **H0 sigue CORREGIR.** Mantener el evaluador original SciResearch `Btwestyo/sciresearch-eval@9d391b3`, T0.26 (controles `naive/heuristic` y scorer original), T0.49/T0.52 (Qwen4B CPU NO apto), T0.55 (comparación preregistrada libre vs descomposición, **no ejecutable con Qwen4B**). No atribuir autonomía científica a toys Gemini. No reenviar datos SciResearch a Google Unpaid.
+2. **T0.69 — experimento ABIERTO y ELEGIBLE sin pedir dinero:** realizar **una sola ablación pareada de la política original** `heuristic` con/sin verificación de convergencia, sobre **dos casos dev ya vistos** `task_525abee377` y `task_b402d13dd9`. Ambos comparten grader, herramientas, presupuesto y el resto del código; la única intervención es que `_converge` devuelva la estimación inicial sin simulaciones/refinamientos. **No cambiar el scorer.** Pre-registrar criterio/costos/casos, verificar con test sin ciencia la igualdad de interfaz y fijar límite CI antes de correr. Al existir observación previa, declarar piloto **exploratorio**; un cambio favorable puede justificar medir el mecanismo de verificación en más casos después de H0, nunca probar H5 causalmente general con dos controles no-LLM.
+3. **Después de T0.69:** decisión científica de si la verificación numérica agrega calidad frente a costo **en esos casos**; determinar con evidencia si se justifica continuar con un candidato LLM comparable y legalmente apto para SciResearch. No crear framework, benchmark ni migración de proveedor por rutina. La falta de autorización paga bloquea solo ejecución que costaría dinero; no cualquier análisis autorizado.
+4. **Bloqueo de hitos:** H1/H2 no empiezan sin auditoría satisfactoria de H0 según criterios originales. Si no hay un actor LLM representativo/no-training disponible, registrar límite y pedir intervención específica; no fabricar progreso técnico.
+
+**Puerta transversal:** cada tarea posterior debe satisfacer [AGENTS.md: relevancia científica y duplicación](AGENTS.md), mostrar resultado frente a `OBJECTIVE.md` y costo de oportunidad. El valor de una tarea no se mide en cantidad de commits o jobs.
+
+
+
 Objetivo canónico: [OBJECTIVE.md](OBJECTIVE.md). Hipótesis H1–H6 definidas allí. Orden dependiente de resultados; la construcción de software nuevo no es un hito obligatorio.
 
 ## H0 — Reproducir y auditar lo existente (**activo, CORREGIR; ver D-0062 y STATE**)
