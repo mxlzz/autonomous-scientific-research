@@ -13,7 +13,7 @@ import threading
 import time
 from h0_cgroup_pressure_t045 import sample, deltas
 from h0_heartbeat_censor_t046 import classify_heartbeat, censor_reason
-from h0_adapter_numeric_telemetry_t049 import parse_metric
+from h0_adapter_numeric_telemetry_t049 import parse_metric  # helper emits T049_REQUEST_ prefix unchanged; observational reuse
 from h0_tool_categories_t051 import parse_event
 
 STATS={"SCIENCE_TURNS","SCIENCE_TOOL_CALLS","SCIENCE_TOOL_ERRORS",
@@ -131,12 +131,12 @@ def fixtures():
      "T047_HEARTBEAT_SCORER_SUBMITTED=false",
      'T052_TOOL_EVENT={"category":"measurement","outcome":"success"}',
      'T052_TOOL_EVENT={"category":"submission","outcome":"success"}',
-     "T052_REQUEST_BODY_BYTES=3123",
-     "T052_REQUEST_MESSAGE_COUNT=2",
-     "T052_REQUEST_TOOL_SCHEMA_COUNT=9",
-     "T052_REQUEST_ATTEMPT_COUNT=1",
-     "T052_REQUEST_ELAPSED_SECONDS=180.125",
-     "T052_REQUEST_EXCEPTION_CLASS=TimeoutError",
+     "T049_REQUEST_BODY_BYTES=3123",
+     "T049_REQUEST_MESSAGE_COUNT=2",
+     "T049_REQUEST_TOOL_SCHEMA_COUNT=9",
+     "T049_REQUEST_ATTEMPT_COUNT=1",
+     "T049_REQUEST_ELAPSED_SECONDS=180.125",
+     "T049_REQUEST_EXCEPTION_CLASS=TimeoutError",
      "T052_MODEL_LOADED_BEFORE_SCIENCE=False",
      "T052_SCIENCE_TOTAL_INPUT_TOKENS=1000",
      "T052_SCIENCE_TOOL_CALLS=5",
