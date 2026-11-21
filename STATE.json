@@ -6,11 +6,11 @@
   "stage": "H0",
   "status": "research_in_progress",
   "current_milestone": "H0",
-  "current_task": "T0.59",
-  "task_title": "T0.59 — Diagnóstico documental offline y stop-loss tras timeout único Gemini Free, sin reejecución API",
-  "task_expected_output": "evidence/T0.59-gemini-transport-offline-cause-decision-2026-11-21.md, auditoría correspondiente, criterios para decidir STOP o solicitar autorización de una sola nueva prueba diagnóstica. Examinar exclusivamente código y job log T0.58, docs oficiales y fuentes disponibles, sin nuevo LLM/API, sin editar workflow que se autoejecute. Aislar qué hipótesis quedan distinguibles y qué instrumentación mínima añadiría información; evitar más infraestructura sin beneficio científico.",
-  "task_acceptance": "Recuperar y verificar HEAD+STATE y run44934173643/job136937084973. Distinguir el transporte URLError/TimeoutError agrupado de fallos HTTP/cuota/respuesta, y dejar claro lo que NO se puede saber sobre envío al servidor, consumo de cuota y causa. Identificar al menos una verificación no invasiva y su dato discriminante antes de ofrecer una segunda corrida; si no, STOP. No repetir Gemini Free sin autorización nueva, no modificar scripts/t058_gemini_synthetic.py ni workflow gatillador por inercia, no enviar SciResearch a Free. Registrar costo humano/CI, decisión marginal, autoverificación, LOG y STATE último. H0 CORREGIR, H1/H2 no abiertos.",
-  "next_action": "T0.59 SOLO OFFLINE: inspeccionar run44934173643/logs y scripts T0.58 para distinguir causa probable de timeout de 45s vs error URLError. Un request inició localmente, ninguna respuesta observada. Evaluar costo/oportunidad de UNA corrección diagnóstica (por ejemplo instrumentar distinción DNS/connect/read sin raw ni secreto), pero NO alterar archivos de trigger ni ejecutar segunda API sin permiso renovado. Si no aporta información decisiva, STOP. Conservar sintéticos únicamente, no SciResearch a Gemini Free; H0 CORREGIR.",
+  "current_task": "T0.60",
+  "task_title": "T0.60 — Reparación offline de identificabilidad y criterios del caso sintético Gemini, sin API",
+  "task_expected_output": "experiments/T0.60-gemini-synthetic-identifiability-repair-2026-11-21.md, evidencia de casos adversarios y autoverificación, distinguir evidencia científica de smoke técnico. No cambiar scripts/workflows que puedan llamar Gemini. Tras diseño validado, STOP pendiente de autorización distinta para segundo intento (si se justifica).",
+  "task_acceptance": "Releer HEAD/STATE, antecedente T0.59, experimento original T0.58. Diseñar modelo de trabajo explícito T=a+b*h+c*f y medición sintética en controles 0..3, excluir target (3,0) de herramientas, medir al menos un off-diagonal válido, verificar coeficientes y predicción holdout con regla fija, evitar que respuesta correcta por medida directa o prueba verbal apruebe. Mostrar caso positivo, shortcut que antes pasaba ahora fallaría, datos diagonales insuficientes y límites (sigue toy, no baseline H0). No ejecutar Gemini, no editar workflows, no consumir API, ni alterar objetivo/hitos. Comparar STOP vs autorización nueva y registrar evidencia, auditoría, LOG, STATE último.",
+  "next_action": "T0.60 SOLO OFFLINE: corregir diseño de calibración sintética descubierto en T0.59. Fuente del defecto: grade(11,[(3,0)]) aceptaría medición directa del target y prompt no supone linealidad, rationale no auditable. Crear prereg de segunda versión con hipótesis funcional explícita y target protegido, probar lógica con casos adversarios sin Gemini/CI; determinar costo/valor científico. Mantener workflow manual-only commit1fe86d0, sin API ni segunda corrida sin permiso. H0 CORREGIR.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -73,7 +73,8 @@
     "T0.54",
     "T0.56",
     "T0.57",
-    "T0.58"
+    "T0.58",
+    "T0.59"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -268,7 +269,8 @@
     "D-0068 (2026-11-21 AR): T0.57 cerrada como revisión documental de viabilidad, no experimento. Reuso SciResearch pinned y fuentes autor LADDER_v0 (Haiku5.5 47 dev episodios USD0,26 total reportados) y TEST_v1 (Haiku5.5 279/279 submitted, USD1,98 reportados), no pruebas propias, precios de cuenta y validez individual no confirmados. Modelo en AWS Bedrock/Converse documentado por AWS, Claude API precio público distinto de Bedrock. Qwen4B CPU n1 muy mala calidad, n2 NO_SCORE: NO-GO a más tuning/age extra sin modelo con piso científico; nuevos benchmarks SciAgentGYM y Sci-Agent-Exam también exigen integración/licencias y no son comparador barato. CONDITIONAL-GO un piloto fuerte SciResearch solo con autorización expresa usuario a gasto/proveedor y hard budget/privacidad/derechos; tope propuesto USD1 total; caso dev nuevo, una ejecución, sin test, sin reintentos por score. Si usuario mantiene USD0 o no hay acceso seguro, PAUSAR H0. No gastos, modelos ni cambios permisos en T0.57. H0 CORREGIR/H1-H2 no iniciados. Próxima T0.58 BLOCKED esperando intervención de usuario.",
     "D-0069 (2026-11-21 AR): usuario indicó que ya dispone de API gratuita Gemini, recurso omitido en T0.57; se corrige dicotomía Claude pago/pausa sin modificar objetivo ni autorizar gasto. Google docs confirman OpenAI compatible function calling, SciResearch pinned OpenAI adapter sin Authorization requiere ajuste pequeño y no está probado. Gemini Unpaid puede usar solicitudes/respuestas para desarrollar ML y tener revisión humana; README SciResearch pide benchmark data nunca en training corpora, por lo que no enviar sus tareas/mediciones/prompts/trazas a Gemini Free. Opción segura de costo USD0: smoke mínimo de función con fixtures nuevos completamente sintéticos solamente tras consentimiento y credencial como secret, no demuestra ciencia. No nuevos modelos, API, costos o permisos. H0 CORREGIR; T0.58 mantiene bloqueo para elección/acceso con privacidad.",
     "D-0070 (2026-11-21 AR): ante 'bueno, como seguimos entonces?' se preparó solo diseño documental para Gemini Free: experiments/T0.58-gemini-free-original-science-calibration-preregister-2026-11-21.md. Caso original 2 factores correlacionados de medición térmica ficticia, intervención discriminante y predicción numérica objetivo, oracle reservado; máximo 3 requests LLM y 2 mediciones, STOP sin reruns. No es SciResearch ni prueba H0. Auditado documentalmente por mismo agente en audits/T0.58-GEMINI-FREE-ORIGINAL-CALIBRATION-PREREG-2026-11-21.md. Se leyeron las fuentes oficiales Google compatible/OpenAI, Unpaid terms y rate limits. NO se creó controlador/workflow, NO se contactó API ni se tomó una clave, no se gastó. T0.58 sigue BLOQUEADA hasta consentimiento explícito y secreto GitHub GEMINI_API_KEY, modelo/cuotas reales por verificar. H0 CORREGIR/H1-H2 sin iniciar.",
-    "D-0071 (2026-11-21 AR): Con autorización explícita del usuario a UNA prueba sintética Gemini Free se implementó scripts/t058_gemini_synthetic.py y workflow .github/workflows/h0-t058-gemini-free-synthetic.yml, sin SciResearch ni datos de terceros ni facturación. Run44934173643 job136937084973 attempt1 completed/failure: offline scorer/mock flow PASS, GEMINI_API_KEY secret presente según gate y enmascarado; una solicitud local a gemini-3.8-flash terminó tras ~45s con NO_SCORE transport_error (URLError o TimeoutError agregado). 0 respuestas, 0 mediciones, 0 submit/score; no evidencia sobre procesamiento/consumo remoto ni razón exacta. No reintento, no efecto científico inferible; no confundir con incapacidad Gemini. Evidencia, autoverificación misma instancia, RESEARCH/PLAN/README/LOG readback. Siguiente T0.59 SOLO diagnóstico offline/stop-loss, cualquier nuevo experimento necesita permiso. H0 CORREGIR, H1/H2 no iniciados."
+    "D-0071 (2026-11-21 AR): Con autorización explícita del usuario a UNA prueba sintética Gemini Free se implementó scripts/t058_gemini_synthetic.py y workflow .github/workflows/h0-t058-gemini-free-synthetic.yml, sin SciResearch ni datos de terceros ni facturación. Run44934173643 job136937084973 attempt1 completed/failure: offline scorer/mock flow PASS, GEMINI_API_KEY secret presente según gate y enmascarado; una solicitud local a gemini-3.8-flash terminó tras ~45s con NO_SCORE transport_error (URLError o TimeoutError agregado). 0 respuestas, 0 mediciones, 0 submit/score; no evidencia sobre procesamiento/consumo remoto ni razón exacta. No reintento, no efecto científico inferible; no confundir con incapacidad Gemini. Evidencia, autoverificación misma instancia, RESEARCH/PLAN/README/LOG readback. Siguiente T0.59 SOLO diagnóstico offline/stop-loss, cualquier nuevo experimento necesita permiso. H0 CORREGIR, H1/H2 no iniciados.",
+    "D-0072 (2026-11-21 AR): T0.59 diagnóstico offline concluido con hallazgo crítico de validez del instrumento: T0.58 permite measure(3,0) para observar el propio objetivo, y grade(11,[(3,0)]) tendría pass=True; además sin familia de modelos asumida los puntos no identifican función en target, y rationale no persiste. Por lo tanto NO-GO a rerun idéntico incluso si se resuelve timeout. Google confirma endpoint/Bearer; transport_error after ~45s agrupa URLError y TimeoutError, sin causa específica; reportes de terceros no son evidencia causal propia. Mitigado riesgo de segunda ejecución automática: quitado push trigger del workflow en commit1fe86d0713351df4dabfe88686a37dbb5e52fbf5, manual-only; readback y listado de runs confirmaron ninguno nuevo observado. No llamadas Gemini, pago ni prueba científica T0.59. Evidencia y auditoría misma instancia documentadas, RESEARCH/PLAN/LOG leídos de vuelta. Próxima T0.60 solo reparación offline, y después nueva autorización si se justificara segunda prueba. H0 CORREGIR, H1/H2 no iniciados."
   ],
   "evidence_refs": [
     {
@@ -678,6 +680,14 @@
     {
       "path": ".github/workflows/h0-t058-gemini-free-synthetic.yml",
       "status": "D-0071 once-triggered GitHub Actions with masked repository secret and Gemini Free model, source blob97971698..."
+    },
+    {
+      "path": "evidence/T0.59-gemini-transport-offline-cause-decision-2026-11-21.md",
+      "status": "D-0072 documentary exact timeout limits and direct-target scientific-shortcut proof; no rerun."
+    },
+    {
+      "path": ".github/workflows/h0-t058-gemini-free-synthetic.yml",
+      "status": "D-0072 manual workflow_dispatch only, removed push to guard against accidental repeat, commit1fe86d0; readback verified."
     }
   ],
   "audit_refs": [
@@ -749,13 +759,14 @@
     "audits/T0.57-SCIENCE-OPPORTUNITY-COST-2026-11-21.md",
     "audits/T0.58-GEMINI-FREE-DATA-GATE-2026-11-21.md",
     "audits/T0.58-GEMINI-FREE-ORIGINAL-CALIBRATION-PREREG-2026-11-21.md",
-    "audits/T0.58-GEMINI-ONE-EPISODE-TRANSPORT-NOSCORE-2026-11-21.md"
+    "audits/T0.58-GEMINI-ONE-EPISODE-TRANSPORT-NOSCORE-2026-11-21.md",
+    "audits/T0.59-GEMINI-TRANSPORT-SCIENCE-DESIGN-STOP-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "4108df519eadfcde3b20e3d32ce6e862af4bc612"
+    "commit": "0f57d6e6a1d130e43138773a70c8c51e96693ec5"
   },
-  "last_confirmed_activity": "D-0071: one user-approved Gemini Free synthetic test persisted and run in GitHub Actions #44934173643; mocked scorer PASS, first remote request NO_SCORE transport_error after ~45s, no result. Evidence/audit/RESEARCH/PLAN/README/LOG readback verified, no retries, no paid calls. T0.59 offline diag next; H0 CORREGIR.",
+  "last_confirmed_activity": "D-0072: T0.59 offline diagnosis: timeout root cause inconclusive, fatal scientific scorer shortcut confirmed. Removed push auto-run from T0.58 GitHub Action; all non-STATE documents saved and read back. No Gemini requests. Next T0.60 offline scientific protocol repair. H0 CORREGIR.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
