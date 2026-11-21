@@ -1,0 +1,46 @@
+name: T0.65 Free Gemini paired original scientific cases (one authorized matrix)
+
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t065-gemini-paired-free-once.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: t065-one-authorized-paired-matrix
+  cancel-in-progress: false
+
+jobs:
+  original-paired-matrix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Offline scientific fixtures, adversarial scorer, transport mock, compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/t061_gemini_identifiability.py scripts/t064_cases.py scripts/t065_paired_gemini.py
+          python3 scripts/t064_cases.py --self-test
+          python3 scripts/t065_paired_gemini.py --self-test
+      - name: Four maximum Gemini Free original-science episodes, no paid or third-party data
+        shell: bash
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          set +x
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "T065_GATE=BLOCKED_MISSING_SECRET"
+            exit 2
+          fi
+          echo "T065_ONLY_ORIGINAL_SYNTHETIC=1"
+          echo "T065_MAX_EPISODES=4"
+          echo "T065_MAX_REQUESTS_PER_EPISODE=3"
+          echo "T065_MODELS=3.5-FLASH-LITE_AND_3.8-FLASH_FREE"
+          python3 scripts/t065_paired_gemini.py --run
