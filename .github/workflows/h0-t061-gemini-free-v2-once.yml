@@ -1,0 +1,48 @@
+name: T0.61 single-authorized Gemini Free 3.5 Flash-Lite corrected calibration
+
+# One-time push trigger for creating this workflow only; remove after first run queues.
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t061-gemini-free-v2-once.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: t061-only-one-authorized-free-gemini-episode
+  cancel-in-progress: false
+
+jobs:
+  synthetic-original-corrected-episode:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Checkout pinned, no persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Offline scientific scorer, adversarial cases, and mock-agent tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/t061_gemini_identifiability.py tests/t060_identifiability_checks.py
+          python3 tests/t060_identifiability_checks.py
+          python3 scripts/t061_gemini_identifiability.py --self-test
+      - name: One authorized Gemini Free model episode with no third-party benchmark data
+        shell: bash
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-3.5-flash-lite
+        run: |
+          set -euo pipefail
+          set +x
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo '{"protocol":"T0.61","science_status":"BLOCKED","error_category":"missing_secret"}'
+            exit 2
+          fi
+          echo "T061_MODEL=gemini-3.5-flash-lite"
+          echo "T061_INPUT=ONLY_ORIGINAL_SYNTHETIC_NO_SCIRESEARCH"
+          echo "T061_MAX_MODEL_REQUESTS=3"
+          echo "T061_MAX_MEASUREMENTS=2"
+          python3 scripts/t061_gemini_identifiability.py --run
