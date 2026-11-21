@@ -44,3 +44,9 @@ Prueba reproducible de la proyección:
 ```bash
 python -m unittest discover -s scripts -p 'test_sciresearch_public_result.py' -v
 ```
+
+## Actualización operativa posterior D-0065 (2026-11-21)
+
+Esta sección **prevalece** sobre las referencias históricas de D-0062 a una decisión A/B/C aún no tomada. El usuario eligió A, aportó su recipient público age, y la unidad T0.54 ejecutó **solo un ensayo sintético** de cifrado y publicación cifrada en [Actions44916003316](https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44916003316). Referencias: [evidencia](../evidence/T0.54-age-synthetic-custody-2026-11-21.md) · [autoverificación](../audits/T0.54-AGE-CUSTODY-GATE-2026-11-21.md). La identidad privada permanece en el equipo del usuario, sin custodia del agente. El archivo sintético se cifró con su recipient pero **no** se descifró con su identidad; el roundtrip completo fue con una identidad de prueba distinta. No solicitar su private key.
+
+T0.55 también cerró como [diseño exploratorio offline](../experiments/T0.55-protocolo-comparacion.md), no como una prueba de dos tratamientos. **Siguiente T0.56:** integración sin inferencia de la custodia `age` con el harness/runner original, rights/retention y fail-closed, evitando que datos en claro salgan del evaluador. Los resultados originales T0.49/T0.52 siguen sin traza recuperable. H0 CORREGIR, ningún nuevo LLM ni H1/H2 autorizado por este gate.
