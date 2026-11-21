@@ -1,5 +1,9 @@
 # Autonomous Scientific Research
 
+
+**Resultado científico T0.69:** [ablación SciResearch original, 4/4 episodios puntuados](evidence/T0.69-sciresearch-convergence-ablation-scored-2026-11-21.md). En un caso la verificación de convergencia bajó el error 2,274→0,104 σ con costo de cómputo 465×; en otro no mejoró los scores y costó +5,17%. **No-LLM, dos dev previamente vistos, no equivale a H0/H5 cerrado**. Próximo requisito para H0: actor generativo viable con uso de datos no-training y custodia auditable; sin nuevas pruebas accesorias. [Criterio de foco](AGENTS.md).
+
+
 **Dirección corregida D-0081:** tras la auditoría de desvío [T0.68](evidence/T0.68-course-correction-objective-drift-2026-11-21.md), **priorizar el objetivo científico original H0**, reutilizando controles y el evaluador de SciResearch; las pruebas sintéticas Gemini son solo instrumentales y no prueban autonomía. DiscoveryWorld ya había sido preparado en T0.8–T0.10: evitar repetirlo. Próxima T0.69: ablación acotada de la verificación de convergencia de una **política científica existente**, sin cambiar grader ni usar APIs pagas; luego decidir si hay una vía justificable para la línea base LLM. [Criterio obligatorio](AGENTS.md). **H0 CORREGIR**, H1/H2 sin iniciar.
 
 
