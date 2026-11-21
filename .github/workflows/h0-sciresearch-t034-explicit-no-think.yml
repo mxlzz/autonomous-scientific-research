@@ -2,7 +2,7 @@ name: H0 T0.34 Qwen3 1.7B single no-thinking probe and conditional science
 on:
   push:
     paths:
-      - .github/workflows/h0-sciresearch-t034-qwen17b.yml
+      - .github/workflows/h0-sciresearch-t034-explicit-no-think.yml
 permissions:
   contents: read
 concurrency:
