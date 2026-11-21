@@ -1,9 +1,8 @@
 name: T0.67 DiscoveryWorld pinned offline headless feasibility, no Gemini
 
+# Only pinned offline preflight run 44941143639; no auto repeats.
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t067-discoveryworld-offline-once.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
