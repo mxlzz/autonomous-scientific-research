@@ -55,7 +55,7 @@ jobs:
           python3 scripts/h0_qwen4b_preflight_t040.py --offline-test
           python3 scripts/h0_qwen4b_tool_probe_t041.py --offline-test
           test "$(git hash-object experiments/T0.52-qwen4b-dev-n2-operational-repeat-tool-categories-preregister-2026-11-21.md)" = 3808e33deddb9bc45240f25a0b75fa3c0905f762
-          test "$(git hash-object scripts/h0_sciresearch_qwen_t052.py)" = 5cc261e4d711ccaafa6d645603ca2b3b2f153603
+          test "$(git hash-object scripts/h0_sciresearch_qwen_t052.py)" = baa40653c60f51d6dac3152098fc6a564162f3c2
           test "$(git hash-object scripts/h0_probe_shape_t034.py)" = ee0c03b9e0a3d9f591bc50aae04da00a5d6d961c
           test "$(git hash-object scripts/h0_tool_error_kind_t036.py)" = b2877b75e030ec929586fcb358a402dab9875905
           test "$(git hash-object scripts/h0_limit_guard_t038.py)" = e2038970b985075f3c5b18e981919dff0b1886a5
@@ -64,6 +64,12 @@ jobs:
           test "$(git hash-object scripts/h0_heartbeat_censor_t046.py)" = 0cea5d9239aec04ce4f646e555d68b4427a29445
           test "$(git hash-object scripts/h0_adapter_numeric_telemetry_t049.py)" = 7ec1d15c1d580e0177b47bff8551499a08b80830
           test "$(git hash-object scripts/h0_tool_categories_t051.py)" = e551860abe8fb925a66a27128cf9607c78d089eb
+          # Static pre-model check of every trusted evaluator helper import/mount.
+          grep -Fq 'from h0_adapter_numeric_telemetry_t049 import patch_adapter' scripts/h0_sciresearch_qwen_t052.py
+          grep -Fq 'from h0_tool_categories_t051 import patch_harness as patch_tool_categories' scripts/h0_sciresearch_qwen_t052.py
+          grep -Fq 'from h0_heartbeat_censor_t046 import instrument_harness' scripts/h0_sciresearch_qwen_t052.py
+          grep -Fq 'from h0_limit_guard_t038 import patch_harness_source' scripts/h0_sciresearch_qwen_t052.py
+          echo T052_ALL_EVALUATOR_HELPER_IMPORTS_PINNED=true
           test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
           test "$(git hash-object scripts/h0_qwen4b_tool_probe_t041.py)" = 1ad7e1928ad93a5f6e520280cb7b70c51ca58909
           cd "$RUNNER_TEMP"
