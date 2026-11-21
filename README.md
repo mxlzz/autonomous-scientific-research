@@ -1,5 +1,8 @@
 # Autonomous Scientific Research
 
+**Dirección corregida D-0081:** tras la auditoría de desvío [T0.68](evidence/T0.68-course-correction-objective-drift-2026-11-21.md), **priorizar el objetivo científico original H0**, reutilizando controles y el evaluador de SciResearch; las pruebas sintéticas Gemini son solo instrumentales y no prueban autonomía. DiscoveryWorld ya había sido preparado en T0.8–T0.10: evitar repetirlo. Próxima T0.69: ablación acotada de la verificación de convergencia de una **política científica existente**, sin cambiar grader ni usar APIs pagas; luego decidir si hay una vía justificable para la línea base LLM. [Criterio obligatorio](AGENTS.md). **H0 CORREGIR**, H1/H2 sin iniciar.
+
+
 Investigación metodológica y experimental sobre **autonomía científica verificable** y **eficiencia de agentes de IA**. El objeto de estudio es determinar cuándo un sistema puede investigar con rigor y autonomía progresiva, y cuándo conviene usar un solo agente, varios agentes o modelos de distinta capacidad. No se presupone que haya que crear un framework.
 
 **H0 sigue en corrección.** Qwen3 4B completó dos episodios científicos sobre el mismo caso. El primero entregó una predicción con un error de 14.861 veces el ruido del sensor. El segundo completó nueve turnos y terminó sin entregar. Se conserva esta configuración como referencia negativa. [Primer episodio](evidence/T0.49-first-scored-sciresearch-qwen4b-poor-quality-2026-11-21.md) · [Réplica efectiva](evidence/T0.52-qwen4b-dev-n2-no-submit-tool-categories-2026-11-21.md).
