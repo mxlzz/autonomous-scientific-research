@@ -1,0 +1,112 @@
+name: H0 T0.40 Qwen3 4B Instruct no-inference metadata preflight
+on:
+  push:
+    paths:
+      - .github/workflows/h0-t040-qwen4b-instruct-metadata-only.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t040-one-no-inference-qwen4b-preflight
+  cancel-in-progress: true
+jobs:
+  cpu-model-metadata-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+      OLLAMA_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      MODEL: "qwen3:4b-instruct-2507-q4_K_M"
+      IMAGE: "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+    steps:
+      - name: Checkout pinned preregistration without persisting credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify metadata-only script and synthetic fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/T0.40-qwen4b-instruct-q4-metadata-only-preregister-2026-11-20.md)" = b19af7c3d77c0ba2b8fe7d3f1dd2b05a5abeefa2
+          test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
+          python3 -m py_compile scripts/h0_qwen4b_preflight_t040.py
+          python3 scripts/h0_qwen4b_preflight_t040.py --offline-test
+          echo T040_PREREG_SCRIPT_PIN_VERIFIED=true
+          echo T040_TASK_DATA_NOT_READ=true
+          echo T040_LLM_REQUESTS_PLANNED=0
+      - name: Pull exact Ollama image and tag within temporary CPU container
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo T040_MODEL_STAGE=METADATA_DOWNLOAD_ONLY
+          avail=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T040_DISK_AVAILABLE_BEFORE_BYTES=$avail"
+          if [ "$avail" -lt 5368709120 ]; then
+            echo T040_DECISION=NO_GO_DISK_PRECHECK
+            exit 0
+          fi
+          timeout 120 docker pull "$IMAGE" >/dev/null
+          echo T040_IMAGE_DIGEST_PIN=true
+          vol="h0t040-model-$GITHUB_RUN_ID"
+          actor="h0t040-actor-$GITHUB_RUN_ID"
+          docker volume create "$vol" >/dev/null
+          docker run -d --name "$actor" --network bridge -p 127.0.0.1:11434:11434 \
+            --cpus 2 --memory 5g --pids-limit 96 --cap-drop ALL \
+            --security-opt no-new-privileges --read-only \
+            --env OLLAMA_HOST=0.0.0.0:11434 \
+            --env OLLAMA_CONTEXT_LENGTH=4096 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=384m,mode=1777 \
+            --mount "type=volume,src=$vol,dst=/root/.ollama" "$IMAGE" >/dev/null
+          docker inspect "$actor" > "$RUNNER_TEMP/t040-inspect-private.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          v=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"t040-inspect-private.json").read_text())[0]
+          h=v["HostConfig"]
+          assert h["ReadonlyRootfs"] and not h["Privileged"]
+          assert h["NanoCpus"]==2000000000 and h["Memory"]==5*1024**3
+          assert "ALL" in h["CapDrop"] and "no-new-privileges" in h["SecurityOpt"]
+          assert all(m["Destination"]!="/var/run/docker.sock" for m in v["Mounts"])
+          assert len(v["Mounts"])==1 and v["Mounts"][0]["Destination"]=="/root/.ollama"
+          assert v["HostConfig"]["PortBindings"]["11434/tcp"][0]["HostIp"]=="127.0.0.1"
+          print("T040_CPU_2_MEM_5G_READONLY_AND_MODEL_ONLY_MOUNT=true",flush=True)
+          print("T040_ONLY_LOOPBACK_SERVER_PORT=true",flush=True)
+          PY
+          ready=no
+          for i in $(seq 1 35); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then
+              ready=yes; break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != yes ]; then
+            echo T040_DECISION=NO_GO_SERVER_START
+            exit 0
+          fi
+          set +e
+          timeout 420 docker exec "$actor" ollama pull "$MODEL" >"$RUNNER_TEMP/t040-pull-private.log" 2>&1
+          rc=$?
+          set -e
+          echo "T040_PULL_EXIT_CODE=$rc"
+          if [ "$rc" -ne 0 ]; then
+            echo T040_DECISION=NO_GO_PULL
+            exit 0
+          fi
+          echo T040_MODEL_PULL_COMPLETED=true
+          python3 scripts/h0_qwen4b_preflight_t040.py --inspect-runtime
+          echo T040_MODEL_GENERATIONS=0
+          echo T040_PRIVATE_TRANSCRIPT_UPLOADED=false
+          echo T040_API_PAID_USD=0
+          after=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T040_DISK_AVAILABLE_AFTER_BYTES=$after"
+      - name: Cleanup ephemeral model and local files
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f "h0t040-actor-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          docker volume rm -f "h0t040-model-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          rm -f "$RUNNER_TEMP/t040-pull-private.log" "$RUNNER_TEMP/t040-inspect-private.json"
+          echo T040_EPHEMERAL_MODEL_REMOVED=true
+          echo T040_NO_RAW_UPLOAD=true
