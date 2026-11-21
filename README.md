@@ -33,3 +33,6 @@ En un chat con acceso de lectura/escritura al repositorio, usar las instruccione
 
 
 **Actualización T0.65:** [cuatro episodios exploratorios Gemini Free](evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md) con dos tareas sintéticas y dos modelos: Gemini 3.5 Flash-Lite obtuvo 1 `GRADED_PASS` y 1 `GRADED_FAIL`; Gemini 3.8 Flash obtuvo 2 `NO_SCORE HTTP503` (sin respuestas), no comparables en capacidad. [Run44940482339](https://github.com/mxlzz/autonomous-scientific-research/actions/runs/44940482339), evaluadores/mocks PASS, sin reintentos ni uso de benchmarks de terceros. Siguiente T0.66 evalúa STOP-LOSS y alternativas con evaluación científica más robusta; **H0 CORREGIR**.
+
+
+**Decisión T0.66:** [STOP-LOSS de toys con Gemini Free](experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md): Flash 3.8 devolvió 2 HTTP503, no puntuación científica, y los dos ejercicios originales no validan H0. Próxima T0.67 inspecciona **solo offline** la viabilidad de DiscoveryWorld text-only, sin asumir derechos de sus assets ni enviar benchmarks a Google gratis. No se gastará cuota por inercia; H0 CORREGIR.
