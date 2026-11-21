@@ -1,5 +1,7 @@
 # Autonomous Scientific Research
 
+**Estado operativo T0.71 / D-0089 (2026-11-21):** [comparación T0.55 evaluada](evidence/T0.71-T055-comparison-feasibility-decision-2026-11-21.md): **NO-GO** a A/B causal con ChatGPT GUI y relé manual; el harness SciResearch original ya registra tools/transcripción/score, pero **no hay modelo/endpoint apto y controlable ni custodia/no-training/costo confirmados**. [Autoverificación, no independiente](audits/T0.71-T055-COMPARABILITY-SELF-AUDIT-2026-11-21.md). **T0.72 bloqueada** a evidencia de actor/recursos o permiso explícito para servicio compatible. **H0 CORREGIR; no se autorizan experimentos nuevos.**
+
 
 **Resultado científico T0.69:** [ablación SciResearch original, 4/4 episodios puntuados](evidence/T0.69-sciresearch-convergence-ablation-scored-2026-11-21.md). En un caso la verificación de convergencia bajó el error 2,274→0,104 σ con costo de cómputo 465×; en otro no mejoró los scores y costó +5,17%. **No-LLM, dos dev previamente vistos, no equivale a H0/H5 cerrado**. Próximo requisito para H0: actor generativo viable con uso de datos no-training y custodia auditable; sin nuevas pruebas accesorias. [Criterio de foco](AGENTS.md).
 
