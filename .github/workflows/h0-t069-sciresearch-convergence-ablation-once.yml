@@ -1,0 +1,55 @@
+name: T0.69 original SciResearch scientific verification ablation, no LLM
+
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t069-sciresearch-convergence-ablation-once.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: t069-once-original-grader-scientific-ablation
+  cancel-in-progress: false
+
+jobs:
+  preregistered-original-scorer-ablation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Fetch original upstream SciResearch exact revision (no secrets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q --no-checkout --filter=blob:none https://github.com/Btwestyo/sciresearch-eval.git /tmp/sciresearch-pinned
+          git -C /tmp/sciresearch-pinned checkout -q 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git -C /tmp/sciresearch-pinned rev-parse HEAD)" = 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          echo "T069_UPSTREAM_PIN=VERIFIED"
+      - name: Install original package only, no model download
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet /tmp/sciresearch-pinned
+      - name: Gate - compile, original grader, one-factor reversible patch, public tasks
+        shell: bash
+        env:
+          SCIRESEARCH_ROOT: /tmp/sciresearch-pinned
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/t069_sciresearch_convergence_ablation.py
+          python3 scripts/t069_sciresearch_convergence_ablation.py --self-test
+      - name: One four-episode scientific ablation under original grader
+        shell: bash
+        env:
+          SCIRESEARCH_ROOT: /tmp/sciresearch-pinned
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          echo "T069_NO_LLM_NO_API=1"
+          echo "T069_EPISODES_MAX=4"
+          echo "T069_PER_EPISODE_TIMEOUT=90s"
+          python3 scripts/t069_sciresearch_convergence_ablation.py --run
