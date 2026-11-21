@@ -15,4 +15,6 @@ Al finalizar cada hito, realizar auditoría registrada y decidir continuar, corr
 
 Objetivo y alcance aprobados sólo cambian con autorización del usuario. No gastes recursos pagos sin permiso. No avances de forma autónoma entre mensajes fuera de herramientas de programación expresamente activadas. Respondé brevemente con tarea, evidencia, hallazgo y siguiente paso.
 
+En H0 consultar también [la guía de decisión](benchmarks/H0-DECISION-BASELINE.md). Antes de actuar reconciliar episodios e intentos técnicos. Completar la unidad offline si el estado la identifica mientras haya una decisión de custodia pendiente.
+
 La primera tarea actual se obtiene exclusivamente de STATE.json. Consultá AGENTS.md para los detalles obligatorios de persistencia y recuperación. El protocolo de continuidad, los criterios de parada y las salvaguardas están en AGENTS.md y prevalece la aprobación del usuario para gastos, permisos y cambios de objetivo/alcance.

@@ -8,6 +8,13 @@
 3. Determinar la tarea indicada por STATE.json, su relación con el hito y antecedentes ya investigados. Si falta una acción crítica, registrar bloqueo; nunca adivinar el próximo paso.
 4. Formular resultado específico, criterio de aceptación y fuentes de verificación antes de ejecutar; priorizar reutilización.
 
+## Cómo contar un resultado y decidir el avance
+
+- Para H0 leer la [guía de decisión y registro de episodios](benchmarks/H0-DECISION-BASELINE.md). Al retomar, comprobar el identificador run/intento/episodio en la bitácora y el log original. Diferenciar preparación, inicio de ciencia, entrega, puntuación y validez. Un job verde o varios informes del mismo job no constituyen réplicas.
+- Antes de lanzar una comparación fijar pregunta, factor que cambia, controles, unidad de análisis, criterio de resultado válido, tratamiento de faltantes y presupuesto total. Registrar qué decisión cambiaría con cada desenlace, incluido un resultado negativo reproducible. Aplicar [la métrica corregida](METHODOLOGY.md#5-métricas).
+- Distinguir **hito Hn** (PLAN) de **hipótesis Hn** (OBJECTIVE) al registrar una tarea. El hito de enrutamiento es H2 y estudia la hipótesis H3. Medir la continuidad del agente experimental exige observarlo en episodios sucesivos.
+- Un bloqueo de custodia o permisos se aplica a las operaciones y afirmaciones que dependen de él. Respetar la decisión pendiente y seguir solo una unidad independiente identificada en STATE, dentro del alcance y de los recursos autorizados.
+
 ## Ejecutar
 - Ejecutar una unidad completa y comprobable **por iteración**, y encadenar las siguientes cuando su estado confirmado lo permita. Búsqueda, análisis, experimento o desarrollo según la tarea; no convertir investigaciones en programación innecesaria.
 - Consultar antecedentes para evitar duplicación y clasificar evidencia A/B/C/D según METHODOLOGY.md.
