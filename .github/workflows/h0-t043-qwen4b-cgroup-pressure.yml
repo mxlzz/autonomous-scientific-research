@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object experiments/T0.41-qwen4b-instruct-single-synthetic-tool-probe-preregister-2026-11-20.md)" = dc7ff0134d3ca21482242c2768d8d463aeef7f72
+          test "$(git hash-object experiments/T0.43-qwen4b-cgroup-pressure-single-probe-preregister-2026-11-20.md)" = dc7ff0134d3ca21482242c2768d8d463aeef7f72
           test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
           test "$(git hash-object scripts/h0_qwen4b_tool_probe_t041.py)" = 1ad7e1928ad93a5f6e520280cb7b70c51ca58909
           test "$(git hash-object scripts/h0_cgroup_pressure_t043.py)" = 6f6b6c8fe303647ed422f97c1512d7b5ef4de4ae
