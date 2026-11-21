@@ -57,7 +57,7 @@ jobs:
           test "$(git hash-object scripts/h0_probe_shape_t034.py)" = ee0c03b9e0a3d9f591bc50aae04da00a5d6d961c
           test "$(git hash-object scripts/h0_tool_error_kind_t036.py)" = b2877b75e030ec929586fcb358a402dab9875905
           test "$(git hash-object scripts/h0_limit_guard_t038.py)" = e2038970b985075f3c5b18e981919dff0b1886a5
-          test "$(git hash-object scripts/h0_cgroup_pressure_t047.py)" = 5ec334c722c23fb4ade2d9580610ecf34ed2535a
+          test "$(git hash-object scripts/h0_cgroup_pressure_t047.py)" = dc99b5a191f4d2cc43861adb3ea254c80a27cbf9
           test "$(git hash-object scripts/h0_science_cgroup_t047.py)" = b76561794ee441f7265eca21caf343ed19bdf6a5
           test "$(git hash-object scripts/h0_heartbeat_censor_t046.py)" = 0cea5d9239aec04ce4f646e555d68b4427a29445
           test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
