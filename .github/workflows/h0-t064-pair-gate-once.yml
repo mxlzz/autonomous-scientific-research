@@ -1,0 +1,23 @@
+name: T0.64 synthetic paired cases adversarial offline validation
+
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t064-pair-gate-once.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate scientific case fixtures and scorer with no API
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/t064_cases.py
+          python3 scripts/t064_cases.py --self-test
