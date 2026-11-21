@@ -4,13 +4,13 @@
   "date": "2026-11-21",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
-  "status": "research_in_progress",
+  "status": "blocked_waiting_for_user_authorization",
   "current_milestone": "H0",
-  "current_task": "T0.67",
-  "task_title": "T0.67 — DiscoveryWorld text-only: preflight offline de derechos, runtime CPU, API y scoring externo",
-  "task_expected_output": "Dictamen concreto y verificable de DiscoveryWorld (Git SHA/LICENSE/README/agents API/requirements, test y scoring) sobre si se puede adoptar text-only bajo Gemini Unpaid sin arte comercial ni datos humanos, sin API ni instalación costosa. Comprobar si simulación y benchmark ofrecen validez científica con <= recursos gratuitos, o cerrar NO-GO/STOP sin infra.",
-  "task_acceptance": "Releer HEAD/STATE/AGENTS/T0.66 y fuente upstream DiscoveryWorld, fijar SHA/blobs de README/LICENSE/docs de agente, estudiar qué licencia cubre código vs tareas/textos/arte, prohibición de entrenar si existe, observaciones de text API vs GUI, scoring externo y costo de acciones/CPU/paquetes. No asumir que Apache licencia imágenes o datos de terceros. Evaluar solo lectura/inspección y, si añade información decisiva con costo bajo, test offline estrecho y aislado SIN Gemini; no crear framework ni llamadas pagas. Dictaminar GO condicionado/NO-GO con riesgo y costo; LOG/audit/STATE último. H0 CORREGIR.",
-  "next_action": "T0.67 OFFLINE DiscoveryWorld: recuperar licencia/README/API de agentes y requisitos desde GitHub; decidir si usarlo con Gemini Free text-only es compatible con derechos y factible en CPU con scoring, sin enviar datos al proveedor. Si no hay evidencia suficiente o requiere integración extensa y contenidos no autorizados, NO-GO y STOP; si sí, proponer prueba acotada luego, sin inventar resultados. Cuota gratis disponible, pero no consumirla por inercia. H0 CORREGIR.",
+  "current_task": "T0.68",
+  "task_title": "T0.68 — Decisión de viabilidad H0: acceso a proveedor no-training con tope de gasto o pausa formal",
+  "task_expected_output": "Usuario decide si habilitar una vía de prueba científicamente válida del benchmark SciResearch con un proveedor/plan no-training y presupuesto/seguridad verificables o PAUSAR H0. No se presume autorización a gastos pagados desde permiso de usar cuota Gemini Free. Si autoriza, ejecutar solo preflight de modelo, región, precio, hard spending gate, credenciales como secret, privacidad/derechos y custodia de trazas antes de un solo episodio con scorer original. Si no, PAUSAR sin falsas conclusiones sobre H1-H6.",
+  "task_acceptance": "Hasta una nueva decisión explícita del usuario: NO APIs de pago, NO Gemini Free con benchmark SciResearch, NO transmisión de contenidos DiscoveryWorld/ScienceAgentBench cuyo régimen de entrenamiento no se haya verificado y NO nuevos toys o integraciones por inercia. Si se ofrece pago, verificar provider/model/region, términos no-training, costo real/prepago y techo efectivo no soft, credencial segura y evidencia original/custodia before any call; no asumir USD1 es hard limit. Si no hay seguridad o usuario prefiere USD0, registrar PAUSA H0 mediante LOG/audit/STATE último, no declarar objetivo fracasado ni logrado. Conservan H0 CORREGIR/H1/H2 no iniciados.",
+  "next_action": "BLOQUEADO POR DECISIÓN USUARIO. Las pruebas Gemini Free originales T0.58/T0.61/T0.65 demostraron calibración limitada: Lite 1 PASS/1 FAIL en dos casos adicionales, Flash 503/NO_SCORE; sin línea base H0. T0.67 inspeccionó DiscoveryWorld pinned, CPU headless una observación ~1.5s y scorer separado; el job failed por detector semánticamente demasiado conservador (completedSuccessfully visible al agente, NO prueba fuga de gold), pero renderer PixyMoon/PNG acoplado, derechos de enviar datos a Google Unpaid no comprobados y 100–1000 pasos hacen NO-GO inmediato. Pedir elegir entre autorizar preflight de 1 episodio SciResearch con proveedor no-training + gasto controlable/secret seguro (nunca pegar clave en chat) o PAUSAR H0 manteniendo USD0. No quemar cuota free ni construir más mocks. Conservar objetivo aprobado, H0 CORREGIR.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -81,7 +81,8 @@
     "T0.63",
     "T0.64",
     "T0.65",
-    "T0.66"
+    "T0.66",
+    "T0.67"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -154,7 +155,8 @@
     "D-0073 same-executor self-verification only; checker file not CI-executed, revised runner unimplemented, no Gemini API response or scientific score; need new user approval and actual free quota inspection before another run.",
     "D-0074 self-audit same executor: numeric synthetic PASS n1 from original project scorer, no independent scientific judgment or full rationale; free quota and provider billing not independently inspected, no comparison between Gemini models. H0 still CORREGIR.",
     "D-0075 same-executor research-plan audit only; no independent scoring, effect ceiling hypothesis untested, new case/evaluator not yet built or approved; comparative n1 would be exploratory not statistical.",
-    "D-0078 same-executor audit only: scientific rationale not stored, external independent benchmark absent, 2 Flash HTTP503 leave outcomes missing, numerical Lite FAIL cause not established, quota/billing not independently inspected. No causal model ranking from n1."
+    "D-0078 same-executor audit only: scientific rationale not stored, external independent benchmark absent, 2 Flash HTTP503 leave outcomes missing, numerical Lite FAIL cause not established, quota/billing not independently inspected. No causal model ranking from n1.",
+    "D-0080 same-executor audit; DiscoveryWorld one scenario only, detector false-positive on task completion status, full scenario response/gold separation not independently validated; asset/data-to-Free rights and 100–1000 steps scientific cost remain NO-GO. No independent H0 assessment."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -207,7 +209,7 @@
     "T0.51 tool category instrumentation currently only offline compiler/fixtures; no runtime stream proof yet. T0.52 original dev Qwen4B repeat allowed solely if privacy/time/memory/source preflight pass. Soft input24k trigger can overrun final submit and must report effective spend. H0 still scientific quality/cost/replication gap.",
     "T0.52 no-submit despite completed final turn and original grader not submitted; cannot inspect cause without private trace (not publicly stored). Soft24k effective31,351 n2 and28,248 n1, category error counts don't prove causes. Need T0.53 audit of stop/budget and safe private trace storage or NO-GO, avoid paid/perms automatically. H0 CORREGIR.",
     "T0.53 H0 blocked by absence of retrievable full scientific traces for external audit; public repo artifacts are readable by repo readers, so cannot store private raw. T0.54 requires user decision on age-encrypted public ciphertext (private key user-held), authorized separate private repo with checked minutes/storage, or continuing summary-only with explicit limitation. No new research LLM until approved custody; H0 CORREGIR.",
-    "D-0073: Gemini free T0.58 timed out with NO_SCORE; old scorer invalid direct-target shortcut. T0.59 documented and disabled push reruns. T0.60 prereg corrected and adversarial math passed offline, but no updated runtime or Gemini result. T0.61 requires fresh explicit authorization for one new Gemini Free episode and confirmation AI Studio model has available quota, no paid billing or SciResearch data. H0 CORREGIR."
+    "D-0080 latest: H0 cannot yet use original SciResearch on Google Gemini Unpaid because benchmark requests never appear in training corpora while Free Google may use content for improvement. Local Qwen4B CPU quality inadequate, Flash3.8 produced no science due HTTP503; DiscoveryWorld text-only payload still loads commercial sprites/PNG and training rights unverified, long episodes. T0.68 waiting explicit user's choice: controlled no-training provider spend/preflight or PAUSE with USD0. No secret/billing permission implied by Free quota approval."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -288,7 +290,8 @@
     "D-0076 (2026-11-21 AR): usuario autorizó usar toda cuota diaria disponible de Gemini AI Studio FREE y avanzar, entendida como permiso amplio dentro Free/no pagos/no SciResearch y no como mandato de gastar tokens sin valor científico. Se liberó bloqueo T0.63; alcance y 2x2 inicial condicional limitado a máximo 4 episodios, 3 requests/2 herramientas cada uno, tras scorrers sintéticos originales y pruebas adversariales; resultados NO_SCORE separados y sin reruns por score. Google precios Free Tier, términos Unpaid y rate limits documentados; cuotas reales de usuario no vistas, user reporta libre. Evidence evidence/T0.63-free-gemini-authorization-scope-2026-11-21.md, autoverificación audits/T0.63-GEMINI-QUOTA-AUTHORIZATION-2026-11-21.md, PLAN/LOG leídos de vuelta. Sin API ni gasto T0.63. T0.64 diseño offline siguiente, H0 CORREGIR/H1/H2 sin iniciar.",
     "D-0077 (2026-11-21 AR): T0.64 COMPLETADA como diseño y validación OFFLINE, no inferencia. Se preregistraron dos casos originales (A discriminación entre leyes lineal/cuadrática con x3 bajo error acotado; B regresión con outlier x3 e intervalo predictivo, validación x5/x7) con target reservado, misma herramienta/oráculo por modelo, máximo 2 muestras y 3 turnos. scripts/t064_cases.py incluye scorers y casos adversarios rechazo de adivinar, medir target, error, outlier/CI falso. CI GitHub run44940203262 job136955512093 completed/success, T064_ORIGINAL_SYNTHETIC_CASES=PASS, sin API/secret. Workflow offline dejó solo manual commit4e8f758; evidencia evidence/T0.64-two-original-science-cases-offline-gate-pass-2026-11-21.md y autoverificación misma instancia audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md; PLAN/RESEARCH/LOG guardados/readback. Costo=1 pequeño CI offline + trabajo humano no cronometrado, cero API/gasto. T0.65 runner mínimo 2 modelos×2 casos Free bajo cuota autorizada, no probar superioridad estadística n1. H0 CORREGIR.",
     "D-0078 (2026-11-21 AR): T0.65 completada una matriz Free Gemini 2 modelos×2 casos sintéticos originales en run44940482339 job136956348737 attempt1. Tests de scorer y mock PASS antes API. 4 episodios, 8 requests generativas iniciadas: Lite mechanisms GRADED_FAIL error1.6 tras medidas x2,x3 (3/3 respuestas, causa textual desconocida), Flash mechanisms NO_SCORE HTTP503 (1 req/0 replies), Flash outlier NO_SCORE HTTP503 (1 req/0 replies), Lite outlier GRADED_PASS error0 con x5,x7 (3/3). 1 PASS/1 FAIL/2 NO_SCORE, 2448 input/680 output tokens Lite declarados, 0 resultados Flash; Google support dice 503 sobrecarga temporal (no inferir backend real). No reruns; workflow encolado una vez commit709ee3d y desactivado push commit2240ede, readback manual-only. Material propio sin SciResearch, key secret no expuesto, ninguna facturación pagada autorizada ni comprobada. Evidence evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md y autoverificación misma instancia audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md, RESEARCH/PLAN/README/LOG guardados/readback. No se puede concluir superioridad/capacidad Flash por NO_SCORE ni H0 general; STOP a repetir toys, T0.66 offline evaluar baseline científico más robusto y licitud Free. H0 CORREGIR/H1/H2 no iniciados.",
-    "D-0079 (2026-11-21 AR): T0.66 revisión SOLO OFFLINE post-T0.65. Dos Flash3.8 HTTP503 dejan ciencia sin score, soporte Google dice 503 usual saturación y no 429/quota (claim general); Lite un PASS y FAIL n1 en sintéticos, no baseline H0. NO-GO a más toys/reintentos por score, usuario permite cuota gratis pero no exige agotarla. Se inspeccionaron fuentes oficiales: SciResearch prohibe train corpora y Google Unpaid puede usar prompts para mejorar; ScienceAgentBench 102 tareas CC BY mayoría con excepciones rasterio/matminer, datos descomprimidos no redistribuibles, evaluador usa GPT-4o; ResearchGym runtime alto/datos papers; DiscoveryWorld 120 tareas paramétricas y API externa, código Apache2 pero assets comerciales PixyMoon excluidos. Ningún candidato probado para remitir texto en Gemini Free. T0.67 siguiente inspección offline DiscoveryWorld text-only/rights/CPU/oráculo, no framework ni API hasta gate. Evidencia experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md, autoverificación audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md, PLAN/RESEARCH/README/LOG guardados/readback; 0 llamadas y gastos T0.66. H0 CORREGIR."
+    "D-0079 (2026-11-21 AR): T0.66 revisión SOLO OFFLINE post-T0.65. Dos Flash3.8 HTTP503 dejan ciencia sin score, soporte Google dice 503 usual saturación y no 429/quota (claim general); Lite un PASS y FAIL n1 en sintéticos, no baseline H0. NO-GO a más toys/reintentos por score, usuario permite cuota gratis pero no exige agotarla. Se inspeccionaron fuentes oficiales: SciResearch prohibe train corpora y Google Unpaid puede usar prompts para mejorar; ScienceAgentBench 102 tareas CC BY mayoría con excepciones rasterio/matminer, datos descomprimidos no redistribuibles, evaluador usa GPT-4o; ResearchGym runtime alto/datos papers; DiscoveryWorld 120 tareas paramétricas y API externa, código Apache2 pero assets comerciales PixyMoon excluidos. Ningún candidato probado para remitir texto en Gemini Free. T0.67 siguiente inspección offline DiscoveryWorld text-only/rights/CPU/oráculo, no framework ni API hasta gate. Evidencia experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md, autoverificación audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md, PLAN/RESEARCH/README/LOG guardados/readback; 0 llamadas y gastos T0.66. H0 CORREGIR.",
+    "D-0080 (2026-11-21 AR): T0.67 DiscoveryWorld OFFLINE cerrada NO-GO inmediato a integración con Gemini Unpaid por costo de oportunidad/derechos. Upstream allenai/discoveryworld pinned fd591323920be0d3786ef350955de1945aa571e5: Apache2 solo código, assets comerciales PixyMoon excluidos; UI JSON and scoring external API documentados, pero getAgentObservation SIEMPRE pygame renderiza sprites y genera PNG/base64 vision, 100–1000 acciones oficiales. Preflight GH Actions 44941143639 job136958406820 completed/failure: código y dependencias/pinned repo/escenario unitario Normal seed0 cargaron CPU headless, primera observación ~1.5s, UI 7927 bytes, vision 111904 chars, scorecard disponible. Nuestro detector marcó completedSuccessfully de renderMinimalTaskProgressJSON como fuga oráculo; inspección upstream UserInterface líneas444–460 demuestra estado mínimo visible al agente distinto de full scorecard, por lo tanto falso positivo semántico, NO evidencia de gold expuesto (tampoco ausencia completa de fuga). No repetir CI solo para poner verde: integración sigue NO-GO porque renderer/arte y permisos para enviar tareas a Google Unpaid no verificados, longitud de episodios. No Gemini ni APIs pagas T0.67. Evidence evidence/T0.67-discoveryworld-offline-probe-rights-runtime-no-go-2026-11-21.md, self-audit audits/T0.67-DISCOVERYWORLD-OFFLINE-NO-GO-2026-11-21.md, RESEARCH/PLAN/README/LOG guardados/readback. T0.68 bloquea espera decisión usuario no-training paid pilot preflight o PAUSA H0. H0 CORREGIR, H1/H2 sin iniciar."
   ],
   "evidence_refs": [
     {
@@ -762,6 +765,18 @@
     {
       "path": "experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md",
       "status": "D-0079 offline stop-loss, source-backed external benchmark/license comparison, NO API."
+    },
+    {
+      "path": "experiments/T0.67-discoveryworld-cpu-text-observation-preflight-2026-11-21.md",
+      "status": "D-0080 prior pin/protocol for third-party simulator one offline headless scenario without Gemini."
+    },
+    {
+      "path": "evidence/T0.67-discoveryworld-offline-probe-rights-runtime-no-go-2026-11-21.md",
+      "status": "D-0080 run44941143639 CPU scene/score API observed, job fail due detector false-positive completedSuccessfully; licensed art and training-rights gate NO-GO."
+    },
+    {
+      "path": "scripts/t067_discoveryworld_offline_probe.py",
+      "status": "D-0080 no-network third-party simulator metadata checker, conservative scorer status key check; result recorded failure and corrected interpretation in evidence."
     }
   ],
   "audit_refs": [
@@ -841,13 +856,14 @@
     "audits/T0.63-GEMINI-QUOTA-AUTHORIZATION-2026-11-21.md",
     "audits/T0.64-SYNTHETIC-PAIR-GATE-SELF-AUDIT-2026-11-21.md",
     "audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md",
-    "audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md"
+    "audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md",
+    "audits/T0.67-DISCOVERYWORLD-OFFLINE-NO-GO-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "2ae06a6209e5a7df17acc583c8bf258be933ae3e"
+    "commit": "04e2d19ddb2cce3cfa99b5bbc1048a7c6b94e5a8"
   },
-  "last_confirmed_activity": "D-0079 T0.66 complete offline, evidence/audit/PLAN/RESEARCH/README/LOG verified, no Gemini requests. Next T0.67 finite DiscoveryWorld text-only license/runtime scoring preflight, not unbounded benchmark build. H0 CORREGIR.",
+  "last_confirmed_activity": "D-0080: DiscoveryWorld pinned upstream CPU headless one-observation CI run44941143639 failed conservative oracle leak gate; source proves completedSuccessfully is visible task status not full scorecard, other rights/graphics/performance blockers justify NO-GO to Gemini Free. No Gemini calls. Evidence, same-agent audit and RESEARCH/PLAN/README/LOG persisted/readback. T0.68 blocked awaiting user no-training paid access consent vs pause. H0 CORREGIR.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
