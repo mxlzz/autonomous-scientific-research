@@ -36,3 +36,6 @@ En un chat con acceso de lectura/escritura al repositorio, usar las instruccione
 
 
 **Decisión T0.66:** [STOP-LOSS de toys con Gemini Free](experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md): Flash 3.8 devolvió 2 HTTP503, no puntuación científica, y los dos ejercicios originales no validan H0. Próxima T0.67 inspecciona **solo offline** la viabilidad de DiscoveryWorld text-only, sin asumir derechos de sus assets ni enviar benchmarks a Google gratis. No se gastará cuota por inercia; H0 CORREGIR.
+
+
+**Resultado T0.67:** [DiscoveryWorld CPU/headless fue inspeccionado y sometido a un preflight offline](evidence/T0.67-discoveryworld-offline-probe-rights-runtime-no-go-2026-11-21.md). El motor carga y genera UI textual y scorecard aparte, pero **también renderiza imágenes y depende de sprites comerciales**; el job falló por un detector sobreconservador que confundió un indicador de finalización con el oráculo detallado. La licencia Apache2 cubre código, no los assets; derechos de transmitir tareas a Gemini Free y costo de episodios largos siguen sin verificar. **NO-GO a esta integración por ahora**. H0 continúa CORREGIR; T0.68 solicita decisión sobre vía no-training o pausa.
