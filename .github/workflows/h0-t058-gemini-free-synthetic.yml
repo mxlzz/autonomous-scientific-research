@@ -1,10 +1,7 @@
 name: H0 T0.58 Gemini free original synthetic calibration (one attempt)
 
+# No push trigger: T0.58 was ONE approved episode; prevent accidental reruns.
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t058-gemini-free-synthetic.yml"
-      - "scripts/t058_gemini_synthetic.py"
   workflow_dispatch:
 
 permissions:
