@@ -4,13 +4,13 @@
   "date": "2026-11-21",
   "objective_file": "OBJECTIVE.md",
   "stage": "H0",
-  "status": "research_in_progress",
+  "status": "blocked_waiting_for_user_authorization",
   "current_milestone": "H0",
-  "current_task": "T0.69",
-  "task_title": "T0.69 — SciResearch H0: ablación pareada de verificación de convergencia en política original, grader original intacto",
-  "task_expected_output": "Prerregistro y ejecución mínima sobre SciResearch original pinned 9d391b3, contrastar heuristic original vs misma policy con _converge sustituida por identidad sobre 2 casos dev históricos de T0.26; registrar scorer external original, dimensiones científicas y costo de compute/tiempo, resultados negativos/NO_SCORE, no confundir con LLM ni H5 causal confirmatoria. Una sola corrida CI gratuita si gates previos pasan, sin API ni datos en proveedor.",
-  "task_acceptance": "Releer HEAD/STATE y fuente pinned SciResearch baselines.scripted, grader, T0.26 7/8 scores; comprobar antes de código por qué esta comparación altera decisión científica (atribución del beneficio/costo de check numérico) sin duplicar resultados previos. Fijar 2 casos dev ya observados task_525abee377 y task_b402d13dd9 (exploratorio no holdout), misma política heurística salvo _converge, mismas herramientas/datos/seed, sin tocar grader ni alterar data/gold, sin LLM. Preflight de aislamiento del factor, `NO_SCORE` para timeout, medidas quality target error/coverage/intervalos, convergencia y compute/wall, no secret/pagos, log solo allowlist, una corrida con presupuesto STOP. Si no se puede aislar factor, NO-GO antes de CI. Audit mismo agente declarada, LOG/readback y STATE último; H0 CORREGIR, H1/H2 sin iniciar.",
-  "next_action": "T0.69 único experimento con instrumento YA EXISTENTE: SciResearch original Btwestyo@9d391b3, scorer original, original heuristic vs ablation sólo de chequeo de convergencia (sin cambiar fit/residual, en dos casos dev ya puntuados en T0.26); prereg y mocks antes de 1 CI CPU gratis. Reutilizar resultados T0.26, no reexaminar DiscoveryWorld ni volver a probar cuota/compatibilidad Gemini. Ningún API pago, no enviar SciResearch a Gemini Free. Resultado limitado a rol de verificación numérica en política programada, no baseline LLM ni H5 confirmatoria. H0 CORREGIR.",
+  "current_task": "T0.70",
+  "task_title": "T0.70 — Un actor LLM viable y seguro para H0 SciResearch original: acceso local privado o remoto no-training autorizado",
+  "task_expected_output": "Con actor generativo capaz en un entorno autorizado y condición de no-training verificable, ejecutar un único episodio original SciResearch bajo scorer intacto, contexto, presupuesto y custodia/trazas auditables; aprovechar controls T0.26 y protocolo T0.55 para preparar después comparaciones A/B de tareas verdaderamente científicas. Si actor no disponible, conservar H0 CORREGIR y el resultado verificado T0.69, sin más tests instrumentales.",
+  "task_acceptance": "Antes de cualquier LLM con SciResearch: confirmar recurso de modelo capaz sin calidad degenerada (Qwen3 4B CPU T0.49/T0.52 negativo), acceso bien sea local seguro bajo control del usuario o remoto con condiciones no-training y presupuesto efectivo autorizados, sin enviar benchmark a Google AI Studio Unpaid. Evaluar derechos de datos, aislamiento de truth, traza recuperable para auditor, igualdad de evaluador y límite real de tokens/turnos, scorer original inalterado y STOP si no se cumplen. No crear benchmarks/toys nuevos ni repetir DiscoveryWorld. H0 no se cierra por un caso; bajo acceso válido usar T0.55 y calibraciones reales. No gastar APIs pagas sin autorización expresa.",
+  "next_action": "BLOQUEO POR ACCESO DE ACTOR, NO POR REORGANIZAR EL PROYECTO: T0.69 ya mostró un contraste científico original: con verificación numérica, caso525 error 0.104 vs2.274 sigma y coste compute 465.28x; caso b402 igual calidad a coste 1.05172x. Ahora H0 requiere probar un AGENTE LLM representativo en tareas originales con scorer/trazas y tratamiento no-training. Las dos vías posibles necesitan intervención: habilitar un ejecutor local/privado con modelo suficiente o aprobar puntualmente un proveedor remoto cuyo tratamiento no-training, topes efectivos y factura puedan verificarse. Autorización Gemini Free no incluye datos SciResearch ni dinero. No hacer más infraestructura o benchmarks de juguete mientras esta condición específica no esté resuelta; conservar la evidencia y el diseño T0.55. H0 CORREGIR, H1/H2 sin iniciar.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -83,7 +83,8 @@
     "T0.65",
     "T0.66",
     "T0.67",
-    "T0.68"
+    "T0.68",
+    "T0.69"
   ],
   "pending_audits": [
     "Auditoría científica independiente de R01 no realizada; la revisión existente es autoverificación documental; considerar en cierre H0",
@@ -158,7 +159,8 @@
     "D-0075 same-executor research-plan audit only; no independent scoring, effect ceiling hypothesis untested, new case/evaluator not yet built or approved; comparative n1 would be exploratory not statistical.",
     "D-0078 same-executor audit only: scientific rationale not stored, external independent benchmark absent, 2 Flash HTTP503 leave outcomes missing, numerical Lite FAIL cause not established, quota/billing not independently inspected. No causal model ranking from n1.",
     "D-0080 same-executor audit; DiscoveryWorld one scenario only, detector false-positive on task completion status, full scenario response/gold separation not independently validated; asset/data-to-Free rights and 100–1000 steps scientific cost remain NO-GO. No independent H0 assessment.",
-    "D-0081 same-executor objective drift self-audit only; no externally validated intervention on H4/H6, future compliance must be checked against experiments, not mere policy text."
+    "D-0081 same-executor objective drift self-audit only; no externally validated intervention on H4/H6, future compliance must be checked against experiments, not mere policy text.",
+    "D-0082 same-executor self audit: scripted policies no LLM, selected known dev tasks, full private trace not retained, conditional effect of one verification package not a H5 general causal result; H0 still unfulfilled."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -211,7 +213,7 @@
     "T0.51 tool category instrumentation currently only offline compiler/fixtures; no runtime stream proof yet. T0.52 original dev Qwen4B repeat allowed solely if privacy/time/memory/source preflight pass. Soft input24k trigger can overrun final submit and must report effective spend. H0 still scientific quality/cost/replication gap.",
     "T0.52 no-submit despite completed final turn and original grader not submitted; cannot inspect cause without private trace (not publicly stored). Soft24k effective31,351 n2 and28,248 n1, category error counts don't prove causes. Need T0.53 audit of stop/budget and safe private trace storage or NO-GO, avoid paid/perms automatically. H0 CORREGIR.",
     "T0.53 H0 blocked by absence of retrievable full scientific traces for external audit; public repo artifacts are readable by repo readers, so cannot store private raw. T0.54 requires user decision on age-encrypted public ciphertext (private key user-held), authorized separate private repo with checked minutes/storage, or continuing summary-only with explicit limitation. No new research LLM until approved custody; H0 CORREGIR.",
-    "D-0080 latest: H0 cannot yet use original SciResearch on Google Gemini Unpaid because benchmark requests never appear in training corpora while Free Google may use content for improvement. Local Qwen4B CPU quality inadequate, Flash3.8 produced no science due HTTP503; DiscoveryWorld text-only payload still loads commercial sprites/PNG and training rights unverified, long episodes. T0.68 waiting explicit user's choice: controlled no-training provider spend/preflight or PAUSE with USD0. No secret/billing permission implied by Free quota approval."
+    "D-0082: after original H0 scripted-science ablation in SciResearch n2, no qualified generative actor currently verified for same original tasks under safe no-training treatment. CPU Qwen4B T0.49/T0.52 poor, Gemini AI Studio Free may use training and cannot receive original SciResearch benchmark, no paid API authorized. To continue LLM H0 need user-controlled local private model capable or explicit permission for safe remote non-training model plus effective budget/custody. This blocks only LLM runs, not independent legal scientific analysis; avoid more toys/benchmark reimplementation."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -294,7 +296,8 @@
     "D-0078 (2026-11-21 AR): T0.65 completada una matriz Free Gemini 2 modelos×2 casos sintéticos originales en run44940482339 job136956348737 attempt1. Tests de scorer y mock PASS antes API. 4 episodios, 8 requests generativas iniciadas: Lite mechanisms GRADED_FAIL error1.6 tras medidas x2,x3 (3/3 respuestas, causa textual desconocida), Flash mechanisms NO_SCORE HTTP503 (1 req/0 replies), Flash outlier NO_SCORE HTTP503 (1 req/0 replies), Lite outlier GRADED_PASS error0 con x5,x7 (3/3). 1 PASS/1 FAIL/2 NO_SCORE, 2448 input/680 output tokens Lite declarados, 0 resultados Flash; Google support dice 503 sobrecarga temporal (no inferir backend real). No reruns; workflow encolado una vez commit709ee3d y desactivado push commit2240ede, readback manual-only. Material propio sin SciResearch, key secret no expuesto, ninguna facturación pagada autorizada ni comprobada. Evidence evidence/T0.65-paired-gemini-free-n1-results-2026-11-21.md y autoverificación misma instancia audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md, RESEARCH/PLAN/README/LOG guardados/readback. No se puede concluir superioridad/capacidad Flash por NO_SCORE ni H0 general; STOP a repetir toys, T0.66 offline evaluar baseline científico más robusto y licitud Free. H0 CORREGIR/H1/H2 no iniciados.",
     "D-0079 (2026-11-21 AR): T0.66 revisión SOLO OFFLINE post-T0.65. Dos Flash3.8 HTTP503 dejan ciencia sin score, soporte Google dice 503 usual saturación y no 429/quota (claim general); Lite un PASS y FAIL n1 en sintéticos, no baseline H0. NO-GO a más toys/reintentos por score, usuario permite cuota gratis pero no exige agotarla. Se inspeccionaron fuentes oficiales: SciResearch prohibe train corpora y Google Unpaid puede usar prompts para mejorar; ScienceAgentBench 102 tareas CC BY mayoría con excepciones rasterio/matminer, datos descomprimidos no redistribuibles, evaluador usa GPT-4o; ResearchGym runtime alto/datos papers; DiscoveryWorld 120 tareas paramétricas y API externa, código Apache2 pero assets comerciales PixyMoon excluidos. Ningún candidato probado para remitir texto en Gemini Free. T0.67 siguiente inspección offline DiscoveryWorld text-only/rights/CPU/oráculo, no framework ni API hasta gate. Evidencia experiments/T0.66-post-gemini-stop-loss-external-benchmark-gate-2026-11-21.md, autoverificación audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md, PLAN/RESEARCH/README/LOG guardados/readback; 0 llamadas y gastos T0.66. H0 CORREGIR.",
     "D-0080 (2026-11-21 AR): T0.67 DiscoveryWorld OFFLINE cerrada NO-GO inmediato a integración con Gemini Unpaid por costo de oportunidad/derechos. Upstream allenai/discoveryworld pinned fd591323920be0d3786ef350955de1945aa571e5: Apache2 solo código, assets comerciales PixyMoon excluidos; UI JSON and scoring external API documentados, pero getAgentObservation SIEMPRE pygame renderiza sprites y genera PNG/base64 vision, 100–1000 acciones oficiales. Preflight GH Actions 44941143639 job136958406820 completed/failure: código y dependencias/pinned repo/escenario unitario Normal seed0 cargaron CPU headless, primera observación ~1.5s, UI 7927 bytes, vision 111904 chars, scorecard disponible. Nuestro detector marcó completedSuccessfully de renderMinimalTaskProgressJSON como fuga oráculo; inspección upstream UserInterface líneas444–460 demuestra estado mínimo visible al agente distinto de full scorecard, por lo tanto falso positivo semántico, NO evidencia de gold expuesto (tampoco ausencia completa de fuga). No repetir CI solo para poner verde: integración sigue NO-GO porque renderer/arte y permisos para enviar tareas a Google Unpaid no verificados, longitud de episodios. No Gemini ni APIs pagas T0.67. Evidence evidence/T0.67-discoveryworld-offline-probe-rights-runtime-no-go-2026-11-21.md, self-audit audits/T0.67-DISCOVERYWORLD-OFFLINE-NO-GO-2026-11-21.md, RESEARCH/PLAN/README/LOG guardados/readback. T0.68 bloquea espera decisión usuario no-training paid pilot preflight o PAUSA H0. H0 CORREGIR, H1/H2 sin iniciar.",
-    "D-0081 (2026-11-21 AR): por objeción explícita usuario se auditó el desvío T0.58–T0.67 frente OBJECTIVE/H0 y se constató repetición DiscoveryWorld upstream mismo SHA ya seleccionado T0.8, preflight T0.9 y interfaz T0.10. Existió continuidad GitHub pero el agente NO aplicó criterio de relevancia ni de deduplicación: evidencia observacional de fallo de proceso, no inferencia causal H4/H6. La disyuntiva T0.68 API paga o pausa no agotaba los análisis autorizados. Se reforzó AGENTS con puerta obligatoria constructo/antecedente exacto/contrafactual/alternativa mínima/costos antes de herramientas y PLAN/README/RESEARCH/LOG con retorno a SciResearch; OBJECTIVE intacto. Evidence evidence/T0.68-course-correction-objective-drift-2026-11-21.md y self-audit audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md, readback confirmado. Sin APIs ni experimentos T0.68. Próxima T0.69 comparación exploratoria de un único componente de verificabilidad de política SciResearch existente sobre 2 dev T0.26, sin cambiar original grader, 0 pago; no proclamar H0/H5 logrado. H0 CORREGIR/H1-H2 cerrados."
+    "D-0081 (2026-11-21 AR): por objeción explícita usuario se auditó el desvío T0.58–T0.67 frente OBJECTIVE/H0 y se constató repetición DiscoveryWorld upstream mismo SHA ya seleccionado T0.8, preflight T0.9 y interfaz T0.10. Existió continuidad GitHub pero el agente NO aplicó criterio de relevancia ni de deduplicación: evidencia observacional de fallo de proceso, no inferencia causal H4/H6. La disyuntiva T0.68 API paga o pausa no agotaba los análisis autorizados. Se reforzó AGENTS con puerta obligatoria constructo/antecedente exacto/contrafactual/alternativa mínima/costos antes de herramientas y PLAN/README/RESEARCH/LOG con retorno a SciResearch; OBJECTIVE intacto. Evidence evidence/T0.68-course-correction-objective-drift-2026-11-21.md y self-audit audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md, readback confirmado. Sin APIs ni experimentos T0.68. Próxima T0.69 comparación exploratoria de un único componente de verificabilidad de política SciResearch existente sobre 2 dev T0.26, sin cambiar original grader, 0 pago; no proclamar H0/H5 logrado. H0 CORREGIR/H1-H2 cerrados.",
+    "D-0082 (2026-11-21 AR): T0.69 completada como EXPERIMENTO científico de control NO-LLM en SciResearch original pinned 9d391b3, scorer original sin alteración, policy heuristic vs same policy sin _converge (paquete verificación/refit). Prereg experiments/T0.69-sciresearch-convergence-ablation-preregister-2026-11-21.md commitfdff731, script commitc993ef1, run44944659946 job136969204133 attempt1 completed/success, T069_OFFLINE_GATE=PASS, 4/4 SCORED. Casos dev T0.26 ya vistos (exploratorio post hoc): task525 con check vs sin check target_abs_error_sigma=0.10413259 vs2.27436741, target interval6 vs18, param_coverage1 vs0, attribution_correct1 vs0, compute33,175,201 vs71,301 ratio465.28381. Taskb402 error0.015863232 e intervalo6 en ambos, paramcoverage1 en ambos, compute2,928,001 vs2,784,001 ratio1.05172 (+5.17%). Efecto del paquete verificación numérica dependiente del caso, no H5 general, no LLM autonomía/H0 completo. 0 APIs/pagos, scripts/grader originales y source pinned, workflow manual-only commit80ee6f2. Evidencia evidence/T0.69-sciresearch-convergence-ablation-scored-2026-11-21.md, same-agent audit audits/T0.69-CONVERGENCE-ABLATION-SELF-AUDIT-2026-11-21.md. AGENTS/PLAN/RESEARCH/README/LOG readback verified. H0 CORREGIR. Próxima T0.70 bloqueada por falta de actor LLM capaz con uso no-training y custodia autorizada, no por falta de más toy/CI, H1/H2 sin empezar."
   ],
   "evidence_refs": [
     {
@@ -788,6 +791,18 @@
     {
       "path": "AGENTS.md",
       "status": "D-0081 science-first / duplicate / actual decision gate before any tool execution."
+    },
+    {
+      "path": "experiments/T0.69-sciresearch-convergence-ablation-preregister-2026-11-21.md",
+      "status": "D-0082 prereg original SciResearch heuristic converg verification ablation on two historically seen dev tasks."
+    },
+    {
+      "path": "scripts/t069_sciresearch_convergence_ablation.py",
+      "status": "D-0082 single-factor original scripted policy ablation, original grader and isolated processes."
+    },
+    {
+      "path": "evidence/T0.69-sciresearch-convergence-ablation-scored-2026-11-21.md",
+      "status": "D-0082 run44944659946 4/4 scored: case525 strong quality benefit at 465.28x compute; caseb402 equal quality 5.17% more compute."
     }
   ],
   "audit_refs": [
@@ -869,13 +884,14 @@
     "audits/T0.65-GEMINI-PAIR-SELF-AUDIT-2026-11-21.md",
     "audits/T0.66-EXTERNAL-SCIENCE-BENCH-STOP-2026-11-21.md",
     "audits/T0.67-DISCOVERYWORLD-OFFLINE-NO-GO-2026-11-21.md",
-    "audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md"
+    "audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md",
+    "audits/T0.69-CONVERGENCE-ABLATION-SELF-AUDIT-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "761fae4dc9bebb0498c8add1cce294517269d678"
+    "commit": "665317d9748a96866a71c342a89112a9a8dbeb9c"
   },
-  "last_confirmed_activity": "D-0081 repaired direction via AGENTS/PLAN/README/RESEARCH/LOG and self-audit; identified duplicate DiscoveryWorld and no new H0 science T0.58-T0.67; next T0.69 prereg original SciResearch heuristic convergence ablation on pre-seen dev tasks without LLM/API. H0 CORREGIR.",
+  "last_confirmed_activity": "D-0082: original SciResearch convergence ablation performed 4 SCORED in Actions44944659946; quality benefit at high compute for case525 but no quality benefit at +5.17% compute for b402; original grader and pinned upstream retained; same-executor audit, evidence, PLAN/RESEARCH/README/LOG all verified. Next T0.70 blocked for viable LLM under no-training treatment and budget authorization/local access, not further infrastructure. H0 CORREGIR.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
