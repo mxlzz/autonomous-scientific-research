@@ -184,7 +184,7 @@ jobs:
             --env MKL_NUM_THREADS=1 --env T045_MOUNT_GATE_VERIFIED=yes --env T045_SCIENCE_ALLOWED=yes \
             --mount "type=bind,src=$RUNNER_TEMP/upstream,dst=/project,readonly" \
             --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_sciresearch_qwen_t045.py,dst=/controller/t045.py,readonly" \
-            --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_probe_shape_t034.py,dst=/controller/probe_shape_t045.py,readonly" \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_limit_guard_t038.py,dst=/controller/h0_limit_guard_t038.py,readonly" \
             --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/h0_tool_error_kind_t036.py,dst=/controller/tool_error_kind_t045.py,readonly" \
             --mount "type=bind,src=$RUNNER_TEMP/t045-wheels,dst=/wheels,readonly" \
             --mount "type=bind,src=$RUNNER_TEMP/t045-site,dst=/site" \
