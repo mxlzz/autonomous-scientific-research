@@ -96,7 +96,7 @@ def setup():
     src=replace_once(src,
         'if attempt == 5:\n                    raise RuntimeError(f"OpenAI-compatible endpoint failed: {exc}") from exc',
         'if attempt == 0:\n                    raise')
-    from h0_adapter_numeric_telemetry_t052 import patch_adapter
+    from h0_adapter_numeric_telemetry_t049 import patch_adapter
     src=patch_adapter(src)
     ha=replace_once(harness_src,"MAX_TURNS = 80","MAX_TURNS = 8")
     ha=replace_once(ha,"MAX_TOOL_CALLS = 60","MAX_TOOL_CALLS = 8")
