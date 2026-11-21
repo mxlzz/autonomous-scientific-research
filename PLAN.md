@@ -1,5 +1,11 @@
 # Plan y criterios de aceptación — versión 1
 
+## Dictamen H0 actualizado D-0092 — evidencia científica acumulada T0.73 (2026-11-21)
+
+[Auditoría formal T0.73](audits/H0-MILESTONE-T0.73-SELF-AUDIT-2026-11-21.md) · [evidencia clasificada](evidence/T0.73-h0-scientific-milestone-after-t069-t070-2026-11-21.md). Se releyeron `AGENTS.md`, `PROJECT_INSTRUCTIONS.md`, `STATE.json` y el criterio original de H0 antes de decidir. **H0 CORREGIR / NO APROBADO; NO abrir H1/H2**. T0.26 y T0.69 prueban un scorer y mecanismos programados sobre física simulada; T0.49/T0.52 registran dos episodios reales Qwen4B (uno scored muy malo, uno NO_SCORE); T0.70 aporta **una entrega GPT puntuable** con error puntual 1,664σ y cobertura, pero intervalo 60σ > cribado 12σ, justificación perdida y traza completa no custodiada. Por tanto existen **3 episodios generativos históricos, 0 resultados válidos bajo el cribado H0/T0.55**, y **ningún costo finito por resultado válido estimable**; los 3 no son comparables entre sí ni estiman tasa general. T0.69 es evidencia acotada del efecto de verificación en control **NO LLM**, no un test de H5 general.
+
+**Relevancia y límites:** el bloqueo de D-0090 (modelo local/endpoint no disponible) afecta a **corridas**, no a auditorías independientes. T0.73 cerró la auditoría de hito pendiente sin gastar recursos. El siguiente experimento capaz de cambiar esta decisión sería un episodio con **actor generativo cualificado** en harness original, scorer, condiciones no-training/custodia, costos y criterio preregistrados, seguido de comparación T0.55 en casos no vistos solo si corresponde. **Hoy ese experimento no está habilitado**: no instalar modelos ni APIs para generar actividad y no repetir Qwen/T0.70. Si no surge recurso o autorización idónea, STOP operacional; el proyecto no cambia su objetivo y no se abre otra tarea por inercia.
+
 ## Prioridad de ejecución D-0081 — Recuperar el objeto científico, no reiniciar H0
 
 [Auditoría de desvío T0.68](evidence/T0.68-course-correction-objective-drift-2026-11-21.md) y [autoverificación](audits/T0.68-OBJECTIVE-DRIFT-SELF-AUDIT-2026-11-21.md). **Esta decisión prevalece sobre la falsa disyuntiva histórica T0.68 «API paga o pausa».**
