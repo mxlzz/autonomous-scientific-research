@@ -2,6 +2,20 @@
 
 **Objetivo aprobado:** la única fuente canónica del propósito y alcance es [OBJECTIVE.md](OBJECTIVE.md). Este documento regula el procedimiento y no cambia el objetivo. GitHub es fuente de verdad. El mensaje **Continuá** activa un **ciclo de unidades de trabajo verificables y sucesivas dentro del mismo turno activo**, sin pedir autorización entre tareas ordinarias; cada unidad debe cerrarse y verificarse antes de comenzar la siguiente.
 
+## Puerta obligatoria de relevancia científica — D-0081 (2026-11-21)
+
+**Corrección por incumplimiento del contrato existente**, no cambio de `OBJECTIVE.md`. El desvío documentado en [T0.68](evidence/T0.68-course-correction-objective-drift-2026-11-21.md) incluyó más calibraciones API/fixtures que ciencia del objetivo y la duplicación de DiscoveryWorld T0.8–T0.10 en T0.67. **Esta puerta prevalece sobre cualquier siguiente acción histórica de PLAN/STATE que solo proponga más instrumentación.**
+
+Antes de crear archivos, jobs, llamadas a modelos, tests o nuevos casos, el ejecutor debe responder **por escrito** (en evidencia de la unidad o plan experimental existente), sin conjeturas:
+
+1. **Constructo:** qué parte exacta del objetivo/hito e hipótesis H1–H6 mide el resultado. Una calibración de compatibilidad, un `PASS` de CI, un toy numérico y una solicitud LLM no son ciencia autónoma end-to-end ni cuentan como réplica confirmatoria.
+2. **Trabajo ya hecho:** buscar **por nombre de benchmark, commit, dataset/caso, instrumento, versión y pregunta** en `PLAN`, `RESEARCH`, `LOG`, `experiments`, `evidence` y `audits` antes de repetir. En particular DiscoveryWorld `@fd591323` ya fue seleccionado T0.8, ejecutado headless T0.9 y contractualmente analizado T0.10; SciResearch `@9d391b3` ya tiene 4 casos/controles T0.26, Qwen4B T0.49/T0.52 y protocolo de comparación T0.55. **La mera novedad del nombre de tarea no vuelve nueva la evidencia.**
+3. **Contrafactual decisivo:** expresar qué decisión entre **continuar, corregir, replantear o parar** cambiaría con un resultado positivo, negativo o `NO_SCORE`. Si las tres dejan la misma decisión, **NO EJECUTAR**. No gastar cuota «porque existe» ni intentar volver verde un job cuyo resultado no cambia la decisión científica.
+4. **Alternativa mínima:** preferir **analizar/contrastar lo ya medido**, reutilizar evaluador y agente original, y comparar **un factor por vez** bajo el mismo caso/scorer. No crear otro benchmark/proyecto, framework, controlador o workflow si no existe un vacío concreto de observación imposible de cubrir con lo existente.
+5. **Costos, legalidad y continuidad:** hasta que H0 alcance su criterio representativo y trazable, no abrir hitos siguientes ni atribuir H1–H6 a muestras sin contraste. El acceso a Gemini AI Studio Free **no** autoriza gastos pagos ni uso de SciResearch en Google Unpaid; no bloquear tareas independientes autorizadas por falta de autorización para una **operación distinta**. No sustituir el objetivo por disponibilidad de un proveedor.
+
+Al cierre, auditoría y `STATE.json` deben incluir: **(a)** evidencia que cuenta para el objetivo, **(b)** evidencia exclusivamente instrumental, **(c)** duplicaciones evitadas, **(d)** próximo contraste científico concreto y **(e)** bloqueos *por operación*. Si no existe experimento admisible, documentar límite real y detener, **no** mantener una fila de tareas técnicamente fáciles para simular progreso. Un mismo ejecutor que se autoaudita lo declara expresamente.
+
 ## Antes de actuar
 1. Desde el repositorio actual, leer README.md, OBJECTIVE.md, PLAN.md, METHODOLOGY.md, STATE.json y secciones relevantes de RESEARCH.md y LOG.md; leer auditorías pendientes.
 2. Confirmar que SHA de HEAD, estado y referencias sean consistentes; comprobar cambios de otros ejecutores, bloqueos, duplicaciones, evidencias o auditorías faltantes.
