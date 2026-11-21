@@ -89,7 +89,8 @@ def score(args, observations, direct_target_attempt):
     result["coefficients_correct"] = bool(good_coeffs)
     consistency = (abs(pred - (a + 3*b)) < 0.25 and
                    all(abs(oracle(h,f) - (a+b*h+c*f)) < 0.25 for h,f in observations))
-    valid_measurements = bool(observations) and all(h != f and (h,f) != TARGET for h,f in observations)
+    valid_measurements = (bool(observations) and any(h != f for h,f in observations)
+                          and all((h,f) != TARGET for h,f in observations))
     passed = (not direct_target_attempt and valid_measurements and good_coeffs
               and abs(pred - 11.0) < 0.25 and consistency)
     result.update({"science_status": "GRADED_PASS" if passed else "GRADED_FAIL", "pass": bool(passed)})
@@ -239,6 +240,7 @@ def offline_tests():
     assert not score({"a":5,"b":2,"c":3,"predicted_temperature":12,"rationale":"x"},[(0,1)],False)["pass"]
     assert not score({"a":5,"b":2,"c":3,"predicted_temperature":11,"rationale":"x"},[],False)["pass"]
     assert not score({"a":5,"b":2,"c":3,"predicted_temperature":11,"rationale":"x"},[(1,1)],False)["pass"]
+    assert score({"a":5,"b":2,"c":3,"predicted_temperature":11,"rationale":"x"},[(1,1),(0,1)],False)["pass"]
     assert not controls({"heater":True,"fan":0})
     assert not controls({"heater":-1,"fan":0})
     assert controls({"heater":0,"fan":1})
