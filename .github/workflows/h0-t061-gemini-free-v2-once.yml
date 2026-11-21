@@ -1,10 +1,8 @@
 name: T0.61 single-authorized Gemini Free 3.5 Flash-Lite corrected calibration
 
-# One-time push trigger for creating this workflow only; remove after first run queues.
+# One-time authorized push run #44938583860 has already been queued; no more automatic runs.
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t061-gemini-free-v2-once.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
