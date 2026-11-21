@@ -1,0 +1,78 @@
+name: H0 T0.54 age synthetic custody gate
+
+on:
+  push:
+    paths:
+      - ".github/workflows/h0-t054-age-synthetic.yml"
+      - "scripts/t054_age_trace_archive.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-age:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      USER_AGE_RECIPIENT: age1896rlr8duy7x3jzhd2u8jgylcywr5r6clwuch3m4xk4rddpx4dssg0wava
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install distro-provided age CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y age >/dev/null
+          age --version
+      - name: Synthetic roundtrip, user-recipient parse, negative gates and artifact isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          base="$RUNNER_TEMP/t054"
+          mkdir -p "$base/src" "$base/roundtrip" "$RUNNER_TEMP/age-only"
+          trap 'rm -rf -- "$base"' EXIT
+          marker="SYNTHETIC_T054_MARKER_NOT_REAL_TRACE"
+          for f in transcript.json env_trace.json state_log.json result.json; do
+            printf '{"test":"%s","data":"%s"}\n' "$f" "$marker" > "$base/src/$f"
+          done
+          # Short-lived test identity belongs to this synthetic test, NOT to the user.
+          age-keygen -o "$base/ephemeral-private.txt" >/dev/null 2>&1
+          test_recipient=$(age-keygen -y "$base/ephemeral-private.txt")
+          bash scripts/t054_age_trace_archive.sh "$base/src" "$base/ephemeral.age" "$test_recipient" >/dev/null
+          age -d -i "$base/ephemeral-private.txt" -o "$base/recovered.tar" "$base/ephemeral.age" >/dev/null 2>&1
+          tar -xf "$base/recovered.tar" -C "$base/roundtrip"
+          for f in transcript.json env_trace.json state_log.json result.json; do
+            cmp "$base/src/$f" "$base/roundtrip/$f" >/dev/null
+          done
+          echo "T054_SYNTHETIC_ROUNDTRIP=PASS"
+          # The user's public key is usable for encryption. We DO NOT have their identity to decrypt.
+          bash scripts/t054_age_trace_archive.sh "$base/src" "$RUNNER_TEMP/age-only/trace.age" "$USER_AGE_RECIPIENT" >/dev/null
+          test -s "$RUNNER_TEMP/age-only/trace.age"
+          test "$(head -c 21 "$RUNNER_TEMP/age-only/trace.age")" = "age-encryption.org/v1"
+          if grep -aq "$marker" "$RUNNER_TEMP/age-only/trace.age"; then exit 2; fi
+          echo "T054_USER_RECIPIENT_ENCRYPTION=PASS"
+          if bash scripts/t054_age_trace_archive.sh "$base/src" "$base/bad.age" age1invalid >/dev/null 2>&1; then exit 2; fi
+          test ! -e "$base/bad.age"
+          mkdir -p "$base/missing"
+          cp "$base/src/transcript.json" "$base/src/env_trace.json" "$base/src/state_log.json" "$base/missing/"
+          if bash scripts/t054_age_trace_archive.sh "$base/missing" "$base/missing.age" "$test_recipient" >/dev/null 2>&1; then exit 2; fi
+          test ! -e "$base/missing.age"
+          ln -s /etc/hostname "$base/src/sneaky"
+          if bash scripts/t054_age_trace_archive.sh "$base/src" "$base/symlink.age" "$test_recipient" >/dev/null 2>&1; then exit 2; fi
+          test ! -e "$base/symlink.age"
+          echo "T054_FAIL_CLOSED=PASS"
+          # upload-artifact sees only this single encrypted file, not src/keys/recovered tar.
+          test "$(find "$RUNNER_TEMP/age-only" -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 1
+          test "$(find "$RUNNER_TEMP/age-only" -mindepth 1 -maxdepth 1 | wc -l)" -eq 1
+          echo "T054_ARTIFACT_ALLOWLIST=PASS"
+      - name: Upload synthetic ciphertext only
+        uses: actions/upload-artifact@v4
+        with:
+          name: t054-synthetic-ciphertext-only
+          path: ${{ runner.temp }}/age-only/trace.age
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
