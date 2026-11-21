@@ -1,9 +1,7 @@
 name: T0.64 synthetic paired cases adversarial offline validation
 
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t064-pair-gate-once.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
