@@ -1,0 +1,126 @@
+name: H0 T0.41 Qwen3 4B Instruct single synthetic budget_status probe
+on:
+  push:
+    paths:
+      - .github/workflows/h0-t043-qwen4b-cgroup-pressure.yml
+permissions:
+  contents: read
+concurrency:
+  group: h0-t043-one-cgroup-profile-qwen4b
+  cancel-in-progress: true
+jobs:
+  one-cgroup-tool-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      HF_TOKEN: ""
+      OLLAMA_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      MODEL: "qwen3:4b-instruct-2507-q4_K_M"
+      IMAGE: "ollama/ollama@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592"
+    steps:
+      - name: Checkout pinned preregistration without persisting credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify prereg scripts and both synthetic fixture suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/T0.41-qwen4b-instruct-single-synthetic-tool-probe-preregister-2026-11-20.md)" = dc7ff0134d3ca21482242c2768d8d463aeef7f72
+          test "$(git hash-object scripts/h0_qwen4b_preflight_t040.py)" = 0794c903eb186d295ec890dbe231edc6429244f6
+          test "$(git hash-object scripts/h0_qwen4b_tool_probe_t041.py)" = 1ad7e1928ad93a5f6e520280cb7b70c51ca58909
+          test "$(git hash-object scripts/h0_cgroup_pressure_t043.py)" = 6f6b6c8fe303647ed422f97c1512d7b5ef4de4ae
+          python3 -m py_compile scripts/h0_qwen4b_preflight_t040.py scripts/h0_qwen4b_tool_probe_t041.py scripts/h0_cgroup_pressure_t043.py
+          python3 scripts/h0_qwen4b_preflight_t040.py --offline-test
+          python3 scripts/h0_qwen4b_tool_probe_t041.py --offline-test
+          python3 scripts/h0_cgroup_pressure_t043.py --offline-test
+          echo T043_PREREG_SCRIPT_PIN_VERIFIED=true
+          echo T043_TASK_DATA_NOT_READ=true
+          echo T043_LLM_REQUESTS_MAX=1
+      - name: One exact model and one synthetic probe with cgroup telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo T043_MODEL_STAGE=DOWNLOAD_THEN_ONE_SYNTHETIC_TOOL_PROBE
+          avail=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T043_DISK_AVAILABLE_BEFORE_BYTES=$avail"
+          if [ "$avail" -lt 5368709120 ]; then
+            echo T043_DECISION=NO_GO_DISK_PRECHECK
+            exit 0
+          fi
+          timeout 120 docker pull "$IMAGE" >/dev/null
+          echo T043_IMAGE_DIGEST_PIN=true
+          vol="h0t043-model-$GITHUB_RUN_ID"
+          actor="h0t043-actor-$GITHUB_RUN_ID"
+          docker volume create "$vol" >/dev/null
+          docker run -d --name "$actor" --network bridge -p 127.0.0.1:11434:11434 \
+            --cpus 2 --memory 5g --pids-limit 96 --cap-drop ALL \
+            --security-opt no-new-privileges --read-only \
+            --env OLLAMA_HOST=0.0.0.0:11434 \
+            --env OLLAMA_CONTEXT_LENGTH=4096 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=384m,mode=1777 \
+            --mount "type=volume,src=$vol,dst=/root/.ollama" "$IMAGE" >/dev/null
+          docker inspect "$actor" > "$RUNNER_TEMP/t043-inspect-private.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          v=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"t043-inspect-private.json").read_text())[0]
+          h=v["HostConfig"]
+          assert h["ReadonlyRootfs"] and not h["Privileged"]
+          assert h["NanoCpus"]==2000000000 and h["Memory"]==5*1024**3
+          assert "ALL" in h["CapDrop"] and "no-new-privileges" in h["SecurityOpt"]
+          assert all(m["Destination"]!="/var/run/docker.sock" for m in v["Mounts"])
+          assert len(v["Mounts"])==1 and v["Mounts"][0]["Destination"]=="/root/.ollama"
+          assert v["HostConfig"]["PortBindings"]["11434/tcp"][0]["HostIp"]=="127.0.0.1"
+          print("T043_CPU_2_MEM_5G_READONLY_AND_MODEL_ONLY_MOUNT=true",flush=True)
+          print("T043_ONLY_LOOPBACK_SERVER_PORT=true",flush=True)
+          PY
+          ready=no
+          for i in $(seq 1 35); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null; then
+              ready=yes; break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != yes ]; then
+            echo T043_DECISION=NO_GO_SERVER_START
+            exit 0
+          fi
+          python3 scripts/h0_cgroup_pressure_t043.py --snapshot-stage before_pull --container "$actor"
+          set +e
+          timeout 420 docker exec "$actor" ollama pull "$MODEL" >"$RUNNER_TEMP/t043-pull-private.log" 2>&1
+          rc=$?
+          set -e
+          echo "T043_PULL_EXIT_CODE=$rc"
+          if [ "$rc" -ne 0 ]; then
+            echo T043_DECISION=NO_GO_PULL
+            exit 0
+          fi
+          echo T043_MODEL_PULL_COMPLETED=true
+          python3 scripts/h0_cgroup_pressure_t043.py --snapshot-stage after_pull --container "$actor"
+          python3 scripts/h0_qwen4b_preflight_t040.py --inspect-runtime
+          # Only this monitor sends the one preregistered synthetic LLM request.
+          set +e
+          timeout --signal=TERM --kill-after=5s 145 python3 scripts/h0_cgroup_pressure_t043.py --monitor --container "$actor"
+          monitor_rc=$?
+          set -e
+          echo "T043_MONITOR_EXIT_CODE=$monitor_rc"
+          if [ "$monitor_rc" = 124 ]; then echo T043_MONITOR_STATUS=TIMEOUT; fi
+          oom=$(docker inspect --format '{{.State.OOMKilled}}' "$actor" 2>/dev/null || true)
+          case "$oom" in true|false) echo "T043_ACTOR_OOM_KILLED=$oom";; *) echo T043_ACTOR_OOM_KILLED=UNVERIFIED;; esac
+          echo T043_PRIVATE_TRANSCRIPT_UPLOADED=false
+          echo T043_API_PAID_USD=0
+          after=$(df -B1 --output=avail / | tail -n1 | tr -d ' ')
+          echo "T043_DISK_AVAILABLE_AFTER_BYTES=$after"
+      - name: Cleanup ephemeral model and local files
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f "h0t043-actor-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          docker volume rm -f "h0t043-model-$GITHUB_RUN_ID" >/dev/null 2>&1 || true
+          rm -f "$RUNNER_TEMP/t043-pull-private.log" "$RUNNER_TEMP/t043-inspect-private.json"
+          echo T043_EPHEMERAL_MODEL_REMOVED=true
+          echo T043_NO_RAW_UPLOAD=true
