@@ -1,9 +1,8 @@
 name: T0.69 original SciResearch scientific verification ablation, no LLM
 
+# One approved free scientific ablation run 44944659946 queued; no automatic repeats.
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t069-sciresearch-convergence-ablation-once.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
