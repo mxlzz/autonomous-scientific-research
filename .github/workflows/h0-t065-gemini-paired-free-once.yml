@@ -1,9 +1,8 @@
 name: T0.65 Free Gemini paired original scientific cases (one authorized matrix)
 
+# Exactly one matrix queued as run 44940482339; no automatic repeats.
 on:
-  push:
-    paths:
-      - ".github/workflows/h0-t065-gemini-paired-free-once.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
