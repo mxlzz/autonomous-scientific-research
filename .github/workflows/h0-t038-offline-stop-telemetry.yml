@@ -1,0 +1,44 @@
+name: H0 T0.38 offline budget guard instrumentation fixtures
+on:
+  push:
+    paths:
+      - .github/workflows/h0-t038-offline-stop-telemetry.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: h0-t038-one-offline-telemetry
+  cancel-in-progress: true
+jobs:
+  offline-stop-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pinned branch without persisting credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Confirm prereg and exact helper source before test
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/T0.38-offline-cache-guard-observability-preregister-2026-11-20.md)" = 4d4fdd9e3282904d5befba873102f8c6cb0d0f2b
+          test "$(git hash-object scripts/h0_limit_guard_t038.py)" = e2038970b985075f3c5b18e981919dff0b1886a5
+          python3 -m py_compile scripts/h0_limit_guard_t038.py
+          echo T038_SOURCE_AND_PREREG_PIN=true
+          echo T038_LLM_REQUESTS=0
+          echo T038_PRIVATE_TASKS_OPENED=false
+      - name: Fetch upstream original source only at pinned commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/t038-src
+          git clone -q --filter=blob:none --no-checkout https://github.com/Btwestyo/sciresearch-eval.git /tmp/t038-src
+          git -C /tmp/t038-src fetch -q --depth 1 origin 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          git -C /tmp/t038-src checkout -q --detach 9d391b3aa8daf8d0b944acda12c7f8b089a1d8e0
+          test "$(git -C /tmp/t038-src hash-object src/sciresearch_eval/agents/harness.py)" = 194a4b36caf4cd702caee34044ec457247644aee
+          echo T038_UPSTREAM_HARNESS_SOURCE_PIN=true
+          python3 scripts/h0_limit_guard_t038.py --self-test --source=/tmp/t038-src/src/sciresearch_eval/agents/harness.py
+          echo T038_NO_MODEL_EXECUTION=true
+          echo T038_NO_GOLD_DATA_ACCESS=true
+          echo T038_API_PAID_USD=0
