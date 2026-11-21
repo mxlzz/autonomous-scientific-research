@@ -149,15 +149,15 @@ def tests():
     assert empty["events_scope"]=="unverified" and empty["memory_current_bytes"] is None
     uncapped=snapshot_from_text({"memory.max":"max"})
     assert uncapped["memory_max_bytes"]=="max"
-    zero_events=snapshot_from_text({"memory.events.local":"max 0\\noom 0\\noom_kill 0"})
+    zero_events=snapshot_from_text({"memory.events.local":"max 0\noom 0\noom_kill 0"})
     assert zero_events["events_max"]==0 and zero_events["events_oom"]==0
-    duplicate=snapshot_from_text({"memory.events.local":"max 1\\nmax 2\\noom 0\\noom_kill 0"})
+    duplicate=snapshot_from_text({"memory.events.local":"max 1\nmax 2\noom 0\noom_kill 0"})
     assert duplicate["events_max"] is None
-    stat_only=snapshot_from_text({"memory.stat":"anon 3\\nfile 2\\nkernel 1"})
+    stat_only=snapshot_from_text({"memory.stat":"anon 3\nfile 2\nkernel 1"})
     assert stat_only["stat_anon_bytes"]==3 and stat_only["stat_file_bytes"]==2
-    psi_only=snapshot_from_text({"memory.pressure":"some avg10=0.00 total=23\\nfull avg10=0.00 total=0"})
+    psi_only=snapshot_from_text({"memory.pressure":"some avg10=0.00 total=23\nfull avg10=0.00 total=0"})
     assert psi_only["psi_some_total_us"]==23 and psi_only["psi_full_total_us"]==0
-    back=deltas(out,snapshot_from_text({**src,"memory.events.local":"max 1\\noom 0\\noom_kill 0"}))
+    back=deltas(out,snapshot_from_text({**src,"memory.events.local":"max 1\noom 0\noom_kill 0"}))
     assert back["events_max_delta"] is None
     print("T043_OFFLINE_CGROUP_FIXTURES_PASS=15",flush=True)
     print("T043_OFFLINE_PRIVATE_LEAK_CHECK=true",flush=True)
