@@ -127,6 +127,7 @@ def setup():
                   "max_turns":from_runtime(h)["max_turns"],"max_tool_calls":from_runtime(h)["max_tool_calls"],"max_output_tokens_per_turn":512,
                   "limit_guard_integrated_in_loaded_copy":True})
     marker("SOURCE_PINS_AND_HARNESS_GUARD",True)
+    marker("CATEGORY_INTEGRATED_IN_LOADED_COPY",True)
     return a,h,AgentTools(ThermalEnv(TASK,ROOT/"tasks","dev"),"A"),np
 
 def scalar(v):
