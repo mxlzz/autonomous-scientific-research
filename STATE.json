@@ -10,7 +10,7 @@
   "task_title": "T0.55 — Diseñar y verificar offline una comparación de descomposición con recursos comparables",
   "task_expected_output": "experiments/T0.55-protocolo-comparacion.md y audits/T0.55-DECISION-H0.md. Una sola comparación emparejada con un factor variable, guía benchmarks/H0-DECISION-BASELINE.md, y decisión de factibilidad que incluya un desenlace negativo. Sin LLM, pesos, datos privados, cambios de permisos ni pagos.",
   "task_acceptance": "Leer la guía, el dictamen reconciliado y T0.49–T0.53; reconocer dos episodios efectivos del mismo caso. Fijar factor, casos de desarrollo y reservas, controles, orden, repeticiones, presupuesto total, definiciones de inicio y validez previa, métrica con unidades/umbral justificado y reglas para faltantes. Verificar con fixtures la proyección tipada y el cálculo de ambos denominadores incluyendo cero válidos y costos desconocidos. Emitir una decisión acotada: protocolo listo para auditoría del hito, dependencia concreta de T0.54, o cerrar la vía Qwen4B/CPU y justificar sustituto o pausa. Pruebas offline no abren H1/H2. Persistir evidencia/LOG y STATE último.",
-  "next_action": "Seguir benchmarks/H0-DECISION-BASELINE.md, sección T0.55. Preparar y verificar el diseño offline antes de comprometer otra corrida. La única réplica prevista ya terminó en 44909561018 con NO_SCORE. T0.54 está diferida; la elección de custodia permanece abierta. No repetir T0.52.",
+  "next_action": "T0.55 offline sigue activa: seguir benchmarks/H0-DECISION-BASELINE.md para diseño de comparación, sin nuevas corridas. D-0063 registra que T0.54 modalidad age A fue elegida; no repetir pregunta. Para cifrado real falta recipient público age1... local del usuario, derechos por fuente y pruebas sintéticas fail-closed. No repetir T0.52.",
   "completed_tasks": [
     "T0.1.1",
     "T0.1.2",
@@ -129,7 +129,8 @@
     "T0.51 same executor test/audit not independent, source patch category stream not yet observed in live n2; T0.52 must validate strict allowlist and privacy, log a single scorer original episode with costs and avoid claiming reproducibility from two stochastic samples.",
     "T0.52 same-agent self-audit, independent H0 review pending. T0.49 one dev scored poor, T0.52 one dev no score and 30.63% soft input overspend; lack of private trace custody, statistical replication, CPU/energy measures and comparable budgets. Next T0.53 OFFLINE source/trace policy audit; H0 not closed.",
     "T0.53 same executor documentary self-audit, independent review not claimed. H0 scientific reproducibility still lacks original private transcript/env_trace/state_log; cannot resolve without authorized trace custody. T0.54 blocked until user's explicit choice, no raw/ciphertext/credentials published or permissions modified.",
-    "Verificar T0.55 contra benchmarks/H0-DECISION-BASELINE.md y los criterios originales de H0. Validación por terceros y auditoría de razonamiento de n1/n2 siguen pendientes; no hay trazas históricas recuperables."
+    "Verificar T0.55 contra benchmarks/H0-DECISION-BASELINE.md y los criterios originales de H0. Validación por terceros y auditoría de razonamiento de n1/n2 siguen pendientes; no hay trazas históricas recuperables.",
+    "T0.54 D-0063: elección A registrada y autoverificada documentalmente por el mismo ejecutor, no es auditoría criptográfica independiente; falta recipiente público, prueba de cifrado/decrypt sintética, revisión de derechos y verificación del pipeline antes de trazas reales."
   ],
   "blockers": [
     "H0-F01 constructo: DS1000 validación513 con ReAct+Qwen3 0.6B I/I (2 intentos, 1 tarea) solo calibra code-generation; no representa un ciclo de investigación autónoma ni valida H1–H6.",
@@ -182,7 +183,7 @@
     "T0.51 tool category instrumentation currently only offline compiler/fixtures; no runtime stream proof yet. T0.52 original dev Qwen4B repeat allowed solely if privacy/time/memory/source preflight pass. Soft input24k trigger can overrun final submit and must report effective spend. H0 still scientific quality/cost/replication gap.",
     "T0.52 no-submit despite completed final turn and original grader not submitted; cannot inspect cause without private trace (not publicly stored). Soft24k effective31,351 n2 and28,248 n1, category error counts don't prove causes. Need T0.53 audit of stop/budget and safe private trace storage or NO-GO, avoid paid/perms automatically. H0 CORREGIR.",
     "T0.53 H0 blocked by absence of retrievable full scientific traces for external audit; public repo artifacts are readable by repo readers, so cannot store private raw. T0.54 requires user decision on age-encrypted public ciphertext (private key user-held), authorized separate private repo with checked minutes/storage, or continuing summary-only with explicit limitation. No new research LLM until approved custody; H0 CORREGIR.",
-    "Vigente D-0062: T0.54 continúa pendiente de elección explícita sobre custodia. Afecta acceso/retención de trazas, nuevas corridas con LLM bajo D-0061 y afirmaciones de auditabilidad plena; no impide T0.55 offline."
+    "Vigente D-0063: T0.54 opción A de custodia age elegida explícitamente por el usuario; NO vuelve a solicitarse elegir modalidad. Pendiente clave pública age1... generada en el equipo del usuario (privada nunca en el repo/CI/asistente), validación de derechos incluso para ciphertext, pruebas sintéticas de cifrado/recuperación/fail-closed y diseño de retención. No publicar raw ni ciphertext ni ejecutar nuevos LLM dependientes de la custodia hasta cumplir gates. T0.55 offline no bloqueada."
   ],
   "decisions": [
     "D-0001: aprobación de diseño",
@@ -246,7 +247,8 @@
     "D-0059 (2026-11-21 AR): T0.51 offline source-pinned optional tool category instrumentation h0_tool_categories_t051.py, CI44908726893 job136859744753 passed original SciResearch harness/tools pinned with 20 valid/11 rejected privacy fixtures and same agent.converse/tools.call/grade(env)/stop, no LLM/gold/paid/GPU. AgentTools.specs condition A only BASE_TOOLS, update_state only C/D, recommend_experiment only D; do not blame missing state updates for T0.49. T0.49 effective input fresh10324+cache17924=28248 vs24k SOFT trigger with final submit, after turn7 input24984, final+3264; for comparability keep same SOFT rule and report actual cost, do not retrofit hard cap. Choose next T0.52 one operational exploratory n2 of exact Qwen3 4B Instruct2507 Q4/SciResearch original dev scorer/actor2CPU8GiB/eval1CPU1GiB/context4096/turns8/tools8/output512/socket180s/science600s with strict category+outcome instrumentation added only observationally. No fixed generation seed inferred, no causal statistics/H0 completion from n2. Same-agent audit not independent, H0 CORREGIR no H1/H2.",
     "D-0060 (2026-11-21 AR): T0.52 original SciResearch Qwen3 4B dev n2 with T0.51 category/outcome telemetry. Canonical prereg prior run blob3808e33d; duplicate supplementary prereg ec58015 made after runs began and not used, recorded as nonbinding. Three workflow attempts: 44909209749 pre-model fixtures AssertionError, 44909303221 valid synthetic budget_status but controller ModuleNotFoundError and NOT_STARTED, 44909561018 sole effective science dev episode with prep budget_status one call PASS 7.211s, cgroup under8GiB no pressure, time gate839s. Science9 turn responses, 8 toolcalls/2 tool_errors, runtime tool category analysis2 success+1 error, reading1 success+1 error, fitting1 success, status2 success (0 measurement/simulation). Final submit-only request returned but no submit accepted, original grader submitted false, status NO_SCORE score=null, summary hash b9bb0e34dd8df91f084abb1ae85d082cb9a2c84583a7a0ae7f390c36923c620a. Input fresh10119+cache21232=31351 over24k soft7351 (+30.63%), limit_trigger both; n1 input28248 (+17.70%) and scored poor quality, no matched costs. Wall449.346s, memory max/oom/oomkill0 swap0 peak4948656128<8GiB, 0 paid APIs/GPU. H0 CORREGIR and H1/H2 not started; same-agent audit nonindependent; next T0.53 OFFLINE stop/trace custody audit before science.",
     "D-0061 (2026-11-21 AR): T0.53 offline source audit pinned SciResearch harness@194a4b36 computes total input including cache each loop and gives one final_turn offering only submit when turns>=8 or input>=24k soft. Original OpenAI adapter force_tool uses tool_choice; pinned Qwen4B Ollama controller removes tool_choice so submit not enforced; T0.52 final request completed but original grader submitted=false, score null. T0.49 n1 scored poor quality with input28248 (+17.70% soft24k), T0.52 n2 NO_SCORE input31351 (+30.63%), both 8 tools/2 errors but effective costs not identical, n1 lacks tool categories. Harness originally writes transcript/env_trace/state_log/result but current public Actions pipeline deletes raw private trace and leaves only hashes+allowlisted data; scientific reasoning not independently re-auditable. GitHub docs public artifact access by readers and private repo billing/permissions requirements, age public recipient encryption as existing alternative; publishing raw to public rejected. D-0061 select conditional age encryption only after user approves publishing ciphertext and holds private key, or authorized private repo, or acknowledge summary-only limit. T0.54 BLOCKED requiring explicit data custody authorization, no new inference/pays/GPU/permission changes; H0 CORREGIR H1/H2 not started. Same-agent audit not independent.",
-    "D-0062 (2026-11-21 AR): integrar el dictamen en main e incorporar T0.52 efectiva. Qwen/CPU queda como referencia negativa, sin tercera réplica del caso de calibración. Separar costo por válido y tasa, incorporar proyección pública tipada y estado por episodio. Diferir T0.54 con sus límites vigentes. T0.55 es trabajo offline independiente; H0 sigue CORREGIR."
+    "D-0062 (2026-11-21 AR): integrar el dictamen en main e incorporar T0.52 efectiva. Qwen/CPU queda como referencia negativa, sin tercera réplica del caso de calibración. Separar costo por válido y tasa, incorporar proyección pública tipada y estado por episodio. Diferir T0.54 con sus límites vigentes. T0.55 es trabajo offline independiente; H0 sigue CORREGIR.",
+    "D-0063 (2026-11-21 AR): el usuario confirmó opción A de T0.54, usar cifrado age con recipient público del usuario y eventual publicación SOLO de ciphertext autorizado en Actions. Constancia evidence/T0.54-age-option-A-authorization-awaiting-recipient-2026-11-21.md y autoverificación administrativa audits/T0.54-AGE-CHOICE-RECORD-2026-11-21.md verificadas. No se recibió recipient ni se generó clave; implementación y trazas reales bloqueadas hasta recipient, derechos por fuente y pruebas fail-closed sintéticas. H0 CORREGIR; T0.55 offline sigue siendo current_task."
   ],
   "evidence_refs": [
     {
@@ -588,6 +590,10 @@
     {
       "path": "scripts/sciresearch_public_result.py",
       "status": "Proyección prospectiva del result.json original verificada con cuatro pruebas de CLI y dos resultados del grader en un entorno sintético. No es reprocesamiento histórico ni ejecución científica."
+    },
+    {
+      "path": "evidence/T0.54-age-option-A-authorization-awaiting-recipient-2026-11-21.md",
+      "status": "D-0063 elección A de custodia age confirmada; recipient público del usuario pendiente; no claves, cifrado, artifacts, cambios de permisos ni LLM. Barreras jurídicas y seguridad fail-closed antes de trazas reales."
     }
   ],
   "audit_refs": [
@@ -651,13 +657,14 @@
     "audits/T0.51-OFFLINE-CATEGORY-PRIVACY-SOFT-BUDGET-2026-11-21.md",
     "audits/T0.52-QWEN4B-DEV-N2-TOOL-CATEGORIES-NOSCORE-2026-11-21.md",
     "audits/T0.53-H0-N1-N2-STOP-AND-PRIVATE-TRACE-OPTIONS-2026-11-21.md",
-    "audits/DICTAMEN-DIRECCION-CIENTIFICA-2026-11-21.md"
+    "audits/DICTAMEN-DIRECCION-CIENTIFICA-2026-11-21.md",
+    "audits/T0.54-AGE-CHOICE-RECORD-2026-11-21.md"
   ],
   "last_confirmed_non_state_write": {
     "path": "LOG.md",
-    "commit": "b02d0ed477e3018d19fcf23d6dd7a60ac9c14598"
+    "commit": "27429901d2d035fba3f02a21d81b3e919fb5e299"
   },
-  "last_confirmed_activity": "D-0062: revisión transversal incorporada, trabajo posterior reconciliado con logs, fórmulas y guía corregidas, proyección pública verificada offline. Once archivos leídos de vuelta desde main. T0.53 es la última unidad experimental/metodológica cerrada; T0.55 es la próxima unidad y T0.54 queda pendiente.",
+  "last_confirmed_activity": "D-0063: registro administrativo de elección age A por el usuario. Evidencia, autoverificación no independiente y LOG confirmados mediante lectura GitHub; aún sin recipient, clave, cifrado, nuevas trazas, infraestructura ni nuevos experimentos. STATE conserva T0.55 como próxima unidad offline; H0 CORREGIR.",
   "recovered_from": "Inconsistencia parcial T0.12: evidencia b5b54de y audit acaeb40 publicadas sin LOG/PLAN/STATE; reconciliación documentada LOG D-0019, cambios verificados, sin duplicar prueba.",
   "initialization_validation": {
     "audit": "A-INIT-001",
@@ -669,14 +676,14 @@
   },
   "deferred_tasks": [
     {
-      "task_title": "T0.54 — BLOQUEADA: autorización de custodia íntegra de trazas privadas para H0",
-      "task_expected_output": "Sin permisos nuevos y sin otro LLM por defecto: esperar decisión explícita de usuario sobre destino de trazas de SciResearch necesarias para reproducir auditoría científica: (A) cifrado asimétrico age al recipient público aportado por usuario y subir SOLO ciphertext autorizado a Actions artifact público, key privada bajo custodia usuario; (B) repositorio/almacén privado autorizado y credenciales/esquema de costo aprobados; (C) continuar únicamente con métricas/hash públicos, reconociendo que H0 no puede declararse auditado integralmente sin contenido de la traza, o suspender. Sólo tras aprobación concreta, preregistrar prueba sintética de no fuga/integridad/descifrado/recovery/retención sin raw/gold ni pago, luego decidir una sola ejecución científica bajo scorer original; no crear repositorios, claves, secrets, publicar raw/ciphertext o cambiar permisos sin autorización. H0 CORREGIR, H1/H2 no iniciados.",
-      "task_acceptance": "Primero obtener la preferencia y autorización explícita del usuario sobre destino y, si A, solo public recipient o paso para generarlo localmente SIN compartir la private key; si B, confirmar permiso y cuota gratuita antes de escribir/activar token, sin pagas. Si C, documentar limitaciones de auditoría y no declarar H0 cerrado por score/summary-only. Fuente GitHub Docs public artifacts descargables para lectores; fuente age CLI asymmetric public recipient and private identity. Validar cualquier implementación FUTURA en datos sintéticos y gates fail-closed antes de mover datos sensibles. No realizar actividad de T0.54 ni nueva inferencia mientras no exista autorización. Tras decisión, evidencia/AGENTS/LOG y STATE último readback, autosupervisión no independiente.",
-      "next_action": "BLOQUEO DE AUTORIZACIÓN: solicitar al usuario elegir custodia de las trazas científicas: A) age recipient público y consentimiento expreso para subir SOLO ciphertext al repositorio público; B) destino GitHub privado con permisos y credenciales/costos verificados; C) solo allowlist con límite de auditoría, o pausar. NO generar claves, tokens, public artifacts sensibles, cambiar permisos, cobrar servicios o iniciar nuevos LLM antes de esa decisión. D-0061 H0 CORREGIR.",
+      "task_title": "T0.54 — OPCIÓN A CONFIRMADA: implementar custodia age tras recibir recipient público",
+      "task_expected_output": "El usuario ya eligió A: usar age y publicar exclusivamente ciphertext permitido en artifact de Actions. Queda pendiente obtener recipient público age1... generado localmente y conservando solo el usuario la identidad privada. Verificar licencias/derechos por fuente incluso para ciphertext. Prerregistrar y probar con datos sintéticos integridad, cifrado/descifrado/recovery, no exposición en logs/cache/artifacts y fail-closed antes de nuevos experimentos. Sin pagos ni permisos nuevos; no retrotraer trazas efímeras.",
+      "task_acceptance": "No pedir nuevamente elegir A/B/C. Solicitar solo recipient público age1... al usuario; nunca pedir private key. Antes de cualquier ciphertext real confirmar derechos y privacidad, realizar prueba sintética de cifrado/descifrado y eliminación segura del plaintext en el contenedor efímero, verificar que Actions artifact solo recibe ciphertext sanitizado. Probar pérdida de recipient/herramienta y rechazar publicación ante fallo. Persistir evidencia, auditoría, LOG y STATE último, no proclamar independencia ni auditabilidad histórica.",
+      "next_action": "ESPERAR RECIPIENT PÚBLICO del usuario antes de instrumentar cifrado para trazas reales. Modalidad A YA APROBADA; no solicitar de nuevo la elección. Trabajo T0.55 offline se puede completar entretanto; sin nuevos LLM ni publicación de trazas hasta superar gates y autorización de derechos para el contenido.",
       "id": "T0.54",
-      "status": "waiting_for_explicit_user_decision",
+      "status": "waiting_for_public_recipient_and_security_gates",
       "blocks": "Custodia de trazas reales, cualquier publicación de datos sensibles o cifrados, nuevas corridas con LLM bajo D-0061 y afirmaciones de auditabilidad íntegra.",
-      "independent_work": "T0.55 usa métodos, fixtures sintéticos y evidencia pública. No presupone elección A/B/C."
+      "independent_work": "T0.55 es la tarea activa; solo requiere metodología y fixtures sintéticos. Opción A confirmada, T0.54 sigue diferida."
     }
   ]
 }
